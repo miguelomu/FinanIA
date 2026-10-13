@@ -1,41 +1,7 @@
-<?php
-require_once __DIR__ . '/../../includes/auth.php';
-requiereLogin();
-require_once __DIR__ . '/../../config/database.php';
-
-$usuario = usuarioActual();
-$id = intval($_GET['id'] ?? 0);
-
-$stmt = $pdo->prepare("SELECT * FROM presupuesto WHERE id_presupuesto = ? AND id_usuario = ?");
-$stmt->execute([$id, $usuario['id']]);
-$presupuesto = $stmt->fetch();
-
-if (!$presupuesto) {
-    header('Location: index.php');
-    exit;
-}
-
-// Cargar categorías de gasto
-$stmt = $pdo->prepare("SELECT * FROM categoria WHERE id_usuario = ? AND tipo = 'gasto' ORDER BY nombre");
-$stmt->execute([$usuario['id']]);
-$categorias = $stmt->fetchAll();
-
-// Cargar límites actuales
-$stmt = $pdo->prepare("SELECT id_categoria, limite FROM detalle_presupuesto WHERE id_presupuesto = ?");
-$stmt->execute([$id]);
-$limitesActuales = [];
-while ($row = $stmt->fetch()) {
-    $limitesActuales[$row['id_categoria']] = $row['limite'];
-}
-
-$meses = ['', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-          'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-
-include __DIR__ . '/../../includes/header.php';
-?>
+<?php include __DIR__ . '/../../../includes/header.php'; ?>
 
 <div class="layout">
-  <?php include __DIR__ . '/../../includes/sidebar.php'; ?>
+  <?php include __DIR__ . '/../../../includes/sidebar.php'; ?>
 
   <main class="main-content">
     <div class="topbar">
@@ -43,7 +9,24 @@ include __DIR__ . '/../../includes/header.php';
       <a href="index.php" class="btn btn-secondary">← Volver</a>
     </div>
 
-    <form action="actualizar.php" method="POST" style="max-width:900px;">
+    <?php if (isset($_GET['error'])): ?>
+      <div class="alert alert-error">
+        <?php
+        $errores = [
+          'campos_vacios' => 'Todos los campos deben llenarse',
+          'ya_existe' => 'Ya existe un presupuesto para ese mes y año'
+        ];
+        echo $errores[$_GET['error']] ?? 'Error al procesar';
+        ?>
+      </div>
+    <?php endif; ?>
+
+    <?php 
+    $meses = ['', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+              'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+    ?>
+
+    <form action="index.php?accion=actualizar" method="POST" style="max-width:900px;">
       <input type="hidden" name="id" value="<?= $presupuesto['id_presupuesto'] ?>">
 
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
@@ -93,4 +76,4 @@ include __DIR__ . '/../../includes/header.php';
   </main>
 </div>
 
-<?php include __DIR__ . '/../../includes/footer.php'; ?>
+<?php include __DIR__ . '/../../../includes/footer.php'; ?>

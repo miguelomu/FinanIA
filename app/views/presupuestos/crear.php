@@ -1,23 +1,7 @@
-<?php
-require_once __DIR__ . '/../../includes/auth.php';
-requiereLogin();
-require_once __DIR__ . '/../../config/database.php';
-
-$usuario = usuarioActual();
-
-// Cargar categorías de gasto del usuario
-$stmt = $pdo->prepare("SELECT * FROM categoria WHERE id_usuario = ? AND tipo = 'gasto' ORDER BY nombre");
-$stmt->execute([$usuario['id']]);
-$categorias = $stmt->fetchAll();
-
-$meses = ['', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-          'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-
-include __DIR__ . '/../../includes/header.php';
-?>
+<?php include __DIR__ . '/../../../includes/header.php'; ?>
 
 <div class="layout">
-  <?php include __DIR__ . '/../../includes/sidebar.php'; ?>
+  <?php include __DIR__ . '/../../../includes/sidebar.php'; ?>
 
   <main class="main-content">
     <div class="topbar">
@@ -30,8 +14,7 @@ include __DIR__ . '/../../includes/header.php';
         <?php
         $errores = [
           'campos_vacios' => 'Debes seleccionar mes y año',
-          'ya_existe' => 'Ya existe un presupuesto para ese mes y año',
-          'sin_categorias' => 'No tienes categorías de gasto creadas'
+          'ya_existe' => 'Ya existe un presupuesto para ese mes y año'
         ];
         echo $errores[$_GET['error']] ?? 'Error al procesar';
         ?>
@@ -44,7 +27,12 @@ include __DIR__ . '/../../includes/header.php';
       </div>
     <?php else: ?>
 
-    <form action="guardar.php" method="POST" style="max-width:900px;">
+    <?php 
+    $meses = ['', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+              'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+    ?>
+
+    <form action="index.php?accion=guardar" method="POST" style="max-width:900px;">
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
         <div class="form-group">
           <label>Mes *</label>
@@ -73,9 +61,7 @@ include __DIR__ . '/../../includes/header.php';
       <div style="background:rgba(19,47,76,0.5); padding:20px; border-radius:12px;">
         <?php foreach ($categorias as $cat): ?>
           <div style="display:grid; grid-template-columns:1fr 200px; gap:15px; align-items:center; padding:10px 0; border-bottom:1px solid rgba(212,175,55,0.1);">
-            <span style="color:#c9d6e3;">
-              <?= htmlspecialchars($cat['nombre']) ?>
-            </span>
+            <span style="color:#c9d6e3;"><?= htmlspecialchars($cat['nombre']) ?></span>
             <input type="number" 
                    name="limites[<?= $cat['id_categoria'] ?>]" 
                    step="0.01" min="0" value="0" 
@@ -95,4 +81,4 @@ include __DIR__ . '/../../includes/header.php';
   </main>
 </div>
 
-<?php include __DIR__ . '/../../includes/footer.php'; ?>
+<?php include __DIR__ . '/../../../includes/footer.php'; ?>
