@@ -1,12 +1,7 @@
-<?php
-require_once __DIR__ . '/../../includes/auth.php';
-requiereLogin();
-
-include __DIR__ . '/../../includes/header.php';
-?>
+<?php include __DIR__ . '/../../../includes/header.php'; ?>
 
 <div class="layout">
-  <?php include __DIR__ . '/../../includes/sidebar.php'; ?>
+  <?php include __DIR__ . '/../../../includes/sidebar.php'; ?>
 
   <main class="main-content">
     <div class="topbar">
@@ -27,7 +22,7 @@ include __DIR__ . '/../../includes/header.php';
       </div>
     <?php endif; ?>
 
-    <form action="guardar.php" method="POST" style="max-width:700px;">
+    <form action="index.php?accion=guardar" method="POST" style="max-width:700px;">
       <div class="form-group">
         <label>Nombre de la meta *</label>
         <input type="text" name="nombre" required maxlength="150" 
@@ -64,4 +59,4 @@ include __DIR__ . '/../../includes/header.php';
   </main>
 </div>
 
-<?php include __DIR__ . '/../../includes/footer.php'; ?>
+<?php include __DIR__ . '/../../../includes/footer.php'; ?>

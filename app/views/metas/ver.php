@@ -1,39 +1,13 @@
-<?php
-require_once __DIR__ . '/../../includes/auth.php';
-requiereLogin();
-require_once __DIR__ . '/../../config/database.php';
-
-$usuario = usuarioActual();
-$id = intval($_GET['id'] ?? 0);
-
-$stmt = $pdo->prepare("SELECT * FROM meta WHERE id_meta = ? AND id_usuario = ?");
-$stmt->execute([$id, $usuario['id']]);
-$meta = $stmt->fetch();
-
-if (!$meta) {
-    header('Location: index.php');
-    exit;
-}
-
-$stmt = $pdo->prepare("SELECT * FROM aporte_meta WHERE id_meta = ? ORDER BY fecha DESC");
-$stmt->execute([$id]);
-$aportes = $stmt->fetchAll();
-
-$progreso = $meta['monto_objetivo'] > 0 
-    ? min(100, ($meta['monto_actual'] / $meta['monto_objetivo']) * 100) 
-    : 0;
-
-include __DIR__ . '/../../includes/header.php';
-?>
+<?php include __DIR__ . '/../../../includes/header.php'; ?>
 
 <div class="layout">
-  <?php include __DIR__ . '/../../includes/sidebar.php'; ?>
+  <?php include __DIR__ . '/../../../includes/sidebar.php'; ?>
 
   <main class="main-content">
     <div class="topbar">
       <h1>💰 <?= htmlspecialchars($meta['nombre']) ?></h1>
       <div style="display:flex; gap:10px;">
-        <a href="aportar.php?id=<?= $meta['id_meta'] ?>" class="btn btn-primary">+ Nuevo Aporte</a>
+        <a href="index.php?accion=aportar&id=<?= $meta['id_meta'] ?>" class="btn btn-primary">+ Nuevo Aporte</a>
         <a href="index.php" class="btn btn-secondary">← Volver</a>
       </div>
     </div>
@@ -51,7 +25,6 @@ include __DIR__ . '/../../includes/header.php';
       </div>
     <?php endif; ?>
 
-        <!-- Resumen de la meta -->
     <div class="cards-grid">
       <div class="card">
         <h3>Objetivo</h3>
@@ -79,13 +52,16 @@ include __DIR__ . '/../../includes/header.php';
       </div>
     </div>
 
-    <!-- Historial -->
+    <div class="progress" style="margin-bottom:30px;">
+      <div class="progress-bar <?= $progreso >= 100 ? 'success' : '' ?>" style="width: <?= $progreso ?>%;"></div>
+    </div>
+
     <h2 style="color:#d4af37; margin-bottom:20px;">Historial de Aportes</h2>
 
     <?php if (empty($aportes)): ?>
       <div class="card" style="text-align:center; padding:40px;">
         <p style="font-size:1.1rem; margin-bottom:15px;">📭 Aún no has hecho aportes a esta meta</p>
-        <a href="aportar.php?id=<?= $meta['id_meta'] ?>" class="btn btn-primary">Registrar primer aporte</a>
+        <a href="index.php?accion=aportar&id=<?= $meta['id_meta'] ?>" class="btn btn-primary">Registrar primer aporte</a>
       </div>
     <?php else: ?>
       <div class="table-container">
@@ -108,8 +84,8 @@ include __DIR__ . '/../../includes/header.php';
                 </td>
                 <td style="text-align:center;">
                   <div class="acciones" style="justify-content:center;">
-                    <a href="editar_aporte.php?id=<?= $a['id_aporte'] ?>" class="btn-sm btn-editar">✏️ Editar</a>
-                    <a href="eliminar_aporte.php?id=<?= $a['id_aporte'] ?>" 
+                    <a href="index.php?accion=editarAporte&id=<?= $a['id_aporte'] ?>" class="btn-sm btn-editar">✏️ Editar</a>
+                    <a href="index.php?accion=eliminarAporte&id=<?= $a['id_aporte'] ?>" 
                        class="btn-sm btn-eliminar"
                        onclick="return confirm('¿Eliminar este aporte? El monto se restará de la meta.')">🗑️ Eliminar</a>
                   </div>
@@ -123,4 +99,4 @@ include __DIR__ . '/../../includes/header.php';
   </main>
 </div>
 
-<?php include __DIR__ . '/../../includes/footer.php'; ?>
+<?php include __DIR__ . '/../../../includes/footer.php'; ?>

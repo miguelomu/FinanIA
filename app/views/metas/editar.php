@@ -1,25 +1,7 @@
-<?php
-require_once __DIR__ . '/../../includes/auth.php';
-requiereLogin();
-require_once __DIR__ . '/../../config/database.php';
-
-$usuario = usuarioActual();
-$id = intval($_GET['id'] ?? 0);
-
-$stmt = $pdo->prepare("SELECT * FROM meta WHERE id_meta = ? AND id_usuario = ?");
-$stmt->execute([$id, $usuario['id']]);
-$meta = $stmt->fetch();
-
-if (!$meta) {
-    header('Location: index.php');
-    exit;
-}
-
-include __DIR__ . '/../../includes/header.php';
-?>
+<?php include __DIR__ . '/../../../includes/header.php'; ?>
 
 <div class="layout">
-  <?php include __DIR__ . '/../../includes/sidebar.php'; ?>
+  <?php include __DIR__ . '/../../../includes/sidebar.php'; ?>
 
   <main class="main-content">
     <div class="topbar">
@@ -27,7 +9,7 @@ include __DIR__ . '/../../includes/header.php';
       <a href="index.php" class="btn btn-secondary">← Volver</a>
     </div>
 
-    <form action="actualizar.php" method="POST" style="max-width:700px;">
+    <form action="index.php?accion=actualizar" method="POST" style="max-width:700px;">
       <input type="hidden" name="id" value="<?= $meta['id_meta'] ?>">
 
       <div class="form-group">
@@ -43,9 +25,12 @@ include __DIR__ . '/../../includes/header.php';
       </div>
 
       <div class="form-group">
-        <label>Monto actual ahorrado</label>
+        <label>Monto inicial (no incluye aportes)</label>
         <input type="number" name="monto_actual" step="0.01" min="0" 
-               value="<?= $meta['monto_actual'] ?>">
+               value="<?= $meta['monto_inicial'] ?>">
+        <small style="color:#9fb3c8; font-size:0.8rem;">
+          Los aportes registrados se suman automáticamente al total.
+        </small>
       </div>
 
       <div class="form-group">
@@ -77,4 +62,4 @@ include __DIR__ . '/../../includes/header.php';
   </main>
 </div>
 
-<?php include __DIR__ . '/../../includes/footer.php'; ?>
+<?php include __DIR__ . '/../../../includes/footer.php'; ?>
