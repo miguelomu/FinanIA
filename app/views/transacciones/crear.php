@@ -1,20 +1,7 @@
-<?php
-require_once __DIR__ . '/../../includes/auth.php';
-requiereLogin();
-require_once __DIR__ . '/../../config/database.php';
-
-$usuario = usuarioActual();
-
-// Cargar categorías del usuario
-$stmt = $pdo->prepare("SELECT * FROM categoria WHERE id_usuario = ? ORDER BY tipo, nombre");
-$stmt->execute([$usuario['id']]);
-$categorias = $stmt->fetchAll();
-
-include __DIR__ . '/../../includes/header.php';
-?>
+<?php include __DIR__ . '/../../../includes/header.php'; ?>
 
 <div class="layout">
-  <?php include __DIR__ . '/../../includes/sidebar.php'; ?>
+  <?php include __DIR__ . '/../../../includes/sidebar.php'; ?>
 
   <main class="main-content">
     <div class="topbar">
@@ -27,8 +14,7 @@ include __DIR__ . '/../../includes/header.php';
         <?php
         $errores = [
           'campos_vacios' => 'Todos los campos obligatorios deben llenarse',
-          'monto_invalido' => 'El monto debe ser mayor a cero',
-          'sin_categorias' => 'Primero debes crear al menos una categoría'
+          'monto_invalido' => 'El monto debe ser mayor a cero'
         ];
         echo $errores[$_GET['error']] ?? 'Error al procesar';
         ?>
@@ -37,11 +23,11 @@ include __DIR__ . '/../../includes/header.php';
 
     <?php if (empty($categorias)): ?>
       <div class="alert alert-error">
-        No tienes categorías creadas. Contacta al soporte o crea categorías por defecto.
+        No tienes categorías creadas. Primero crea una categoría en el módulo de Categorías.
       </div>
     <?php else: ?>
 
-    <form action="guardar.php" method="POST" style="max-width:700px;">
+    <form action="index.php?accion=guardar" method="POST" style="max-width:700px;">
       <div class="form-group">
         <label>Tipo de Transacción *</label>
         <select name="tipo" required>
@@ -104,4 +90,4 @@ include __DIR__ . '/../../includes/header.php';
   </main>
 </div>
 
-<?php include __DIR__ . '/../../includes/footer.php'; ?>
+<?php include __DIR__ . '/../../../includes/footer.php'; ?>

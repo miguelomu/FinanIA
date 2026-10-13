@@ -1,31 +1,7 @@
-<?php
-require_once __DIR__ . '/../../includes/auth.php';
-requiereLogin();
-require_once __DIR__ . '/../../config/database.php';
-
-$usuario = usuarioActual();
-$id = intval($_GET['id'] ?? 0);
-
-// Cargar transacción
-$stmt = $pdo->prepare("SELECT * FROM transaccion WHERE id_transaccion = ? AND id_usuario = ?");
-$stmt->execute([$id, $usuario['id']]);
-$transaccion = $stmt->fetch();
-
-if (!$transaccion) {
-    header('Location: index.php');
-    exit;
-}
-
-// Cargar categorías
-$stmt = $pdo->prepare("SELECT * FROM categoria WHERE id_usuario = ? ORDER BY tipo, nombre");
-$stmt->execute([$usuario['id']]);
-$categorias = $stmt->fetchAll();
-
-include __DIR__ . '/../../includes/header.php';
-?>
+<?php include __DIR__ . '/../../../includes/header.php'; ?>
 
 <div class="layout">
-  <?php include __DIR__ . '/../../includes/sidebar.php'; ?>
+  <?php include __DIR__ . '/../../../includes/sidebar.php'; ?>
 
   <main class="main-content">
     <div class="topbar">
@@ -33,7 +9,19 @@ include __DIR__ . '/../../includes/header.php';
       <a href="index.php" class="btn btn-secondary">← Volver</a>
     </div>
 
-    <form action="actualizar.php" method="POST" style="max-width:700px;">
+    <?php if (isset($_GET['error'])): ?>
+      <div class="alert alert-error">
+        <?php
+        $errores = [
+          'campos_vacios' => 'Todos los campos obligatorios deben llenarse',
+          'monto_invalido' => 'El monto debe ser mayor a cero'
+        ];
+        echo $errores[$_GET['error']] ?? 'Error al procesar';
+        ?>
+      </div>
+    <?php endif; ?>
+
+    <form action="index.php?accion=actualizar" method="POST" style="max-width:700px;">
       <input type="hidden" name="id" value="<?= $transaccion['id_transaccion'] ?>">
 
       <div class="form-group">
@@ -99,4 +87,4 @@ include __DIR__ . '/../../includes/header.php';
   </main>
 </div>
 
-<?php include __DIR__ . '/../../includes/footer.php'; ?>
+<?php include __DIR__ . '/../../../includes/footer.php'; ?>
