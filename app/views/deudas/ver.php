@@ -1,40 +1,14 @@
-<?php
-require_once __DIR__ . '/../../includes/auth.php';
-requiereLogin();
-require_once __DIR__ . '/../../config/database.php';
-
-$usuario = usuarioActual();
-$id = intval($_GET['id'] ?? 0);
-
-$stmt = $pdo->prepare("SELECT * FROM deuda WHERE id_deuda = ? AND id_usuario = ?");
-$stmt->execute([$id, $usuario['id']]);
-$deuda = $stmt->fetch();
-
-if (!$deuda) {
-    header('Location: index.php');
-    exit;
-}
-
-$stmt = $pdo->prepare("SELECT * FROM pago_deuda WHERE id_deuda = ? ORDER BY fecha DESC");
-$stmt->execute([$id]);
-$pagos = $stmt->fetchAll();
-
-$progreso = $deuda['monto_total'] > 0 
-    ? min(100, ($deuda['monto_pagado'] / $deuda['monto_total']) * 100) 
-    : 0;
-
-include __DIR__ . '/../../includes/header.php';
-?>
+<?php include __DIR__ . '/../../../includes/header.php'; ?>
 
 <div class="layout">
-  <?php include __DIR__ . '/../../includes/sidebar.php'; ?>
+  <?php include __DIR__ . '/../../../includes/sidebar.php'; ?>
 
   <main class="main-content">
     <div class="topbar">
       <h1>💳 <?= htmlspecialchars($deuda['acreedor']) ?></h1>
       <div style="display:flex; gap:10px;">
         <?php if ($deuda['estado'] !== 'pagada'): ?>
-          <a href="pagar.php?id=<?= $deuda['id_deuda'] ?>" class="btn btn-primary">+ Nuevo Pago</a>
+          <a href="index.php?accion=pagar&id=<?= $deuda['id_deuda'] ?>" class="btn btn-primary">+ Nuevo Pago</a>
         <?php endif; ?>
         <a href="index.php" class="btn btn-secondary">← Volver</a>
       </div>
@@ -82,7 +56,7 @@ include __DIR__ . '/../../includes/header.php';
       <div class="card" style="text-align:center; padding:40px;">
         <p style="font-size:1.1rem; margin-bottom:15px;">📭 Aún no has hecho pagos a esta deuda</p>
         <?php if ($deuda['estado'] !== 'pagada'): ?>
-          <a href="pagar.php?id=<?= $deuda['id_deuda'] ?>" class="btn btn-primary">Registrar primer pago</a>
+          <a href="index.php?accion=pagar&id=<?= $deuda['id_deuda'] ?>" class="btn btn-primary">Registrar primer pago</a>
         <?php endif; ?>
       </div>
     <?php else: ?>
@@ -106,8 +80,8 @@ include __DIR__ . '/../../includes/header.php';
                 </td>
                 <td style="text-align:center;">
                   <div class="acciones" style="justify-content:center;">
-                    <a href="editar_pago.php?id=<?= $p['id_pago'] ?>" class="btn-sm btn-editar">✏️ Editar</a>
-                    <a href="eliminar_pago.php?id=<?= $p['id_pago'] ?>" 
+                    <a href="index.php?accion=editarPago&id=<?= $p['id_pago'] ?>" class="btn-sm btn-editar">✏️ Editar</a>
+                    <a href="index.php?accion=eliminarPago&id=<?= $p['id_pago'] ?>" 
                        class="btn-sm btn-eliminar"
                        onclick="return confirm('¿Eliminar este pago?')">🗑️ Eliminar</a>
                   </div>
@@ -121,4 +95,4 @@ include __DIR__ . '/../../includes/header.php';
   </main>
 </div>
 
-<?php include __DIR__ . '/../../includes/footer.php'; ?>
+<?php include __DIR__ . '/../../../includes/footer.php'; ?>

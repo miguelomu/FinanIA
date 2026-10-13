@@ -2,155 +2,24 @@
 require_once __DIR__ . '/../../includes/auth.php';
 requiereLogin();
 require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../../app/controllers/DeudaController.php';
 
 $usuario = usuarioActual();
-$estado = $_GET['estado'] ?? '';
+$controller = new DeudaController($pdo, $usuario['id']);
 
-$sql = "SELECT * FROM deuda WHERE id_usuario = ?";
-$params = [$usuario['id']];
+$accion = $_GET['accion'] ?? 'index';
 
-if (in_array($estado, ['activa', 'pagada', 'vencida'])) {
-    $sql .= " AND estado = ?";
-    $params[] = $estado;
+switch ($accion) {
+    case 'crear':           $controller->crear(); break;
+    case 'guardar':         $controller->guardar(); break;
+    case 'editar':          $controller->editar(); break;
+    case 'actualizar':      $controller->actualizar(); break;
+    case 'eliminar':        $controller->eliminar(); break;
+    case 'ver':             $controller->ver(); break;
+    case 'pagar':           $controller->pagar(); break;
+    case 'editarPago':      $controller->editarPago(); break;
+    case 'actualizarPago':  $controller->actualizarPago(); break;
+    case 'eliminarPago':    $controller->eliminarPago(); break;
+    case 'index':
+    default:                $controller->index(); break;
 }
-
-$sql .= " ORDER BY 
-    CASE estado 
-        WHEN 'vencida' THEN 1 
-        WHEN 'activa' THEN 2 
-        WHEN 'pagada' THEN 3 
-    END, fecha_vencimiento ASC";
-
-$stmt = $pdo->prepare($sql);
-$stmt->execute($params);
-$deudas = $stmt->fetchAll();
-
-$totalDeuda = 0;
-$totalPagado = 0;
-foreach ($deudas as $d) {
-    $totalDeuda += $d['monto_total'];
-    $totalPagado += $d['monto_pagado'];
-}
-
-include __DIR__ . '/../../includes/header.php';
-?>
-
-<div class="layout">
-  <?php include __DIR__ . '/../../includes/sidebar.php'; ?>
-
-  <main class="main-content">
-    <div class="topbar">
-      <h1>💳 Mis Deudas</h1>
-      <a href="crear.php" class="btn btn-primary">+ Nueva Deuda</a>
-    </div>
-
-    <?php if (isset($_GET['msg'])): ?>
-      <div class="alert alert-success">
-        <?php
-        $mensajes = [
-          'creado' => 'Deuda registrada exitosamente',
-          'actualizado' => 'Deuda actualizada exitosamente',
-          'eliminado' => 'Deuda eliminada exitosamente',
-          'pagado' => 'Pago registrado exitosamente'
-        ];
-        echo $mensajes[$_GET['msg']] ?? 'Operación exitosa';
-        ?>
-      </div>
-    <?php endif; ?>
-
-    <div class="cards-grid">
-      <div class="card">
-        <h3>Deuda Total</h3>
-        <div class="value negativo">$<?= number_format($totalDeuda, 2) ?></div>
-      </div>
-      <div class="card">
-        <h3>Total Pagado</h3>
-        <div class="value positivo">$<?= number_format($totalPagado, 2) ?></div>
-      </div>
-      <div class="card">
-        <h3>Saldo Pendiente</h3>
-        <div class="value negativo">$<?= number_format($totalDeuda - $totalPagado, 2) ?></div>
-      </div>
-      <div class="card">
-        <h3>Deudas Activas</h3>
-        <div class="value"><?= count(array_filter($deudas, fn($d) => $d['estado'] === 'activa')) ?></div>
-      </div>
-    </div>
-
-    <div style="background:rgba(19,47,76,0.5); padding:20px; border-radius:12px; margin-bottom:20px;">
-      <div style="display:flex; gap:10px; flex-wrap:wrap;">
-        <a href="index.php" class="btn <?= empty($estado) ? 'btn-primary' : 'btn-secondary' ?>">Todas</a>
-        <a href="?estado=activa" class="btn <?= $estado === 'activa' ? 'btn-primary' : 'btn-secondary' ?>">Activas</a>
-        <a href="?estado=pagada" class="btn <?= $estado === 'pagada' ? 'btn-primary' : 'btn-secondary' ?>">Pagadas</a>
-        <a href="?estado=vencida" class="btn <?= $estado === 'vencida' ? 'btn-primary' : 'btn-secondary' ?>">Vencidas</a>
-      </div>
-    </div>
-
-    <?php if (empty($deudas)): ?>
-      <div class="card" style="text-align:center; padding:40px;">
-        <p style="font-size:1.2rem; margin-bottom:15px;">💳 No tienes deudas registradas</p>
-        <a href="crear.php" class="btn btn-primary">Registrar primera deuda</a>
-      </div>
-    <?php else: ?>
-      <?php foreach ($deudas as $d): 
-        $progreso = $d['monto_total'] > 0 
-            ? min(100, ($d['monto_pagado'] / $d['monto_total']) * 100) 
-            : 0;
-        $claseBarra = $progreso >= 100 ? 'success' : ($progreso >= 50 ? '' : 'warning');
-        $estadoColor = [
-            'activa' => '#f39c12',
-            'pagada' => '#27ae60',
-            'vencida' => '#e74c3c'
-        ][$d['estado']] ?? '#3498db';
-        
-        $diasRestantes = (strtotime($d['fecha_vencimiento']) - time()) / 86400;
-      ?>
-        <div class="meta-card" style="border-left:4px solid <?= $estadoColor ?>;">
-          <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:15px;">
-            <h3 style="margin:0;"><?= htmlspecialchars($d['acreedor']) ?></h3>
-            <span style="padding:4px 12px; border-radius:12px; font-size:0.75rem; font-weight:bold;
-              background: <?= $estadoColor ?>22; color: <?= $estadoColor ?>;">
-              <?= ucfirst($d['estado']) ?>
-            </span>
-          </div>
-
-          <div class="meta-info">
-            <span>Monto total: <strong>$<?= number_format($d['monto_total'], 2) ?></strong></span>
-            <span>Pagado: <strong>$<?= number_format($d['monto_pagado'], 2) ?></strong></span>
-            <span>Pendiente: <strong>$<?= number_format($d['monto_total'] - $d['monto_pagado'], 2) ?></strong></span>
-          </div>
-
-          <div class="meta-info">
-            <span>Tasa interés: <strong><?= number_format($d['tasa_interes'], 2) ?>%</strong></span>
-            <span>Pago mínimo: <strong>$<?= number_format($d['pago_minimo'], 2) ?></strong></span>
-            <span>Vence: <strong><?= date('d/m/Y', strtotime($d['fecha_vencimiento'])) ?></strong></span>
-          </div>
-
-          <?php if ($d['estado'] === 'activa' && $diasRestantes > 0 && $diasRestantes <= 30): ?>
-            <div style="background:rgba(243,156,18,0.15); border-left:3px solid #f39c12; padding:10px; border-radius:6px; margin:10px 0;">
-              ⚠️ <strong>Vence en <?= floor($diasRestantes) ?> días</strong>
-            </div>
-          <?php endif; ?>
-
-          <div class="progress">
-            <div class="progress-bar <?= $claseBarra ?>" style="width: <?= $progreso ?>%;"></div>
-          </div>
-
-          <div class="btn-group" style="margin-top:15px;">
-            <?php if ($d['estado'] !== 'pagada'): ?>
-              <a href="pagar.php?id=<?= $d['id_deuda'] ?>" class="btn btn-primary">+ Registrar Pago</a>
-            <?php endif; ?>
-            <a href="ver.php?id=<?= $d['id_deuda'] ?>" class="btn btn-secondary">📋 Ver Pagos</a>
-            <a href="editar.php?id=<?= $d['id_deuda'] ?>" class="btn btn-secondary">✏️ Editar</a>
-            <a href="eliminar.php?id=<?= $d['id_deuda'] ?>" 
-               class="btn btn-secondary"
-               style="color:#e74c3c;"
-               onclick="return confirm('¿Eliminar esta deuda? Se eliminarán también sus pagos.')">🗑️ Eliminar</a>
-          </div>
-        </div>
-      <?php endforeach; ?>
-    <?php endif; ?>
-  </main>
-</div>
-
-<?php include __DIR__ . '/../../includes/footer.php'; ?>
