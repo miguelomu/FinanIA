@@ -1,25 +1,7 @@
-<?php
-require_once __DIR__ . '/../../includes/auth.php';
-requiereLogin();
-require_once __DIR__ . '/../../config/database.php';
-
-$usuario = usuarioActual();
-$id = intval($_GET['id'] ?? 0);
-
-$stmt = $pdo->prepare("SELECT * FROM categoria WHERE id_categoria = ? AND id_usuario = ?");
-$stmt->execute([$id, $usuario['id']]);
-$categoria = $stmt->fetch();
-
-if (!$categoria) {
-    header('Location: index.php');
-    exit;
-}
-
-include __DIR__ . '/../../includes/header.php';
-?>
+<?php include __DIR__ . '/../../../includes/header.php'; ?>
 
 <div class="layout">
-  <?php include __DIR__ . '/../../includes/sidebar.php'; ?>
+  <?php include __DIR__ . '/../../../includes/sidebar.php'; ?>
 
   <main class="main-content">
     <div class="topbar">
@@ -27,7 +9,19 @@ include __DIR__ . '/../../includes/header.php';
       <a href="index.php" class="btn btn-secondary">← Volver</a>
     </div>
 
-    <form action="actualizar.php" method="POST" style="max-width:600px;">
+    <?php if (isset($_GET['error'])): ?>
+      <div class="alert alert-error">
+        <?php
+        $errores = [
+          'campos_vacios' => 'El nombre y el tipo son obligatorios',
+          'nombre_existe' => 'Ya tienes una categoría con ese nombre'
+        ];
+        echo $errores[$_GET['error']] ?? 'Error al procesar';
+        ?>
+      </div>
+    <?php endif; ?>
+
+    <form action="index.php?accion=actualizar" method="POST" style="max-width:600px;">
       <input type="hidden" name="id" value="<?= $categoria['id_categoria'] ?>">
 
       <div class="form-group">
@@ -64,4 +58,4 @@ include __DIR__ . '/../../includes/header.php';
   </main>
 </div>
 
-<?php include __DIR__ . '/../../includes/footer.php'; ?>
+<?php include __DIR__ . '/../../../includes/footer.php'; ?>
