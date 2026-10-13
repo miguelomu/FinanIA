@@ -25,16 +25,16 @@
     <div class="cards-grid">
       <div class="card">
         <h3>Ingresos</h3>
-        <div class="value positivo">$<?= number_format($totales['ingresos'], 2) ?></div>
+        <div class="value positivo"><?= formatoCOP($totales['ingresos'], 2) ?></div>
       </div>
       <div class="card">
         <h3>Gastos</h3>
-        <div class="value negativo">$<?= number_format($totales['gastos'], 2) ?></div>
+        <div class="value negativo"><?= formatoCOP($totales['gastos'], 2) ?></div>
       </div>
       <div class="card">
         <h3>Balance</h3>
         <div class="value <?= $totales['balance'] >= 0 ? 'positivo' : 'negativo' ?>">
-          $<?= number_format($totales['balance'], 2) ?>
+          <?= formatoCOP($totales['balance'], 2) ?>
         </div>
       </div>
       <div class="card">
@@ -97,7 +97,7 @@
                 <td><?= ucfirst($t['metodo_pago']) ?></td>
                 <td style="text-align:right; font-weight:bold;
                   color: <?= $t['tipo'] === 'ingreso' ? '#27ae60' : '#e74c3c' ?>;">
-                  <?= $t['tipo'] === 'ingreso' ? '+' : '-' ?>$<?= number_format($t['monto'], 2) ?>
+                  <?= $t['tipo'] === 'ingreso' ? '+' : '-' ?><?= formatoCOP($t['monto'], 2) ?>
                 </td>
                 <td style="text-align:center;">
                   <div class="acciones" style="justify-content:center;">

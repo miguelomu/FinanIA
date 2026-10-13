@@ -53,6 +53,8 @@ class MetaController
             exit;
         }
 
+        requiereCsrf('index.php?error=csrf');
+
         $nombre = trim($_POST['nombre'] ?? '');
         $montoObjetivo = floatval($_POST['monto_objetivo'] ?? 0);
         $montoInicial = floatval($_POST['monto_actual'] ?? 0);
@@ -105,6 +107,8 @@ class MetaController
             header('Location: index.php');
             exit;
         }
+
+        requiereCsrf('index.php?error=csrf');
 
         $id = intval($_POST['id'] ?? 0);
         $nombre = trim($_POST['nombre'] ?? '');
@@ -181,6 +185,7 @@ class MetaController
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            requiereCsrf("index.php?accion=aportar&id=$id&error=csrf");
             $monto = floatval($_POST['monto'] ?? 0);
             $nota = trim($_POST['nota'] ?? '');
 
@@ -227,6 +232,8 @@ class MetaController
             header('Location: index.php');
             exit;
         }
+
+        requiereCsrf('index.php?error=csrf');
 
         $id = intval($_POST['id'] ?? 0);
         $monto = floatval($_POST['monto'] ?? 0);

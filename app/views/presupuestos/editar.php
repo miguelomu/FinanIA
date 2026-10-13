@@ -27,6 +27,7 @@
     ?>
 
     <form action="index.php?accion=actualizar" method="POST" style="max-width:900px;">
+        <?= csrfField() ?>
       <input type="hidden" name="id" value="<?= $presupuesto['id_presupuesto'] ?>">
 
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">

@@ -18,6 +18,7 @@
       </div>
 
       <form action="index.php?accion=pagar&id=<?= $deuda['id_deuda'] ?>" method="POST" style="margin-top:20px;">
+        <?= csrfField() ?>
         <div class="form-group">
           <label>Monto a pagar *</label>
           <input type="number" name="monto" step="0.01" min="0.01" required 

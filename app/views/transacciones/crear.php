@@ -28,6 +28,7 @@
     <?php else: ?>
 
     <form action="index.php?accion=guardar" method="POST" style="max-width:700px;">
+        <?= csrfField() ?>
       <div class="form-group">
         <label>Tipo de Transacción *</label>
         <select name="tipo" required>

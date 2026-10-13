@@ -10,6 +10,7 @@
     </div>
 
     <form action="index.php?accion=actualizar" method="POST" style="max-width:700px;">
+        <?= csrfField() ?>
       <input type="hidden" name="id" value="<?= $meta['id_meta'] ?>">
 
       <div class="form-group">

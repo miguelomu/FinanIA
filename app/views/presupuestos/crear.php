@@ -33,6 +33,7 @@
     ?>
 
     <form action="index.php?accion=guardar" method="POST" style="max-width:900px;">
+        <?= csrfField() ?>
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
         <div class="form-group">
           <label>Mes *</label>

@@ -23,6 +23,7 @@
     <?php endif; ?>
 
     <form action="index.php?accion=guardar" method="POST" style="max-width:700px;">
+        <?= csrfField() ?>
       <div class="form-group">
         <label>Nombre de la meta *</label>
         <input type="text" name="nombre" required maxlength="150" 

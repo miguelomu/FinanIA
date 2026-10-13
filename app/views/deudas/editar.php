@@ -10,6 +10,7 @@
     </div>
 
     <form action="index.php?accion=actualizar" method="POST" style="max-width:700px;">
+        <?= csrfField() ?>
       <input type="hidden" name="id" value="<?= $deuda['id_deuda'] ?>">
 
       <div class="form-group">

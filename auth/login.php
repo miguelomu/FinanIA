@@ -1,4 +1,7 @@
-<?php require_once '../includes/auth.php'; ?>
+<?php 
+require_once '../includes/auth.php';
+require_once '../app/bootstrap.php';   // ← AGREGAR ESTA LÍNEA
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -29,6 +32,7 @@
       <?php endif; ?>
 
       <form action="procesar_auth.php" method="POST">
+        <?= csrfField() ?>
         <input type="hidden" name="accion" value="login">
         <div class="form-group">
           <label>Correo Electrónico</label>

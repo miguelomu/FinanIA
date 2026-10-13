@@ -1,6 +1,18 @@
 <?php
 require_once '../config/database.php';
+require_once '../app/bootstrap.php';
 session_start();
+
+$accion = $_POST['accion'] ?? '';
+
+// Cargar helpers (por si acaso no se cargaron aún)
+require_once __DIR__ . '/../app/bootstrap.php';
+
+// Validar CSRF
+if (!validarCsrf()) {
+    header('Location: login.php?error=csrf');
+    exit;
+}
 
 $accion = $_POST['accion'] ?? '';
 

@@ -67,11 +67,13 @@ class TransaccionController
             exit;
         }
 
-        $tipo = $_POST['tipo'] ?? '';
-        $monto = floatval($_POST['monto'] ?? 0);
-        $fecha = $_POST['fecha'] ?? '';
+        requiereCsrf('index.php?error=csrf');
+
+        $tipo = postStr('tipo');
+        $monto = postFloat('monto');
+        $fecha = postStr('fecha');
         $idCategoria = intval($_POST['id_categoria'] ?? 0);
-        $descripcion = trim($_POST['descripcion'] ?? '');
+        $descripcion = postStr('descripcion');
         $metodoPago = $_POST['metodo_pago'] ?? 'efectivo';
         $recurrente = isset($_POST['recurrente']) ? 1 : 0;
 
@@ -136,6 +138,8 @@ class TransaccionController
             header('Location: index.php');
             exit;
         }
+
+        requiereCsrf('index.php?error=csrf');
 
         $id = intval($_POST['id'] ?? 0);
         $tipo = $_POST['tipo'] ?? '';

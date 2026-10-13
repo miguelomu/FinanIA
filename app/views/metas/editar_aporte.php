@@ -13,6 +13,7 @@
       <h3>Meta: <?= htmlspecialchars($aporte['meta_nombre']) ?></h3>
 
       <form action="index.php?accion=actualizarAporte" method="POST" style="margin-top:20px;">
+        <?= csrfField() ?>
         <input type="hidden" name="id" value="<?= $aporte['id_aporte'] ?>">
 
         <div class="form-group">

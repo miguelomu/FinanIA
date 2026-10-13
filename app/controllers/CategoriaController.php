@@ -62,6 +62,8 @@ class CategoriaController
             exit;
         }
 
+        requiereCsrf('index.php?error=csrf');
+
         $nombre = trim($_POST['nombre'] ?? '');
         $tipo = $_POST['tipo'] ?? '';
         $color = $_POST['color'] ?? '#3498db';
@@ -119,6 +121,8 @@ class CategoriaController
             header('Location: index.php');
             exit;
         }
+
+        requiereCsrf('index.php?error=csrf');
 
         $id = intval($_POST['id'] ?? 0);
         $nombre = trim($_POST['nombre'] ?? '');

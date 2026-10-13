@@ -22,6 +22,7 @@
     <?php endif; ?>
 
     <form action="index.php?accion=actualizar" method="POST" style="max-width:700px;">
+        <?= csrfField() ?>
       <input type="hidden" name="id" value="<?= $transaccion['id_transaccion'] ?>">
 
       <div class="form-group">

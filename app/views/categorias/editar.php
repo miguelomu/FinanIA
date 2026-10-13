@@ -22,6 +22,7 @@
     <?php endif; ?>
 
     <form action="index.php?accion=actualizar" method="POST" style="max-width:600px;">
+        <?= csrfField() ?>
       <input type="hidden" name="id" value="<?= $categoria['id_categoria'] ?>">
 
       <div class="form-group">

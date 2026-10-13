@@ -1,3 +1,7 @@
+<?php
+// Cargar helpers si no se han cargado
+require_once __DIR__ . '/../app/bootstrap.php';
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>

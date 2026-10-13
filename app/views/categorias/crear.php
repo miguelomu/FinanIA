@@ -21,7 +21,8 @@
       </div>
     <?php endif; ?>
 
-    <form action="index.php?accion=guardar" method="POST" style="max-width:600px;">
+    <form action="index.php?accion=guardar" method="POST"  style="max-width:600px;">
+        <?= csrfField() ?>
       <div class="form-group">
         <label>Nombre *</label>
         <input type="text" name="nombre" required maxlength="100" 

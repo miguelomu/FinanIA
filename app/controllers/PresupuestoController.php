@@ -49,6 +49,8 @@ class PresupuestoController
             exit;
         }
 
+        requiereCsrf('index.php?error=csrf');
+
         $mes = intval($_POST['mes'] ?? 0);
         $anio = intval($_POST['anio'] ?? 0);
         $limites = $_POST['limites'] ?? [];
@@ -99,6 +101,8 @@ class PresupuestoController
             header('Location: index.php');
             exit;
         }
+
+        requiereCsrf('index.php?error=csrf');
 
         $id = intval($_POST['id'] ?? 0);
         $mes = intval($_POST['mes'] ?? 0);

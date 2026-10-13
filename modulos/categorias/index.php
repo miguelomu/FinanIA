@@ -9,6 +9,7 @@
 require_once __DIR__ . '/../../includes/auth.php';
 requiereLogin();
 require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../../app/bootstrap.php'; 
 require_once __DIR__ . '/../../app/controllers/CategoriaController.php';
 
 // Obtener el usuario actual

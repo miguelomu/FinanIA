@@ -53,6 +53,8 @@ class DeudaController
             exit;
         }
 
+        requiereCsrf('index.php?error=csrf');
+
         $acreedor = trim($_POST['acreedor'] ?? '');
         $montoTotal = floatval($_POST['monto_total'] ?? 0);
         $montoPagado = floatval($_POST['monto_pagado'] ?? 0);
@@ -107,6 +109,8 @@ class DeudaController
             header('Location: index.php');
             exit;
         }
+
+        requiereCsrf('index.php?error=csrf');
 
         $id = intval($_POST['id'] ?? 0);
         $acreedor = trim($_POST['acreedor'] ?? '');
@@ -185,6 +189,7 @@ class DeudaController
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            requiereCsrf("index.php?accion=aportar&id=$id&error=csrf");
             $monto = floatval($_POST['monto'] ?? 0);
             $nota = trim($_POST['nota'] ?? '');
 
@@ -225,6 +230,8 @@ class DeudaController
             header('Location: index.php');
             exit;
         }
+
+        requiereCsrf('index.php?error=csrf');
 
         $id = intval($_POST['id'] ?? 0);
         $monto = floatval($_POST['monto'] ?? 0);

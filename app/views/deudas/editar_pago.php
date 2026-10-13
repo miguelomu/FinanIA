@@ -13,6 +13,7 @@
       <h3>Deuda: <?= htmlspecialchars($pago['deuda_acreedor']) ?></h3>
 
       <form action="index.php?accion=actualizarPago" method="POST" style="margin-top:20px;">
+        <?= csrfField() ?>
         <input type="hidden" name="id" value="<?= $pago['id_pago'] ?>">
 
         <div class="form-group">
