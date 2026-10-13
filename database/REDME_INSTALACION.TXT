@@ -1,0 +1,19 @@
+INSTRUCCIONES DE INSTALACIÓN
+============================
+
+1. Instalar XAMPP (https://www.apachefriends.org/)
+2. Copiar esta carpeta a C:\xampp\htdocs\FinanIA\
+3. Encender Apache y MySQL en XAMPP
+4. Abrir http://localhost/phpmyadmin
+5. Crear base de datos "gestor_financiero" (utf8mb4_unicode_ci)
+6. Importar el archivo database/gestor_financiero.sql
+7. Verificar config/database.php (usuario: root, contraseña: vacía)
+8. Abrir http://localhost/FinanIA/auth/login.php
+
+USUARIOS DE PRUEBA
+==================
+Email: admin@demo.com
+Contraseña: admin123
+
+Email: user@demo.com
+Contraseña: admin123

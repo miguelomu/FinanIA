@@ -1,0 +1,54 @@
+# ============================================
+# GITIGNORE - FinanIA
+# ============================================
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Archivos de configuración personal
+# NO subir credenciales reales al repo público
+config/database.local.php
+.env
+.env.local
+
+# Archivos de IDE / Editor
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+
+# Logs y debug
+*.log
+debug.log
+error.log
+
+# Archivos temporales
+*.tmp
+*.bak
+*~
+
+# Dependencias (si algún día usas Composer)
+/vendor/
+composer.lock
+
+# Backups de base de datos con datos personales
+database/*_personal.sql
+database/*_backup_*.sql
+
+# Node (por si algún día usas npm)
+node_modules/
+package-lock.json
+
+# Uploads de usuarios
+assets/uploads/
+assets/img/avatars/
+
+# Archivos generados
+*.pdf
+!assets/docs/*.pdf
+
+# Configuración personal de base de datos
+config/database.php
