@@ -68,6 +68,7 @@ class Chatbot
             'consultar_ahorro' => ['cuánto he ahorrado', 'mi ahorro', 'ahorros'],
             'consultar_cuentas' => ['mis cuentas', 'cuántas cuentas', 'saldos de cuentas'],
             'consultar_me_deben' => ['cuánto me deben', 'quién me debe', 'deudas a favor'],
+            'salud_financiera' => ['salud financiera', 'cómo estoy financieramente', 'mi puntaje', 'qué tan bien estoy', 'cómo va mi salud'],
 
             // Consultas de categorías
             'consultar_gasto_categoria' => ['cuánto gasté en', 'gasto en', 'cuánto llevo en'],
@@ -134,6 +135,9 @@ class Chatbot
 
             case 'consultar_me_deben':
                 return $this->respuestaMeDeben();
+
+            case 'salud_financiera':
+                return $this->respuestaSaludFinanciera();
 
             case 'consultar_gasto_categoria':
                 return $this->respuestaGastoCategoria($msg);
@@ -880,6 +884,38 @@ class Chatbot
                "• \"¿Debería invertir?\"\n" .
                "• \"¿Qué puedes hacer?\"\n\n" .
                "También puedes escribir **\"ayuda\"** para ver todas las opciones.";
+    }
+
+    private function respuestaSaludFinanciera()
+    {
+        require_once __DIR__ . '/SaludFinanciera.php';
+        $model = new SaludFinanciera($this->pdo, $this->idUsuario);
+        $salud = $model->calcular();
+
+        $respuesta = "🏆 **Tu Salud Financiera: " . $salud['total'] . "/100** (" . $salud['categoria']['nombre'] . ")\n\n";
+
+        foreach ($salud['componentes'] as $key => $c) {
+            $nombres = [
+                'fondo_emergencia' => '🛡️ Fondo de emergencia',
+                'nivel_deuda' => '💳 Nivel de deuda',
+                'tasa_ahorro' => '💰 Tasa de ahorro',
+                'diversificacion' => '📊 Diversificación',
+                'estabilidad' => '📈 Estabilidad'
+            ];
+            $respuesta .= $nombres[$key] . ": " . $c['puntos'] . " puntos — " . $c['descripcion'] . "\n";
+        }
+
+        $respuesta .= "\n💡 **Recomendación:** ";
+
+        if ($salud['total'] < 50) {
+            $respuesta .= "Hay mucho por mejorar. Enfócate en los componentes con menor puntaje.";
+        } elseif ($salud['total'] < 70) {
+            $respuesta .= "Vas bien, pero hay áreas de mejora. Revisa el desglose en tu dashboard.";
+        } else {
+            $respuesta .= "¡Excelente salud financiera! Sigue así.";
+        }
+
+        return $respuesta;
     }
 
     // ==========================================

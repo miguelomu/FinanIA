@@ -3,6 +3,7 @@ require_once __DIR__ . '/../includes/auth.php';
 requiereRol(['registrado', 'premium']);
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../app/models/Cuenta.php';
+require_once __DIR__ . '/../app/models/SaludFinanciera.php';
 
 $usuario = usuarioActual();
 
@@ -18,6 +19,10 @@ $balance = $stats['ingresos'] - $stats['gastos'];
 // Patrimonio
 $modelCuenta = new Cuenta($pdo);
 $patrimonio = $modelCuenta->calcularPatrimonio($usuario['id']);
+
+// Salud financiera
+$modelSalud = new SaludFinanciera($pdo, $usuario['id']);
+$salud = $modelSalud->calcular();
 
 // Metas activas
 $stmt = $pdo->prepare("SELECT 
@@ -60,6 +65,97 @@ include __DIR__ . '/../includes/header.php';
         − 
         Pasivos <strong style="color: #e74c3c;"><?= formatoCOP($patrimonio['pasivos']) ?></strong>
       </p>
+    </div>
+
+        <!-- 🏆 SALUD FINANCIERA -->
+    <div class="card" style="margin-top:30px; border:2px solid <?= $salud['categoria']['color'] ?>; padding:30px;">
+      <h2 style="color:<?= $salud['categoria']['color'] ?>; margin-bottom:20px; display:flex; align-items:center; gap:10px;">
+        <span style="font-size:2rem;"><?= $salud['categoria']['emoji'] ?></span>
+        Salud Financiera: <?= $salud['categoria']['nombre'] ?>
+      </h2>
+
+      <!-- Número grande -->
+      <div style="text-align:center; padding:20px 0;">
+        <div style="font-size:4rem; font-weight:bold; color:<?= $salud['categoria']['color'] ?>;">
+          <?= $salud['total'] ?><span style="font-size:2rem; color:#9fb3c8;">/100</span>
+        </div>
+        
+        <!-- Barra de progreso -->
+        <div style="max-width:500px; margin:20px auto;">
+          <div class="progress" style="height:15px;">
+            <div class="progress-bar" 
+                 style="width: <?= $salud['total'] ?>%; background: <?= $salud['categoria']['color'] ?>;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Desglose por componente -->
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:15px; margin-top:25px;">
+        <?php
+        $componentes = [
+          'fondo_emergencia' => ['nombre' => '🛡️ Fondo de emergencia', 'max' => 25],
+          'nivel_deuda' => ['nombre' => '💳 Nivel de deuda', 'max' => 25],
+          'tasa_ahorro' => ['nombre' => '💰 Tasa de ahorro', 'max' => 20],
+          'diversificacion' => ['nombre' => '📊 Diversificación', 'max' => 15],
+          'estabilidad' => ['nombre' => '📈 Estabilidad', 'max' => 15]
+        ];
+        
+        foreach ($componentes as $key => $info):
+          $c = $salud['componentes'][$key];
+          $colorEstado = [
+            'excelente' => '#27ae60',
+            'bueno' => '#2ecc71',
+            'regular' => '#f39c12',
+            'alerta' => '#e67e22',
+            'critico' => '#e74c3c',
+            'neutral' => '#7a8a9c'
+          ][$c['estado']];
+        ?>
+          <div style="background:rgba(10,25,41,0.6); padding:15px; border-radius:10px; border-left:4px solid <?= $colorEstado ?>;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+              <strong style="color:#e6edf3; font-size:0.9rem;"><?= $info['nombre'] ?></strong>
+              <strong style="color:<?= $colorEstado ?>;">
+                <?= $c['puntos'] ?>/<?= $info['max'] ?>
+              </strong>
+            </div>
+            <p style="color:#9fb3c8; font-size:0.8rem; margin-bottom:8px;">
+              <?= $c['descripcion'] ?>
+            </p>
+            <p style="color:<?= $colorEstado ?>; font-size:0.8rem;">
+              💡 <?= $c['recomendacion'] ?>
+            </p>
+          </div>
+        <?php endforeach; ?>
+      </div>
+
+      <!-- Recomendación general -->
+      <?php if ($salud['total'] < 70): ?>
+        <div style="background:rgba(231,76,60,0.1); border-left:4px solid #e74c3c; padding:15px; border-radius:8px; margin-top:25px;">
+          <strong style="color:#ff8a80;">🎯 Tu prioridad ahora:</strong>
+          <p style="color:#ff8a80; margin-top:8px;">
+            <?php
+            // Encontrar el componente con menor puntaje relativo
+            $peor = null;
+            $peorRatio = 1;
+            foreach ($componentes as $key => $info) {
+              $ratio = $salud['componentes'][$key]['puntos'] / $info['max'];
+              if ($ratio < $peorRatio) {
+                $peorRatio = $ratio;
+                $peor = $info['nombre'];
+              }
+            }
+            echo "Enfócate en mejorar: <strong>$peor</strong>. Es el área con más oportunidad de mejora.";
+            ?>
+          </p>
+        </div>
+      <?php else: ?>
+        <div style="background:rgba(39,174,96,0.1); border-left:4px solid #27ae60; padding:15px; border-radius:8px; margin-top:25px;">
+          <strong style="color:#7ee8a8;">🌟 ¡Felicidades!</strong>
+          <p style="color:#7ee8a8; margin-top:8px;">
+            Tu salud financiera está en buen nivel. Sigue así y considera aumentar tus metas de ahorro.
+          </p>
+        </div>
+      <?php endif; ?>
     </div>
 
     <!-- Tarjetas de resumen -->
