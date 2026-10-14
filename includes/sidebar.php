@@ -13,6 +13,7 @@ $paginaActual = basename($_SERVER['PHP_SELF']);
     <a href="/FinanIA/modulos/deudas/index.php">💳 Deudas</a>
     <a href="/FinanIA/modulos/gastos_compartidos/index.php">👥 Gastos Compartidos</a>
     <a href="/FinanIA/modulos/simulador/index.php">🏔️ Simulador de Deudas</a>
+    <a href="/FinanIA/modulos/fuentes_ingreso/index.php">💼 Fuentes de Ingreso</a>
     <a href="/FinanIA/modulos/categorias/index.php">🏷️ Categorías</a>
     <a href="/FinanIA/modulos/reportes/index.php">📈 Reportes</a>
     <a href="/FinanIA/modulos/configuracion/index.php">⚙️ Configuración</a>
@@ -21,6 +22,6 @@ $paginaActual = basename($_SERVER['PHP_SELF']);
       <a href="#">🔍 Gastos Hormiga</a>
     <?php endif; ?>
     <hr style="border-color:rgba(212,175,55,0.2); margin:15px 0;">
-    <a href="/FinanIA/auth/logout.php" style="color:#e74c3c;">🚪 Cerrar Sesión</a>
+    <a href="/FinanIA/auth/logout.php" style="color: #e74c3c;">🚪 Cerrar Sesión</a>
   </nav>
 </aside>
