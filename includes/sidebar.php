@@ -17,6 +17,7 @@ $paginaActual = basename($_SERVER['PHP_SELF']);
     <a href="/FinanIA/modulos/simulador/index.php">🏔️ Simulador de Deudas</a>
     <a href="/FinanIA/modulos/simulador_inversion/index.php">💰 Simulador de Inversiones</a>
     <a href="/FinanIA/modulos/fuentes_ingreso/index.php">💼 Fuentes de Ingreso</a>
+    <a href="/FinanIA/modulos/logros/index.php">🏆 Mis Logros</a>
     <a href="/FinanIA/modulos/categorias/index.php">🏷️ Categorías</a>
     <a href="/FinanIA/modulos/reportes/index.php">📈 Reportes</a>
     <a href="/FinanIA/modulos/configuracion/index.php">⚙️ Configuración</a>
@@ -26,5 +27,7 @@ $paginaActual = basename($_SERVER['PHP_SELF']);
     <?php endif; ?>
     <hr style="border-color:rgba(212,175,55,0.2); margin:15px 0;">
     <a href="/FinanIA/auth/logout.php" style="color: #e74c3c;">🚪 Cerrar Sesión</a>
+    <hr style="border-color:rgba(212,175,55,0.2); margin:15px 0;">
+    <?php include __DIR__ . '/toggle_tema.php'; ?>
   </nav>
 </aside>

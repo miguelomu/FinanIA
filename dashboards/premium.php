@@ -4,6 +4,7 @@ requiereRol('premium');
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../app/models/Cuenta.php';
 require_once __DIR__ . '/../app/models/SaludFinanciera.php'; 
+require_once __DIR__ . '/../app/models/Logro.php';
 
 $usuario = usuarioActual();
 
@@ -16,13 +17,13 @@ $stmt->execute([$usuario['id']]);
 $stats = $stmt->fetch();
 $balance = $stats['ingresos'] - $stats['gastos'];
 
-// Patrimonio
-$modelCuenta = new Cuenta($pdo);
-$patrimonio = $modelCuenta->calcularPatrimonio($usuario['id']);
-
 // Salud financiera
 $modelSalud = new SaludFinanciera($pdo, $usuario['id']);
 $salud = $modelSalud->calcular();
+
+// Patrimonio
+$modelCuenta = new Cuenta($pdo);
+$patrimonio = $modelCuenta->calcularPatrimonio($usuario['id']);
 
 // Metas activas
 $stmt = $pdo->prepare("SELECT 
@@ -34,28 +35,41 @@ $stmt->execute([$usuario['id']]);
 $metas = $stmt->fetch();
 
 // Alertas de presupuesto
-  $stmt = $pdo->prepare(
-      "SELECT c.nombre AS categoria, dp.limite,
-          COALESCE((
-              SELECT SUM(monto) FROM transaccion t
-              WHERE t.id_usuario = ?
-                AND t.id_categoria = dp.id_categoria
-                AND t.tipo = 'gasto'
-                AND MONTH(t.fecha) = ?
-                AND YEAR(t.fecha) = ?
-          ), 0) AS gastado
-      FROM presupuesto p
-      INNER JOIN detalle_presupuesto dp ON p.id_presupuesto = dp.id_presupuesto
-      INNER JOIN categoria c ON dp.id_categoria = c.id_categoria
-      WHERE p.id_usuario = ? AND p.mes = ? AND p.anio = ?
-      HAVING gastado >= (limite * 0.8)"
-  );
-  $stmt->execute([
-      $usuario['id'],
-      date('n'), date('Y'),
-      $usuario['id'], date('n'), date('Y')
-  ]);
-  $alertasPresupuesto = $stmt->fetchAll();
+$stmt = $pdo->prepare(
+    "SELECT c.nombre AS categoria, dp.limite,
+        COALESCE((
+            SELECT SUM(monto) FROM transaccion t
+            WHERE t.id_usuario = ?
+              AND t.id_categoria = dp.id_categoria
+              AND t.tipo = 'gasto'
+              AND MONTH(t.fecha) = ?
+              AND YEAR(t.fecha) = ?
+        ), 0) AS gastado
+    FROM presupuesto p
+    INNER JOIN detalle_presupuesto dp ON p.id_presupuesto = dp.id_presupuesto
+    INNER JOIN categoria c ON dp.id_categoria = c.id_categoria
+    WHERE p.id_usuario = ? AND p.mes = ? AND p.anio = ?
+    HAVING gastado >= (limite * 0.8)"
+);
+$stmt->execute([
+    $usuario['id'],
+    date('n'), date('Y'),
+    $usuario['id'], date('n'), date('Y')
+]);
+$alertasPresupuesto = $stmt->fetchAll();
+
+// Logros
+$modelLogro = new Logro($pdo, $usuario['id']);
+$modelLogro->verificarTodos();   // Verificar logros nuevos
+$logrosRecientes = $modelLogro->resumen();
+
+// 8. Tema del usuario (para el toggle)
+if (!isset($_SESSION['tema'])) {
+    $stmt = $pdo->prepare("SELECT tema FROM usuario WHERE id_usuario = ?");
+    $stmt->execute([$usuario['id']]);
+    $t = $stmt->fetch();
+    $_SESSION['tema'] = $t['tema'] ?? 'oscuro';
+}
 
 include __DIR__ . '/../includes/header.php';
 ?>
@@ -71,6 +85,26 @@ include __DIR__ . '/../includes/header.php';
         <span class="badge badge-premium">Premium</span>
       </div>
     </div>
+
+    <?php if (!empty($logrosRecientes['recientes'])): ?>
+      <div class="card" style="margin-bottom:20px; border-left:4px solid #d4af37;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <strong style="color:#d4af37;">🏆 Logros recientes</strong>
+            <div style="display:flex; gap:10px; margin-top:10px;">
+              <?php foreach ($logrosRecientes['recientes'] as $l): ?>
+                <div style="background:rgba(212,175,55,0.15); padding:8px 15px; border-radius:20px; font-size:0.85rem;">
+                  <?= $l['icono'] ?> <?= e($l['nombre']) ?>
+                </div>
+              <?php endforeach; ?>
+            </div>
+          </div>
+          <a href="/FinanIA/modulos/logros/index.php" class="btn btn-secondary" style="font-size:0.8rem;">
+            Ver todos (<?= $logrosRecientes['desbloqueados'] ?>/<?= $logrosRecientes['total'] ?>)
+          </a>
+        </div>
+      </div>
+    <?php endif; ?>
 
     <!-- Alertas de presupuesto -->
     <?php foreach ($alertasPresupuesto as $alerta): 

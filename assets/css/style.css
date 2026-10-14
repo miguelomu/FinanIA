@@ -459,3 +459,384 @@ tbody tr:hover { background: rgba(212, 175, 55, 0.05); }
   table { font-size: 11px; }
   canvas { max-width: 100% !important; }
 }
+
+/* ============================================
+   TEMA CLARO - VERSIÓN COMPLETA
+   ============================================ */
+
+[data-tema="claro"] {
+  --bg-principal: #f0f2f5;
+  --bg-secundario: #ffffff;
+  --bg-terciario: #f8f9fa;
+  --texto-principal: #1a1a1a;
+  --texto-secundario: #5a6c7d;
+  --texto-terciario: #8896a7;
+  --borde: rgba(212, 175, 55, 0.3);
+  --sombra: rgba(0, 0, 0, 0.08);
+}
+
+/* Base */
+[data-tema="claro"] body {
+  background: linear-gradient(135deg, #f0f2f5 0%, #e8eef5 50%, #f0f2f5 100%);
+  color: #1a1a1a;
+}
+
+[data-tema="claro"] .layout {
+  background: transparent;
+}
+
+[data-tema="claro"] .main-content {
+  background: transparent;
+}
+
+/* ============================================
+   SIDEBAR
+   ============================================ */
+[data-tema="claro"] .sidebar {
+  background: rgba(255, 255, 255, 0.95);
+  border-right: 1px solid rgba(212, 175, 55, 0.3);
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+}
+
+[data-tema="claro"] .sidebar h2 {
+  color: #b8860b;
+}
+
+[data-tema="claro"] .sidebar nav a {
+  color: #4a5a6a;
+}
+
+[data-tema="claro"] .sidebar nav a:hover {
+  background: rgba(212, 175, 55, 0.15);
+  color: #b8860b;
+}
+
+[data-tema="claro"] .sidebar nav a.active {
+  background: rgba(212, 175, 55, 0.25);
+  color: #b8860b;
+  font-weight: 600;
+}
+
+[data-tema="claro"] .sidebar hr {
+  border-color: rgba(212, 175, 55, 0.2);
+}
+
+/* ============================================
+   TOPBAR
+   ============================================ */
+[data-tema="claro"] .topbar {
+  border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+[data-tema="claro"] .topbar h1 {
+  color: #b8860b;
+}
+
+[data-tema="claro"] .topbar > div > span {
+  color: #4a5a6a;
+}
+
+[data-tema="claro"] .topbar strong {
+  color: #1a1a1a;
+}
+
+/* ============================================
+   TARJETAS / CARDS
+   ============================================ */
+[data-tema="claro"] .card {
+  background: #ffffff;
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  color: #1a1a1a;
+}
+
+[data-tema="claro"] .card h3 {
+  color: #5a6c7d;
+}
+
+[data-tema="claro"] .card .value {
+  color: #b8860b;
+}
+
+[data-tema="claro"] .card .value.positivo {
+  color: #1e7e34;
+}
+
+[data-tema="claro"] .card .value.negativo {
+  color: #b71c1c;
+}
+
+[data-tema="claro"] .card p {
+  color: #4a5a6a;
+}
+
+/* ============================================
+   META CARDS
+   ============================================ */
+[data-tema="claro"] .meta-card {
+  background: #ffffff;
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  color: #1a1a1a;
+}
+
+[data-tema="claro"] .meta-card h3 {
+  color: #b8860b;
+}
+
+[data-tema="claro"] .meta-info span {
+  color: #5a6c7d;
+}
+
+[data-tema="claro"] .meta-info span strong {
+  color: #1a1a1a;
+}
+
+/* ============================================
+   TABLAS
+   ============================================ */
+[data-tema="claro"] .table-container {
+  background: #ffffff;
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+[data-tema="claro"] table {
+  color: #1a1a1a;
+}
+
+[data-tema="claro"] thead {
+  background: #f8f9fa;
+}
+
+[data-tema="claro"] thead th {
+  color: #b8860b;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.25);
+}
+
+[data-tema="claro"] tbody td {
+  color: #1a1a1a;
+  border-top: 1px solid rgba(212, 175, 55, 0.12);
+}
+
+[data-tema="claro"] tbody tr:hover {
+  background: rgba(212, 175, 55, 0.06);
+}
+
+[data-tema="claro"] tbody td small {
+  color: #5a6c7d;
+}
+
+/* ============================================
+   FORMULARIOS
+   ============================================ */
+[data-tema="claro"] .form-group label {
+  color: #4a5a6a;
+}
+
+[data-tema="claro"] .form-group input,
+[data-tema="claro"] .form-group select,
+[data-tema="claro"] .form-group textarea {
+  background: #ffffff;
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  color: #1a1a1a;
+}
+
+[data-tema="claro"] .form-group input::placeholder,
+[data-tema="claro"] .form-group textarea::placeholder {
+  color: #9aa7b8;
+}
+
+[data-tema="claro"] .form-group input:focus,
+[data-tema="claro"] .form-group select:focus,
+[data-tema="claro"] .form-group textarea:focus {
+  border-color: #d4af37;
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+}
+
+[data-tema="claro"] .form-group small {
+  color: #5a6c7d !important;
+}
+
+/* ============================================
+   BOTONES
+   ============================================ */
+[data-tema="claro"] .btn-secondary {
+  background: #ffffff;
+  color: #b8860b;
+  border: 1px solid rgba(212, 175, 55, 0.4);
+}
+
+[data-tema="claro"] .btn-secondary:hover {
+  background: rgba(212, 175, 55, 0.1);
+}
+
+[data-tema="claro"] .btn-danger {
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+  color: #fff;
+}
+
+/* ============================================
+   ALERTAS
+   ============================================ */
+[data-tema="claro"] .alert-success {
+  background: rgba(39, 174, 96, 0.15);
+  border-left: 4px solid #27ae60;
+  color: #1e7e34;
+}
+
+[data-tema="claro"] .alert-error {
+  background: rgba(231, 76, 60, 0.15);
+  border-left: 4px solid #e74c3c;
+  color: #b71c1c;
+}
+
+/* ============================================
+   BADGES
+   ============================================ */
+[data-tema="claro"] .badge-registrado {
+  background: rgba(46, 125, 200, 0.2);
+  color: #2874a6;
+}
+
+[data-tema="claro"] .badge-premium {
+  background: rgba(155, 89, 182, 0.2);
+  color: #6c3483;
+}
+
+/* ============================================
+   PROGRESS
+   ============================================ */
+[data-tema="claro"] .progress {
+  background: rgba(200, 200, 200, 0.5);
+}
+
+/* ============================================
+   CHAT
+   ============================================ */
+[data-tema="claro"] .chat-container {
+  background: #ffffff;
+  border: 1px solid rgba(212, 175, 55, 0.25);
+}
+
+[data-tema="claro"] .chat-messages {
+  background: #ffffff;
+}
+
+[data-tema="claro"] .message.bot .bubble {
+  background: rgba(212, 175, 55, 0.1);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  color: #1a1a1a;
+}
+
+[data-tema="claro"] .message.user .bubble {
+  background: linear-gradient(135deg, #3498db, #2874a6);
+  color: #ffffff;
+}
+
+[data-tema="claro"] .chat-input-container {
+  background: #f8f9fa;
+  border-top: 1px solid rgba(212, 175, 55, 0.25);
+}
+
+[data-tema="claro"] .chat-input-container input {
+  background: #ffffff;
+  color: #1a1a1a;
+  border: 1px solid rgba(212, 175, 55, 0.4);
+}
+
+[data-tema="claro"] .sugerencias button {
+  background: rgba(212, 175, 55, 0.1);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  color: #b8860b;
+}
+
+[data-tema="claro"] .sugerencias button:hover {
+  background: rgba(212, 175, 55, 0.25);
+}
+
+/* ============================================
+   TEXTOS GENERALES
+   ============================================ */
+[data-tema="claro"] h1,
+[data-tema="claro"] h2,
+[data-tema="claro"] h3 {
+  color: #b8860b;
+}
+
+[data-tema="claro"] p {
+  color: #1a1a1a;
+}
+
+[data-tema="claro"] small {
+  color: #5a6c7d;
+}
+
+[data-tema="claro"] strong {
+  color: #1a1a1a;
+}
+
+/* ============================================
+   ESTILOS INLINE CON FONDOS OSCUROS
+   ============================================ */
+
+/* Sobrescribir los fondos inline oscuros */
+[data-tema="claro"] div[style*="rgba(19,47,76"],
+[data-tema="claro"] div[style*="rgba(10,25,41"] {
+  background: #f8f9fa !important;
+  color: #1a1a1a !important;
+}
+
+/* Sobrescribir los textos claros */
+[data-tema="claro"] span[style*="color:#9fb3c8"],
+[data-tema="claro"] p[style*="color:#9fb3c8"],
+[data-tema="claro"] small[style*="color:#9fb3c8"] {
+  color: #4a5a6a !important;
+}
+
+[data-tema="claro"] span[style*="color:#c9d6e3"],
+[data-tema="claro"] p[style*="color:#c9d6e3"],
+[data-tema="claro"] label[style*="color:#c9d6e3"] {
+  color: #2c3e50 !important;
+}
+
+[data-tema="claro"] span[style*="color:#e6edf3"],
+[data-tema="claro"] strong[style*="color:#e6edf3"] {
+  color: #1a1a1a !important;
+}
+
+/* ============================================
+   TARJETAS CON BORDER-LEFT DE COLOR
+   ============================================ */
+[data-tema="claro"] .meta-card[style*="border-left"] {
+  background: #ffffff !important;
+}
+
+/* ============================================
+   CONTENEDORES CON FONDOS INLINE
+   ============================================ */
+[data-tema="claro"] div[style*="background:rgba(39,174,96,0.15)"],
+[data-tema="claro"] div[style*="background:rgba(39,174,96,0.1)"] {
+  background: rgba(39, 174, 96, 0.1) !important;
+  color: #1e7e34 !important;
+}
+
+[data-tema="claro"] div[style*="background:rgba(231,76,60,0.15)"],
+[data-tema="claro"] div[style*="background:rgba(231,76,60,0.1)"] {
+  background: rgba(231, 76, 60, 0.1) !important;
+  color: #b71c1c !important;
+}
+
+[data-tema="claro"] div[style*="background:rgba(243,156,18,0.15)"],
+[data-tema="claro"] div[style*="background:rgba(243,156,18,0.1)"] {
+  background: rgba(243, 156, 18, 0.1) !important;
+  color: #9c640c !important;
+}
+
+/* ============================================
+   TRANSICIONES SUAVES
+   ============================================ */
+body, .card, .meta-card, .sidebar, .table-container, .btn, 
+.topbar, .form-group input, .form-group select, .form-group textarea {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}

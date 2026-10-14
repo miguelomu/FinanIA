@@ -24,11 +24,23 @@ function requiereRol($roles) {
 }
 
 function usuarioActual() {
+    // Cargar tema desde la BD la primera vez
+    if (!isset($_SESSION['tema']) && isset($_SESSION['id_usuario'])) {
+        global $pdo;
+        if (isset($pdo)) {
+            $stmt = $pdo->prepare("SELECT tema FROM usuario WHERE id_usuario = ?");
+            $stmt->execute([$_SESSION['id_usuario']]);
+            $t = $stmt->fetch();
+            $_SESSION['tema'] = $t['tema'] ?? 'oscuro';
+        }
+    }
+    
     return [
         'id' => $_SESSION['id_usuario'] ?? null,
         'nombre' => $_SESSION['nombre'] ?? null,
         'email' => $_SESSION['email'] ?? null,
-        'rol' => $_SESSION['rol'] ?? null
+        'rol' => $_SESSION['rol'] ?? null,
+        'tema' => $_SESSION['tema'] ?? 'oscuro'
     ];
 }
 ?>
