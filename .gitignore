@@ -54,3 +54,5 @@ assets/img/avatars/
 config/database.php
 
 config/dev.php
+
+config/ia.php
