@@ -2,9 +2,11 @@
 require_once __DIR__ . '/../includes/auth.php';
 requiereRol('premium');
 require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../app/models/Cuenta.php';
 
 $usuario = usuarioActual();
 
+// Estadísticas de transacciones
 $stmt = $pdo->prepare("SELECT 
     COALESCE(SUM(CASE WHEN tipo='ingreso' THEN monto ELSE 0 END),0) AS ingresos,
     COALESCE(SUM(CASE WHEN tipo='gasto' THEN monto ELSE 0 END),0) AS gastos
@@ -12,6 +14,19 @@ $stmt = $pdo->prepare("SELECT
 $stmt->execute([$usuario['id']]);
 $stats = $stmt->fetch();
 $balance = $stats['ingresos'] - $stats['gastos'];
+
+// Patrimonio
+$modelCuenta = new Cuenta($pdo);
+$patrimonio = $modelCuenta->calcularPatrimonio($usuario['id']);
+
+// Metas activas
+$stmt = $pdo->prepare("SELECT 
+    COUNT(*) AS total,
+    COALESCE(SUM(monto_actual),0) AS ahorrado,
+    COALESCE(SUM(monto_objetivo),0) AS objetivo
+    FROM meta WHERE id_usuario = ? AND estado = 'activa'");
+$stmt->execute([$usuario['id']]);
+$metas = $stmt->fetch();
 
 include __DIR__ . '/../includes/header.php';
 ?>
@@ -23,56 +38,140 @@ include __DIR__ . '/../includes/header.php';
     <div class="topbar">
       <h1>Dashboard Premium 🌟</h1>
       <div>
-        <span>Bienvenido, <strong><?= htmlspecialchars($usuario['nombre']) ?></strong></span>
+        <span>Bienvenido, <strong><?= e($usuario['nombre']) ?></strong></span>
         <span class="badge badge-premium">Premium</span>
       </div>
     </div>
 
-    <div class="cards-grid">
+    <?php if (isset($_GET['msg']) && $_GET['msg'] === 'cambio_rol'): ?>
+      <div class="alert alert-success">
+        🎉 ¡Ahora eres usuario Premium!
+      </div>
+    <?php endif; ?>
+
+    <!-- 🏆 PATRIMONIO NETO -->
+    <div class="card" style="border:2px solid #d4af37; background: linear-gradient(135deg, rgba(212,175,55,0.1), rgba(19,47,76,0.6)); text-align:center; padding:35px;">
+      <h3 style="font-size:1rem; letter-spacing:2px;">💰 PATRIMONIO NETO</h3>
+      <div class="value <?= $patrimonio['neto'] >= 0 ? 'positivo' : 'negativo' ?>" style="font-size:3rem; margin:15px 0;">
+        <?= formatoCOP($patrimonio['neto']) ?>
+      </div>
+      <p style="color: #9fb3c8; font-size:0.9rem;">
+        Activos <strong style="color: #27ae60;"><?= formatoCOP($patrimonio['activos']) ?></strong>
+        − 
+        Pasivos <strong style="color: #e74c3c;"><?= formatoCOP($patrimonio['pasivos']) ?></strong>
+      </p>
+    </div>
+
+    <!-- Tarjetas de resumen -->
+    <div class="cards-grid" style="margin-top:25px;">
       <div class="card">
-        <h3>Ingresos Totales</h3>
-        <div class="value positivo">$<?= number_format($stats['ingresos'], 2) ?></div>
+        <h3>📈 Activos</h3>
+        <div class="value positivo"><?= formatoCOP($patrimonio['activos']) ?></div>
+        <p style="color: #9fb3c8; font-size:0.75rem; margin-top:8px;">En <?= count($patrimonio['cuentas']) ?> cuenta(s)</p>
       </div>
       <div class="card">
-        <h3>Gastos Totales</h3>
-        <div class="value negativo">$<?= number_format($stats['gastos'], 2) ?></div>
+        <h3>📉 Pasivos</h3>
+        <div class="value negativo"><?= formatoCOP($patrimonio['pasivos']) ?></div>
+        <p style="color: #9fb3c8; font-size:0.75rem; margin-top:8px;">Deudas pendientes</p>
       </div>
       <div class="card">
-        <h3>Balance</h3>
+        <h3>💵 Balance del mes</h3>
         <div class="value <?= $balance >= 0 ? 'positivo' : 'negativo' ?>">
-          $<?= number_format($balance, 2) ?>
+          <?= formatoCOP($balance) ?>
         </div>
+        <p style="color: #9fb3c8; font-size:0.75rem; margin-top:8px;">Ingresos − Gastos</p>
       </div>
       <div class="card">
-        <h3>Acceso IA</h3>
-        <div class="value" style="font-size:1.2rem; color:#d5a6ff;">Activo ✅</div>
+        <h3>🎯 Metas activas</h3>
+        <div class="value"><?= $metas['total'] ?></div>
+        <p style="color: #9fb3c8; font-size:0.75rem; margin-top:8px;">
+          <?= formatoCOP($metas['ahorrado']) ?> de <?= formatoCOP($metas['objetivo']) ?>
+        </p>
       </div>
     </div>
 
-    <h2 style="color:#d4af37; margin:30px 0 20px;">Funciones Premium</h2>
+    <!-- Desglose por cuenta -->
+    <h2 style="color: #d4af37; margin:35px 0 20px;">🏦 Distribución de tu dinero</h2>
+
+    <?php if (empty($patrimonio['cuentas'])): ?>
+      <div class="card" style="text-align:center; padding:40px;">
+        <p style="font-size:1.1rem; margin-bottom:15px;">🏦 No tienes cuentas creadas</p>
+        <a href="/FinanIA/modulos/cuentas/index.php?accion=crear" class="btn btn-primary">Crear primera cuenta</a>
+      </div>
+    <?php else: ?>
+      <div class="cards-grid">
+        <?php foreach ($patrimonio['cuentas'] as $c): 
+          $porcentaje = $patrimonio['activos'] > 0 
+            ? ($c['saldo_actual'] / $patrimonio['activos']) * 100 
+            : 0;
+        ?>
+          <div class="card" style="border-left:4px solid <?= e($c['color']) ?>;">
+            <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:10px;">
+              <h3 style="margin:0; font-size:1rem;"><?= e($c['nombre']) ?></h3>
+              <span style="font-size:0.75rem; color: #9fb3c8;"><?= number_format($porcentaje, 1) ?>%</span>
+            </div>
+            <div class="value <?= $c['saldo_actual'] >= 0 ? 'positivo' : 'negativo' ?>" style="font-size:1.4rem;">
+              <?= formatoCOP($c['saldo_actual']) ?>
+            </div>
+            <p style="color: #9fb3c8; font-size:0.75rem; margin-top:8px;">
+              <?= e(capitalizar($c['tipo'])) ?>
+              <?php if ($c['etiqueta']): ?>
+                · <?= e($c['etiqueta']) ?>
+              <?php endif; ?>
+            </p>
+            <div class="progress" style="margin-top:10px; height:6px;">
+              <div class="progress-bar" style="width: <?= $porcentaje ?>%; background: <?= e($c['color']) ?>;"></div>
+            </div>
+          </div>
+        <?php endforeach; ?>
+      </div>
+    <?php endif; ?>
+
+    <!-- Funciones Premium -->
+    <h2 style="color: #d4af37; margin:35px 0 20px;">🌟 Funciones Premium</h2>
     <div class="cards-grid">
       <div class="card">
         <h3>🤖 Chatbot IA</h3>
-        <p style="color:#9fb3c8; font-size:0.85rem; margin:10px 0;">Consulta financiera con IA</p>
+        <p style="color: #9fb3c8; font-size:0.85rem; margin:10px 0;">Consulta financiera personalizada</p>
         <a href="#" class="btn btn-primary btn-block">Abrir Chat</a>
       </div>
       <div class="card">
         <h3>📈 Predicciones</h3>
-        <p style="color:#9fb3c8; font-size:0.85rem; margin:10px 0;">Proyección con inflación</p>
+        <p style="color: #9fb3c8; font-size:0.85rem; margin:10px 0;">Proyección con inflación</p>
         <a href="#" class="btn btn-primary btn-block">Ver Predicción</a>
       </div>
       <div class="card">
         <h3>🔍 Gastos Hormiga</h3>
-        <p style="color:#9fb3c8; font-size:0.85rem; margin:10px 0;">Detección automática</p>
+        <p style="color: #9fb3c8; font-size:0.85rem; margin:10px 0;">Detección automática</p>
         <a href="#" class="btn btn-primary btn-block">Analizar</a>
       </div>
     </div>
 
-    <h2 style="color:#d4af37; margin:30px 0 20px;">Acciones Rápidas</h2>
+    <?php
+    require_once __DIR__ . '/../config/dev.php';
+    if (esDesarrollador()): 
+    ?>
+    <!-- 🛠️ Herramienta de desarrollo: volver a Registrado -->
+    <div class="card" style="border:2px solid #3498db; background: linear-gradient(135deg, rgba(52,152,219,0.15), rgba(19,47,76,0.6)); text-align:center; padding:30px; margin-top:30px;">
+      <h3 style="color:#6bb6ff; letter-spacing:2px;">🛠️ MODO DESARROLLO</h3>
+      <p style="color:#c9d6e3; margin:15px 0; font-size:0.95rem;">
+        Volver al rol <strong>Registrado</strong>.
+      </p>
+      <a href="/FinanIA/auth/cambiar_rol.php" 
+        class="btn btn-primary" 
+        style="background: linear-gradient(135deg, #3498db, #2874a6); color:#fff; padding:12px 30px;">
+        👤 Cambiar a Registrado
+      </a>
+    </div>
+    <?php endif; ?>
+    
+    <!-- Acciones rápidas -->
+    <h2 style="color: #d4af37; margin:35px 0 20px;">⚡ Acciones rápidas</h2>
     <div style="display:flex; gap:15px; flex-wrap:wrap;">
-      <a href="/FinanIA/modulos/transacciones/crear.php" class="btn btn-primary">+ Nueva Transacción</a>
-      <a href="/FinanIA/modulos/metas/crear.php" class="btn btn-primary">+ + Nueva Meta</a>
-      <a href="/FinanIA/modulos/deudas/crear.php" class="btn btn-primary">+ Nueva Deuda</a>
+      <a href="/FinanIA/modulos/transacciones/index.php?accion=crear" class="btn btn-primary">+ Nueva Transacción</a>
+      <a href="/FinanIA/modulos/metas/index.php?accion=crear" class="btn btn-primary">+ Nueva Meta</a>
+      <a href="/FinanIA/modulos/deudas/index.php?accion=crear" class="btn btn-primary">+ Nueva Deuda</a>
+      <a href="/FinanIA/modulos/cuentas/index.php?accion=crear" class="btn btn-primary">+ Nueva Cuenta</a>
     </div>
   </main>
 </div>

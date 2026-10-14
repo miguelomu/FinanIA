@@ -52,3 +52,5 @@ assets/img/avatars/
 
 # Configuración personal de base de datos
 config/database.php
+
+config/dev.php
