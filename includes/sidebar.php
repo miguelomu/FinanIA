@@ -6,6 +6,7 @@ $paginaActual = basename($_SERVER['PHP_SELF']);
   <h2>💰 Gestor</h2>
   <nav>
     <a href="/FinanIA/dashboards/<?= $usuario['rol'] ?>.php" class="<?= $paginaActual === $usuario['rol'] . '.php' ? 'active' : '' ?>">📊 Dashboard</a>
+    <a href="/FinanIA/modulos/cuentas/index.php">🏦 Cuentas</a>
     <a href="/FinanIA/modulos/transacciones/index.php" class="<?= $paginaActual === 'index.php' && strpos($_SERVER['PHP_SELF'], 'transacciones') ? 'active' : '' ?>">💸 Transacciones</a>
     <a href="/FinanIA/modulos/presupuestos/index.php">📅 Presupuestos</a>
     <a href="/FinanIA/modulos/metas/index.php">🎯 Metas</a>

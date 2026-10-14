@@ -14,7 +14,8 @@
         <?php
         $errores = [
           'campos_vacios' => 'Todos los campos obligatorios deben llenarse',
-          'monto_invalido' => 'El monto debe ser mayor a cero'
+          'monto_invalido' => 'El monto debe ser mayor a cero',
+          'csrf' => 'Sesión expirada. Recarga la página.'
         ];
         echo $errores[$_GET['error']] ?? 'Error al procesar';
         ?>
@@ -22,12 +23,12 @@
     <?php endif; ?>
 
     <form action="index.php?accion=actualizar" method="POST" style="max-width:700px;">
-        <?= csrfField() ?>
+      <?= csrfField() ?>
       <input type="hidden" name="id" value="<?= $transaccion['id_transaccion'] ?>">
 
       <div class="form-group">
         <label>Tipo *</label>
-        <select name="tipo" required>
+        <select name="tipo" id="tipo" required>
           <option value="ingreso" <?= $transaccion['tipo'] === 'ingreso' ? 'selected' : '' ?>>💰 Ingreso</option>
           <option value="gasto" <?= $transaccion['tipo'] === 'gasto' ? 'selected' : '' ?>>💸 Gasto</option>
         </select>
@@ -47,11 +48,25 @@
 
       <div class="form-group">
         <label>Categoría *</label>
-        <select name="id_categoria" required>
+        <select name="id_categoria" id="categoria" required>
           <?php foreach ($categorias as $cat): ?>
             <option value="<?= $cat['id_categoria'] ?>" 
-              <?= $cat['id_categoria'] == $transaccion['id_categoria'] ? 'selected' : '' ?>>
-              <?= ucfirst($cat['tipo']) ?> — <?= htmlspecialchars($cat['nombre']) ?>
+                    data-tipo="<?= $cat['tipo'] ?>"
+                    <?= $cat['id_categoria'] == $transaccion['id_categoria'] ? 'selected' : '' ?>>
+              <?= e($cat['nombre']) ?>
+            </option>
+          <?php endforeach; ?>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Cuenta *</label>
+        <select name="id_cuenta" required>
+          <option value="">Selecciona la cuenta...</option>
+          <?php foreach ($cuentas as $c): ?>
+            <option value="<?= $c['id_cuenta'] ?>" 
+              <?= $c['id_cuenta'] == $transaccion['id_cuenta'] ? 'selected' : '' ?>>
+              <?= e($c['nombre']) ?> — <?= formatoCOP($c['saldo_actual']) ?>
             </option>
           <?php endforeach; ?>
         </select>
@@ -60,16 +75,7 @@
       <div class="form-group">
         <label>Descripción</label>
         <input type="text" name="descripcion" maxlength="255" 
-               value="<?= htmlspecialchars($transaccion['descripcion'] ?? '') ?>">
-      </div>
-
-      <div class="form-group">
-        <label>Método de Pago</label>
-        <select name="metodo_pago">
-          <option value="efectivo" <?= $transaccion['metodo_pago'] === 'efectivo' ? 'selected' : '' ?>>Efectivo</option>
-          <option value="tarjeta" <?= $transaccion['metodo_pago'] === 'tarjeta' ? 'selected' : '' ?>>Tarjeta</option>
-          <option value="transferencia" <?= $transaccion['metodo_pago'] === 'transferencia' ? 'selected' : '' ?>>Transferencia</option>
-        </select>
+               value="<?= e($transaccion['descripcion'] ?? '') ?>">
       </div>
 
       <div class="form-group">
@@ -85,6 +91,37 @@
         <a href="index.php" class="btn btn-secondary" style="flex:1; text-align:center;">Cancelar</a>
       </div>
     </form>
+
+    <script>
+      const selectTipo = document.getElementById('tipo');
+      const selectCategoria = document.getElementById('categoria');
+      const opcionesCategoria = Array.from(selectCategoria.querySelectorAll('option'));
+
+      function filtrarCategorias() {
+        const tipo = selectTipo.value;
+        const valorActual = selectCategoria.value;
+        
+        let valorSigueVisible = false;
+        
+        opcionesCategoria.forEach(op => {
+          if (op.value === '') {
+            op.style.display = 'none';
+          } else if (op.dataset.tipo === tipo) {
+            op.style.display = '';
+            if (op.value === valorActual) valorSigueVisible = true;
+          } else {
+            op.style.display = 'none';
+          }
+        });
+        
+        if (!valorSigueVisible) {
+          selectCategoria.value = '';
+        }
+      }
+
+      selectTipo.addEventListener('change', filtrarCategorias);
+      filtrarCategorias();
+    </script>
   </main>
 </div>
 

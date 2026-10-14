@@ -1,18 +1,18 @@
 <?php
 /**
  * Controlador: TransaccionController
- * 
- * Maneja la lógica del módulo de transacciones.
  */
 
 require_once __DIR__ . '/../models/Transaccion.php';
 require_once __DIR__ . '/../models/Categoria.php';
+require_once __DIR__ . '/../models/Cuenta.php';
 
 class TransaccionController
 {
     private $pdo;
     private $model;
     private $modelCategoria;
+    private $modelCuenta;
     private $idUsuario;
 
     public function __construct($pdo, $idUsuario)
@@ -20,16 +20,14 @@ class TransaccionController
         $this->pdo = $pdo;
         $this->model = new Transaccion($pdo);
         $this->modelCategoria = new Categoria($pdo);
+        $this->modelCuenta = new Cuenta($pdo);
         $this->idUsuario = $idUsuario;
     }
 
-    /**
-     * Acción: Listar transacciones con filtros
-     */
     public function index()
     {
-        $tipo = $_GET['tipo'] ?? '';
-        $buscar = $_GET['buscar'] ?? '';
+        $tipo = get('tipo', '');
+        $buscar = get('buscar', '');
 
         $transacciones = $this->model->obtenerTodas($this->idUsuario, $tipo, $buscar);
         $totales = $this->model->calcularTotales($transacciones);
@@ -43,151 +41,132 @@ class TransaccionController
         ]);
     }
 
-    /**
-     * Acción: Mostrar formulario de creación
-     */
     public function crear()
     {
-        // Cargar categorías del usuario
         $categorias = $this->modelCategoria->obtenerTodas($this->idUsuario);
+        $cuentas = $this->modelCuenta->obtenerTodas($this->idUsuario, true);
 
         $this->render('crear', [
             'categorias' => $categorias,
+            'cuentas' => $cuentas,
             'usuario' => usuarioActual()
         ]);
     }
 
-    /**
-     * Acción: Guardar nueva transacción
-     */
     public function guardar()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: index.php');
-            exit;
+            redirigir('index.php');
         }
 
-        requiereCsrf('index.php?error=csrf');
+        requiereCsrf('index.php?accion=crear&error=csrf');
 
         $tipo = postStr('tipo');
         $monto = postFloat('monto');
         $fecha = postStr('fecha');
-        $idCategoria = intval($_POST['id_categoria'] ?? 0);
+        $idCategoria = postInt('id_categoria');
+        $idCuenta = postInt('id_cuenta');
         $descripcion = postStr('descripcion');
-        $metodoPago = $_POST['metodo_pago'] ?? 'efectivo';
-        $recurrente = isset($_POST['recurrente']) ? 1 : 0;
+        $metodoPago = 'cuenta';  
+        $recurrente = post('recurrente') ? 1 : 0;
 
-        // Validaciones
         if (empty($tipo) || empty($fecha) || empty($idCategoria)) {
-            header('Location: index.php?accion=crear&error=campos_vacios');
-            exit;
+            redirigir('index.php?accion=crear&error=campos_vacios');
         }
 
         if ($monto <= 0) {
-            header('Location: index.php?accion=crear&error=monto_invalido');
-            exit;
+            redirigir('index.php?accion=crear&error=monto_invalido');
         }
 
         if (!in_array($tipo, ['ingreso', 'gasto'])) {
-            header('Location: index.php?accion=crear&error=campos_vacios');
-            exit;
+            redirigir('index.php?accion=crear&error=campos_vacios');
         }
 
         if (!$this->model->categoriaEsDelUsuario($idCategoria, $this->idUsuario)) {
-            header('Location: index.php?accion=crear&error=campos_vacios');
-            exit;
+            redirigir('index.php?accion=crear&error=campos_vacios');
+        }
+
+        if (!$this->model->cuentaEsDelUsuario($idCuenta, $this->idUsuario)) {
+            redirigir('index.php?accion=crear&error=campos_vacios');
         }
 
         $this->model->crear(
-            $this->idUsuario, $idCategoria, $monto, $tipo,
+            $this->idUsuario, $idCategoria, $idCuenta, $monto, $tipo,
             $descripcion, $fecha, $metodoPago, $recurrente
         );
 
-        header('Location: index.php?msg=creado');
-        exit;
+        redirigir('index.php?msg=creado');
     }
 
-    /**
-     * Acción: Mostrar formulario de edición
-     */
     public function editar()
     {
-        $id = intval($_GET['id'] ?? 0);
+        $id = getInt('id');
         $transaccion = $this->model->obtenerPorId($id, $this->idUsuario);
 
         if (!$transaccion) {
-            header('Location: index.php');
-            exit;
+            redirigir('index.php');
         }
 
         $categorias = $this->modelCategoria->obtenerTodas($this->idUsuario);
+        $cuentas = $this->modelCuenta->obtenerTodas($this->idUsuario, true);
 
         $this->render('editar', [
             'transaccion' => $transaccion,
             'categorias' => $categorias,
+            'cuentas' => $cuentas,
             'usuario' => usuarioActual()
         ]);
     }
 
-    /**
-     * Acción: Actualizar transacción
-     */
     public function actualizar()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: index.php');
-            exit;
+            redirigir('index.php');
         }
 
         requiereCsrf('index.php?error=csrf');
 
-        $id = intval($_POST['id'] ?? 0);
-        $tipo = $_POST['tipo'] ?? '';
-        $monto = floatval($_POST['monto'] ?? 0);
-        $fecha = $_POST['fecha'] ?? '';
-        $idCategoria = intval($_POST['id_categoria'] ?? 0);
-        $descripcion = trim($_POST['descripcion'] ?? '');
-        $metodoPago = $_POST['metodo_pago'] ?? 'efectivo';
-        $recurrente = isset($_POST['recurrente']) ? 1 : 0;
+        $id = postInt('id');
+        $tipo = postStr('tipo');
+        $monto = postFloat('monto');
+        $fecha = postStr('fecha');
+        $idCategoria = postInt('id_categoria');
+        $idCuenta = postInt('id_cuenta');
+        $descripcion = postStr('descripcion');
+        $metodoPago = 'cuenta';
+        $recurrente = post('recurrente') ? 1 : 0;
 
-        // Validaciones
         if (empty($tipo) || empty($fecha) || empty($idCategoria) || $monto <= 0) {
-            header("Location: index.php?accion=editar&id=$id&error=campos_vacios");
-            exit;
+            redirigir("index.php?accion=editar&id=$id&error=campos_vacios");
         }
 
         if (!$this->model->categoriaEsDelUsuario($idCategoria, $this->idUsuario)) {
-            header("Location: index.php?accion=editar&id=$id&error=campos_vacios");
-            exit;
+            redirigir("index.php?accion=editar&id=$id&error=campos_vacios");
+        }
+
+        if (!$this->model->cuentaEsDelUsuario($idCuenta, $this->idUsuario)) {
+            redirigir("index.php?accion=editar&id=$id&error=campos_vacios");
         }
 
         $this->model->actualizar(
-            $id, $this->idUsuario, $idCategoria, $monto, $tipo,
+            $id, $this->idUsuario, $idCategoria, $idCuenta, $monto, $tipo,
             $descripcion, $fecha, $metodoPago, $recurrente
         );
 
-        header('Location: index.php?msg=actualizado');
-        exit;
+        redirigir('index.php?msg=actualizado');
     }
 
-    /**
-     * Acción: Eliminar transacción
-     */
     public function eliminar()
     {
-        $id = intval($_GET['id'] ?? 0);
+        $id = getInt('id');
 
         if ($id > 0) {
             $this->model->eliminar($id, $this->idUsuario);
         }
 
-        header('Location: index.php?msg=eliminado');
-        exit;
+        redirigir('index.php?msg=eliminado');
     }
 
-    /**
-     * Renderiza una vista con datos
-     */
     private function render($vista, $datos = [])
     {
         extract($datos);

@@ -1,9 +1,6 @@
 <?php
 /**
  * Modelo: Transaccion
- * 
- * Se encarga de todas las operaciones de base de datos
- * relacionadas con las transacciones.
  */
 
 class Transaccion
@@ -16,13 +13,14 @@ class Transaccion
     }
 
     /**
-     * Obtiene todas las transacciones de un usuario, con filtros opcionales
+     * Obtiene todas las transacciones con su categoría y cuenta
      */
     public function obtenerTodas($idUsuario, $tipo = '', $buscar = '')
     {
-        $sql = "SELECT t.*, c.nombre AS categoria_nombre 
+        $sql = "SELECT t.*, c.nombre AS categoria_nombre, cu.nombre AS cuenta_nombre, cu.color AS cuenta_color
                 FROM transaccion t
                 INNER JOIN categoria c ON t.id_categoria = c.id_categoria
+                LEFT JOIN cuenta cu ON t.id_cuenta = cu.id_cuenta
                 WHERE t.id_usuario = ?";
         $params = [$idUsuario];
 
@@ -44,9 +42,6 @@ class Transaccion
         return $stmt->fetchAll();
     }
 
-    /**
-     * Obtiene una transacción por ID validando que pertenezca al usuario
-     */
     public function obtenerPorId($id, $idUsuario)
     {
         $stmt = $this->pdo->prepare(
@@ -56,9 +51,6 @@ class Transaccion
         return $stmt->fetch();
     }
 
-    /**
-     * Verifica que una categoría pertenezca al usuario
-     */
     public function categoriaEsDelUsuario($idCategoria, $idUsuario)
     {
         $stmt = $this->pdo->prepare(
@@ -69,17 +61,31 @@ class Transaccion
     }
 
     /**
-     * Crea una nueva transacción
+     * Verifica que una cuenta pertenezca al usuario
      */
-    public function crear($idUsuario, $idCategoria, $monto, $tipo, $descripcion, $fecha, $metodoPago, $recurrente)
+    public function cuentaEsDelUsuario($idCuenta, $idUsuario)
+    {
+        if (empty($idCuenta)) return true; // Permitir NULL
+
+        $stmt = $this->pdo->prepare(
+            "SELECT id_cuenta FROM cuenta WHERE id_cuenta = ? AND id_usuario = ?"
+        );
+        $stmt->execute([$idCuenta, $idUsuario]);
+        return $stmt->fetch() !== false;
+    }
+
+    /**
+     * Crea una nueva transacción (ahora con id_cuenta)
+     */
+    public function crear($idUsuario, $idCategoria, $idCuenta, $monto, $tipo, $descripcion, $fecha, $metodoPago, $recurrente)
     {
         $stmt = $this->pdo->prepare(
             "INSERT INTO transaccion 
-             (id_usuario, id_categoria, monto, tipo, descripcion, fecha, metodo_pago, recurrente) 
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+             (id_usuario, id_categoria, id_cuenta, monto, tipo, descripcion, fecha, metodo_pago, recurrente) 
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
         );
         return $stmt->execute([
-            $idUsuario, $idCategoria, $monto, $tipo,
+            $idUsuario, $idCategoria, $idCuenta ?: null, $monto, $tipo,
             $descripcion, $fecha, $metodoPago, $recurrente
         ]);
     }
@@ -87,24 +93,21 @@ class Transaccion
     /**
      * Actualiza una transacción
      */
-    public function actualizar($id, $idUsuario, $idCategoria, $monto, $tipo, $descripcion, $fecha, $metodoPago, $recurrente)
+    public function actualizar($id, $idUsuario, $idCategoria, $idCuenta, $monto, $tipo, $descripcion, $fecha, $metodoPago, $recurrente)
     {
         $stmt = $this->pdo->prepare(
             "UPDATE transaccion 
-             SET tipo = ?, monto = ?, fecha = ?, id_categoria = ?, 
+             SET tipo = ?, monto = ?, fecha = ?, id_categoria = ?, id_cuenta = ?, 
                  descripcion = ?, metodo_pago = ?, recurrente = ?
              WHERE id_transaccion = ? AND id_usuario = ?"
         );
         return $stmt->execute([
-            $tipo, $monto, $fecha, $idCategoria,
+            $tipo, $monto, $fecha, $idCategoria, $idCuenta ?: null,
             $descripcion, $metodoPago, $recurrente,
             $id, $idUsuario
         ]);
     }
 
-    /**
-     * Elimina una transacción
-     */
     public function eliminar($id, $idUsuario)
     {
         $stmt = $this->pdo->prepare(
@@ -113,12 +116,6 @@ class Transaccion
         return $stmt->execute([$id, $idUsuario]);
     }
 
-    /**
-     * Calcula los totales de un conjunto de transacciones
-     * 
-     * @param array $transacciones
-     * @return array ['ingresos' => float, 'gastos' => float, 'balance' => float]
-     */
     public function calcularTotales($transacciones)
     {
         $ingresos = 0;

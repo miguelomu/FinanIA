@@ -14,7 +14,8 @@
         <?php
         $errores = [
           'campos_vacios' => 'Todos los campos obligatorios deben llenarse',
-          'monto_invalido' => 'El monto debe ser mayor a cero'
+          'monto_invalido' => 'El monto debe ser mayor a cero',
+          'csrf' => 'Sesión expirada. Recarga la página.'
         ];
         echo $errores[$_GET['error']] ?? 'Error al procesar';
         ?>
@@ -25,13 +26,18 @@
       <div class="alert alert-error">
         No tienes categorías creadas. Primero crea una categoría en el módulo de Categorías.
       </div>
+    <?php elseif (empty($cuentas)): ?>
+      <div class="alert alert-error">
+        No tienes cuentas creadas. Primero crea una cuenta en el módulo de Cuentas.
+      </div>
     <?php else: ?>
 
     <form action="index.php?accion=guardar" method="POST" style="max-width:700px;">
-        <?= csrfField() ?>
+      <?= csrfField() ?>
+
       <div class="form-group">
         <label>Tipo de Transacción *</label>
-        <select name="tipo" required>
+        <select name="tipo" id="tipo" required>
           <option value="">Selecciona...</option>
           <option value="ingreso">💰 Ingreso</option>
           <option value="gasto">💸 Gasto</option>
@@ -50,28 +56,34 @@
 
       <div class="form-group">
         <label>Categoría *</label>
-        <select name="id_categoria" required>
-          <option value="">Selecciona...</option>
+        <select name="id_categoria" id="categoria" required>
+          <option value="">Primero selecciona el tipo</option>
           <?php foreach ($categorias as $cat): ?>
-            <option value="<?= $cat['id_categoria'] ?>">
-              <?= ucfirst($cat['tipo']) ?> — <?= htmlspecialchars($cat['nombre']) ?>
+            <option value="<?= $cat['id_categoria'] ?>" data-tipo="<?= $cat['tipo'] ?>" style="display:none;">
+              <?= e($cat['nombre']) ?>
             </option>
           <?php endforeach; ?>
         </select>
       </div>
 
       <div class="form-group">
-        <label>Descripción</label>
-        <input type="text" name="descripcion" maxlength="255" placeholder="Opcional">
+        <label>Cuenta *</label>
+        <select name="id_cuenta" required>
+          <option value="">Selecciona la cuenta...</option>
+          <?php foreach ($cuentas as $c): ?>
+            <option value="<?= $c['id_cuenta'] ?>">
+              <?= e($c['nombre']) ?> — <?= formatoCOP($c['saldo_actual']) ?>
+            </option>
+          <?php endforeach; ?>
+        </select>
+        <small style="color:#9fb3c8; font-size:0.8rem;">
+          ¿De dónde sale o entra el dinero?
+        </small>
       </div>
 
       <div class="form-group">
-        <label>Método de Pago</label>
-        <select name="metodo_pago">
-          <option value="efectivo">Efectivo</option>
-          <option value="tarjeta">Tarjeta</option>
-          <option value="transferencia">Transferencia</option>
-        </select>
+        <label>Descripción</label>
+        <input type="text" name="descripcion" maxlength="255" placeholder="Opcional">
       </div>
 
       <div class="form-group">
@@ -86,6 +98,49 @@
         <a href="index.php" class="btn btn-secondary" style="flex:1; text-align:center;">Cancelar</a>
       </div>
     </form>
+
+    <script>
+      const selectTipo = document.getElementById('tipo');
+      const selectCategoria = document.getElementById('categoria');
+      const opcionesCategoria = Array.from(selectCategoria.querySelectorAll('option'));
+
+      function filtrarCategorias() {
+        const tipo = selectTipo.value;
+        
+        // Resetear selección
+        selectCategoria.value = '';
+        
+        // Si no hay tipo, mostrar mensaje
+        if (!tipo) {
+          opcionesCategoria.forEach(op => {
+            if (op.value === '') {
+              op.textContent = 'Primero selecciona el tipo';
+              op.style.display = '';
+            } else {
+              op.style.display = 'none';
+            }
+          });
+          return;
+        }
+        
+        // Filtrar por tipo
+        opcionesCategoria.forEach(op => {
+          if (op.value === '') {
+            op.textContent = 'Selecciona una categoría de ' + (tipo === 'ingreso' ? 'ingreso' : 'gasto');
+            op.style.display = '';
+          } else if (op.dataset.tipo === tipo) {
+            op.style.display = '';
+          } else {
+            op.style.display = 'none';
+          }
+        });
+      }
+
+      selectTipo.addEventListener('change', filtrarCategorias);
+      
+      // Ejecutar al cargar por si ya hay un tipo seleccionado
+      filtrarCategorias();
+    </script>
 
     <?php endif; ?>
   </main>

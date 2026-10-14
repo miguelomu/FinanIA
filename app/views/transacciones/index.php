@@ -75,8 +75,8 @@
               <th>Fecha</th>
               <th>Tipo</th>
               <th>Categoría</th>
+              <th>Cuenta</th>
               <th>Descripción</th>
-              <th>Método</th>
               <th style="text-align:right;">Monto</th>
               <th style="text-align:center;">Acciones</th>
             </tr>
@@ -92,9 +92,18 @@
                     <?= ucfirst($t['tipo']) ?>
                   </span>
                 </td>
-                <td><?= htmlspecialchars($t['categoria_nombre']) ?></td>
-                <td><?= htmlspecialchars($t['descripcion'] ?? '—') ?></td>
-                <td><?= ucfirst($t['metodo_pago']) ?></td>
+                <td><?= e($t['categoria_nombre']) ?></td>
+                <td>
+                  <?php if ($t['cuenta_nombre']): ?>
+                    <span style="padding:3px 8px; border-radius:8px; font-size:0.75rem;
+                      background:<?= e($t['cuenta_color']) ?>22; color:<?= e($t['cuenta_color']) ?>;">
+                      <?= e($t['cuenta_nombre']) ?>
+                    </span>
+                  <?php else: ?>
+                    <span style="color:#7a8a9c;">—</span>
+                  <?php endif; ?>
+                </td>
+                <td><?= e($t['descripcion'] ?? '—') ?></td>
                 <td style="text-align:right; font-weight:bold;
                   color: <?= $t['tipo'] === 'ingreso' ? '#27ae60' : '#e74c3c' ?>;">
                   <?= $t['tipo'] === 'ingreso' ? '+' : '-' ?><?= formatoCOP($t['monto'], 2) ?>
