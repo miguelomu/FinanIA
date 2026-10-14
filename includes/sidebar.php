@@ -12,6 +12,7 @@ $paginaActual = basename($_SERVER['PHP_SELF']);
     <a href="/FinanIA/modulos/metas/index.php">🎯 Metas</a>
     <a href="/FinanIA/modulos/deudas/index.php">💳 Deudas</a>
     <a href="/FinanIA/modulos/gastos_compartidos/index.php">👥 Gastos Compartidos</a>
+    <a href="/FinanIA/modulos/simulador/index.php">🏔️ Simulador de Deudas</a>
     <a href="/FinanIA/modulos/categorias/index.php">🏷️ Categorías</a>
     <a href="/FinanIA/modulos/reportes/index.php">📈 Reportes</a>
     <?php if ($usuario['rol'] === 'premium'): ?>
