@@ -13,7 +13,7 @@
     <?php if (empty($deudas)): ?>
       <div class="card" style="text-align:center; padding:50px;">
         <p style="font-size:1.3rem; margin-bottom:15px;">🎉 ¡No tienes deudas activas!</p>
-        <p style="color:#9fb3c8;">No hay nada que simular. Sigue así.</p>
+        <p style="color: #9fb3c8;">No hay nada que simular. Sigue así.</p>
       </div>
     <?php else: ?>
 
@@ -38,7 +38,7 @@
       </div>
 
       <!-- Lista de deudas -->
-      <h2 style="color:#d4af37; margin:30px 0 20px;">Tus deudas</h2>
+      <h2 style="color: #d4af37; margin:30px 0 20px;">Tus deudas</h2>
       <div class="table-container">
         <table>
           <thead>
@@ -55,7 +55,7 @@
             ?>
               <tr>
                 <td><?= e($d['acreedor']) ?></td>
-                <td style="text-align:right; color:#e74c3c; font-weight:bold;">
+                <td style="text-align:right; color: #e74c3c; font-weight:bold;">
                   <?= formatoCOP($saldo) ?>
                 </td>
                 <td style="text-align:right;">
@@ -72,8 +72,28 @@
         </table>
       </div>
 
+      <?php 
+        $deudasEnUsura = array_filter($deudas, fn($d) => $d['tasa_interes'] > $tasaUsura);
+        if (!empty($deudasEnUsura)): 
+        ?>
+        <div style="background:rgba(231,76,60,0.15); border-left:4px solid #e74c3c; padding:20px; border-radius:12px; margin-top:20px;">
+            <h3 style="color: #ff8a80;">🚨 Alerta: Tienes deudas por encima de la tasa de usura</h3>
+            <p style="color: #ff8a80; margin-top:10px;">
+            Las siguientes deudas cobran más del <strong><?= number_format($tasaUsura, 2) ?>% EA</strong> permitido:
+            </p>
+            <ul style="color: #ff8a80; margin-top:10px; padding-left:25px;">
+            <?php foreach ($deudasEnUsura as $d): ?>
+                <li><strong><?= e($d['acreedor']) ?></strong> — <?= number_format($d['tasa_interes'], 2) ?>% EA</li>
+            <?php endforeach; ?>
+            </ul>
+            <p style="color: #ff8a80; margin-top:15px; font-size:0.9rem;">
+            💡 <strong>Recomendación:</strong> Estas deudas son prioridad absoluta. Págalas primero o renegocia con tu acreedor.
+            </p>
+        </div>
+        <?php endif; ?>
+
       <!-- Formulario de simulación -->
-      <h2 style="color:#d4af37; margin:35px 0 20px;">🎯 Simular estrategia de pago</h2>
+      <h2 style="color: #d4af37; margin:35px 0 20px;">🎯 Simular estrategia de pago</h2>
       <div class="card" style="padding:30px;">
         <form method="POST" action="index.php?accion=simular">
           <?= csrfField() ?>
@@ -83,7 +103,7 @@
             <input type="number" name="pago_extra" step="0.01" min="0" required 
                    value="<?= $pagoExtra > 0 ? $pagoExtra : '' ?>"
                    placeholder="Ej: 200000">
-            <small style="color:#9fb3c8; font-size:0.85rem;">
+            <small style="color: #9fb3c8; font-size:0.85rem;">
               Cualquier monto extra acelera el pago de tus deudas y reduce los intereses.
             </small>
           </div>
@@ -96,17 +116,17 @@
 
       <!-- Resultados de la comparación -->
       <?php if ($resultado): ?>
-        <h2 style="color:#d4af37; margin:40px 0 20px;">📊 Comparación de estrategias</h2>
+        <h2 style="color: #d4af37; margin:40px 0 20px;">📊 Comparación de estrategias</h2>
 
         <!-- Recomendación destacada -->
         <div class="card" style="border:2px solid #d4af37; background: linear-gradient(135deg, rgba(212,175,55,0.15), rgba(19,47,76,0.6)); padding:30px;">
           <div style="display:flex; align-items:center; gap:15px; margin-bottom:15px;">
             <span style="font-size:2.5rem;">🏆</span>
             <div>
-              <h3 style="color:#d4af37; margin:0; font-size:1.3rem;">
+              <h3 style="color: #d4af37; margin:0; font-size:1.3rem;">
                 Recomendación: <?= $resultado['recomendacion'] === 'avalancha' ? 'Avalancha' : 'Bola de nieve' ?>
               </h3>
-              <p style="color:#c9d6e3; margin-top:5px; font-size:0.95rem;">
+              <p style="color: #c9d6e3; margin-top:5px; font-size:0.95rem;">
                 <?= e($resultado['motivo']) ?>
               </p>
             </div>
@@ -117,31 +137,31 @@
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:25px; margin-top:25px;">
           <!-- Avalancha -->
           <div class="card" style="border:2px solid #3498db;">
-            <h3 style="color:#6bb6ff; font-size:1.2rem;">🏔️ Avalancha</h3>
-            <p style="color:#9fb3c8; font-size:0.85rem; margin-bottom:20px;">
+            <h3 style="color: #6bb6ff; font-size:1.2rem;">🏔️ Avalancha</h3>
+            <p style="color: #9fb3c8; font-size:0.85rem; margin-bottom:20px;">
               Paga primero la deuda con mayor tasa de interés.
             </p>
             
             <div style="margin-bottom:15px;">
-              <span style="color:#9fb3c8; font-size:0.85rem;">Tiempo para liquidar todo:</span>
-              <div style="color:#d4af37; font-size:1.8rem; font-weight:bold;">
+              <span style="color: #9fb3c8; font-size:0.85rem;">Tiempo para liquidar todo:</span>
+              <div style="color: #d4af37; font-size:1.8rem; font-weight:bold;">
                 <?= $resultado['avalancha']['meses'] ?> meses
               </div>
-              <span style="color:#7a8a9c; font-size:0.8rem;">
+              <span style="color: #7a8a9c; font-size:0.8rem;">
                 (<?= round($resultado['avalancha']['meses'] / 12, 1) ?> años)
               </span>
             </div>
             
             <div style="margin-bottom:15px;">
-              <span style="color:#9fb3c8; font-size:0.85rem;">Intereses totales:</span>
-              <div style="color:#e74c3c; font-size:1.4rem; font-weight:bold;">
+              <span style="color: #9fb3c8; font-size:0.85rem;">Intereses totales:</span>
+              <div style="color: #e74c3c; font-size:1.4rem; font-weight:bold;">
                 <?= formatoCOP($resultado['avalancha']['total_intereses']) ?>
               </div>
             </div>
 
             <div>
-              <span style="color:#9fb3c8; font-size:0.85rem;">Total a pagar:</span>
-              <div style="color:#fff; font-size:1.2rem; font-weight:bold;">
+              <span style="color: #9fb3c8; font-size:0.85rem;">Total a pagar:</span>
+              <div style="color: #fff; font-size:1.2rem; font-weight:bold;">
                 <?= formatoCOP($resultado['avalancha']['total_pagado']) ?>
               </div>
             </div>
@@ -149,31 +169,31 @@
 
           <!-- Bola de nieve -->
           <div class="card" style="border:2px solid #e67e22;">
-            <h3 style="color:#f39c12; font-size:1.2rem;">⛄ Bola de nieve</h3>
-            <p style="color:#9fb3c8; font-size:0.85rem; margin-bottom:20px;">
+            <h3 style="color: #f39c12; font-size:1.2rem;">⛄ Bola de nieve</h3>
+            <p style="color: #9fb3c8; font-size:0.85rem; margin-bottom:20px;">
               Paga primero la deuda más pequeña.
             </p>
             
             <div style="margin-bottom:15px;">
-              <span style="color:#9fb3c8; font-size:0.85rem;">Tiempo para liquidar todo:</span>
-              <div style="color:#d4af37; font-size:1.8rem; font-weight:bold;">
+              <span style="color: #9fb3c8; font-size:0.85rem;">Tiempo para liquidar todo:</span>
+              <div style="color: #d4af37; font-size:1.8rem; font-weight:bold;">
                 <?= $resultado['bolanieve']['meses'] ?> meses
               </div>
-              <span style="color:#7a8a9c; font-size:0.8rem;">
+              <span style="color: #7a8a9c; font-size:0.8rem;">
                 (<?= round($resultado['bolanieve']['meses'] / 12, 1) ?> años)
               </span>
             </div>
             
             <div style="margin-bottom:15px;">
-              <span style="color:#9fb3c8; font-size:0.85rem;">Intereses totales:</span>
-              <div style="color:#e74c3c; font-size:1.4rem; font-weight:bold;">
+              <span style="color: #9fb3c8; font-size:0.85rem;">Intereses totales:</span>
+              <div style="color: #e74c3c; font-size:1.4rem; font-weight:bold;">
                 <?= formatoCOP($resultado['bolanieve']['total_intereses']) ?>
               </div>
             </div>
 
             <div>
-              <span style="color:#9fb3c8; font-size:0.85rem;">Total a pagar:</span>
-              <div style="color:#fff; font-size:1.2rem; font-weight:bold;">
+              <span style="color: #9fb3c8; font-size:0.85rem;">Total a pagar:</span>
+              <div style="color: #fff; font-size:1.2rem; font-weight:bold;">
                 <?= formatoCOP($resultado['bolanieve']['total_pagado']) ?>
               </div>
             </div>
@@ -182,17 +202,17 @@
 
         <!-- Diferencia -->
         <div class="card" style="margin-top:25px; border:2px solid #27ae60; background: rgba(39,174,96,0.1);">
-          <h3 style="color:#7ee8a8;">💡 Diferencia clave</h3>
+          <h3 style="color: #7ee8a8;">💡 Diferencia clave</h3>
           <div style="display:flex; gap:40px; flex-wrap:wrap; margin-top:15px;">
             <div>
-              <span style="color:#9fb3c8; font-size:0.85rem;">Ahorro en intereses con avalancha:</span>
-              <div style="color:#27ae60; font-size:1.5rem; font-weight:bold;">
+              <span style="color: #9fb3c8; font-size:0.85rem;">Ahorro en intereses con avalancha:</span>
+              <div style="color: #27ae60; font-size:1.5rem; font-weight:bold;">
                 <?= formatoCOP($resultado['ahorro_intereses']) ?>
               </div>
             </div>
             <div>
-              <span style="color:#9fb3c8; font-size:0.85rem;">Diferencia en tiempo:</span>
-              <div style="color:#d4af37; font-size:1.5rem; font-weight:bold;">
+              <span style="color: #9fb3c8; font-size:0.85rem;">Diferencia en tiempo:</span>
+              <div style="color: #d4af37; font-size:1.5rem; font-weight:bold;">
                 <?= abs($resultado['diferencia_meses']) ?> meses
               </div>
             </div>
@@ -201,7 +221,7 @@
 
         <!-- Gráfica de evolución -->
         <div class="card" style="margin-top:25px; padding:25px;">
-          <h3 style="color:#d4af37; margin-bottom:20px;">📉 Evolución del saldo total</h3>
+          <h3 style="color: #d4af37; margin-bottom:20px;">📉 Evolución del saldo total</h3>
           <canvas id="graficoEvolucion" height="100"></canvas>
         </div>
 
@@ -274,7 +294,7 @@
 
         <!-- Aviso educativo -->
         <div style="background:rgba(243,156,18,0.1); border-left:4px solid #f39c12; padding:15px; border-radius:8px; margin-top:25px;">
-          <p style="color:#f39c12; font-size:0.9rem;">
+          <p style="color: #f39c12; font-size:0.9rem;">
             ⚠️ <strong>Aviso educativo:</strong> Esta simulación es una herramienta de orientación. 
             Los cálculos asumen tasas constantes y no incluyen comisiones, seguros u otros cargos. 
             Consulta con un asesor financiero antes de tomar decisiones importantes.

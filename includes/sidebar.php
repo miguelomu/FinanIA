@@ -15,6 +15,7 @@ $paginaActual = basename($_SERVER['PHP_SELF']);
     <a href="/FinanIA/modulos/simulador/index.php">🏔️ Simulador de Deudas</a>
     <a href="/FinanIA/modulos/categorias/index.php">🏷️ Categorías</a>
     <a href="/FinanIA/modulos/reportes/index.php">📈 Reportes</a>
+    <a href="/FinanIA/modulos/configuracion/index.php">⚙️ Configuración</a>
     <?php if ($usuario['rol'] === 'premium'): ?>
       <a href="#">🤖 Chatbot IA</a>
       <a href="#">🔍 Gastos Hormiga</a>

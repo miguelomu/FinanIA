@@ -7,6 +7,7 @@
 
 require_once __DIR__ . '/../models/Deuda.php';
 require_once __DIR__ . '/../models/Pago.php';
+require_once __DIR__ . '/../models/Configuracion.php';
 
 class DeudaController
 {
@@ -14,12 +15,14 @@ class DeudaController
     private $model;
     private $modelPago;
     private $idUsuario;
+    private $modelConfig;
 
     public function __construct($pdo, $idUsuario)
     {
         $this->pdo = $pdo;
         $this->model = new Deuda($pdo);
         $this->modelPago = new Pago($pdo);
+        $this->modelConfig = new Configuracion($pdo);
         $this->idUsuario = $idUsuario;
     }
 
@@ -32,11 +35,13 @@ class DeudaController
         $estado = $_GET['estado'] ?? '';
         $deudas = $this->model->obtenerTodas($this->idUsuario, $estado);
         $totales = $this->model->calcularTotales($deudas);
+        $tasaUsura = $this->modelConfig->tasaUsura();   // ← AGREGAR
 
         $this->render('index', [
             'deudas' => $deudas,
             'totales' => $totales,
             'estado' => $estado,
+            'tasaUsura' => $tasaUsura,   // ← AGREGAR
             'usuario' => usuarioActual()
         ]);
     }

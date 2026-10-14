@@ -12,13 +12,16 @@ class SimuladorController
     private $pdo;
     private $model;
     private $idUsuario;
+    private $modelConfig;
 
     public function __construct($pdo, $idUsuario)
-    {
-        $this->pdo = $pdo;
-        $this->model = new SimuladorDeuda($pdo);
-        $this->idUsuario = $idUsuario;
-    }
+{
+    $this->pdo = $pdo;
+    $this->model = new SimuladorDeuda($pdo);
+    require_once __DIR__ . '/../models/Configuracion.php';
+    $this->modelConfig = new Configuracion($pdo);
+    $this->idUsuario = $idUsuario;
+}
 
     /**
      * Vista principal del simulador
@@ -48,6 +51,7 @@ class SimuladorController
             'totalDeuda' => $totalDeuda,
             'totalMinimo' => $totalMinimo,
             'tasaPromedio' => $tasaPromedio,
+            'tasaUsura' => $this->modelConfig->tasaUsura(),   // ← AGREGAR
             'resultado' => null,
             'pagoExtra' => 0,
             'usuario' => usuarioActual()
@@ -89,6 +93,7 @@ class SimuladorController
             'totalDeuda' => $totalDeuda,
             'totalMinimo' => $totalMinimo,
             'tasaPromedio' => $tasaPromedio,
+            'tasaUsura' => $this->modelConfig->tasaUsura(),   // ← AGREGAR
             'resultado' => $resultado,
             'pagoExtra' => $pagoExtra,
             'usuario' => usuarioActual()

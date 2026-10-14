@@ -97,6 +97,26 @@
             </div>
           <?php endif; ?>
 
+          <?php if ($d['tasa_interes'] > $tasaUsura): ?>
+            <div style="background:rgba(231,76,60,0.2); border-left:4px solid #e74c3c; padding:12px; border-radius:6px; margin:10px 0;">
+              <strong style="color:#ff8a80;">🚨 ¡ALERTA! Tasa de usura</strong>
+              <p style="color:#ff8a80; font-size:0.85rem; margin-top:5px;">
+                Esta deuda cobra <strong><?= number_format($d['tasa_interes'], 2) ?>% EA</strong>, 
+                superando la tasa de usura vigente (<strong><?= number_format($tasaUsura, 2) ?>% EA</strong>).
+                Esto es ilegal en Colombia. Puedes denunciar ante la Superintendencia Financiera.
+              </p>
+            </div>
+          <?php elseif ($d['tasa_interes'] > $tasaUsura * 0.85): ?>
+            <div style="background:rgba(243,156,18,0.15); border-left:4px solid #f39c12; padding:12px; border-radius:6px; margin:10px 0;">
+              <strong style="color:#f39c12;">⚠️ Tasa alta</strong>
+              <p style="color:#f39c12; font-size:0.85rem; margin-top:5px;">
+                Esta deuda cobra <strong><?= number_format($d['tasa_interes'], 2) ?>% EA</strong>, 
+                cerca del límite de usura (<strong><?= number_format($tasaUsura, 2) ?>%</strong>).
+                Considera renegociar o buscar alternativas.
+              </p>
+            </div>
+          <?php endif; ?>
+
           <div class="progress">
             <div class="progress-bar <?= $claseBarra ?>" style="width: <?= $progreso ?>%;"></div>
           </div>
