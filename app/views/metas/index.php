@@ -101,7 +101,7 @@
             <a href="index.php?accion=editar&id=<?= $m['id_meta'] ?>" class="btn btn-secondary">✏️ Editar</a>
             <a href="index.php?accion=eliminar&id=<?= $m['id_meta'] ?>" 
                class="btn btn-secondary"
-               style="color:#e74c3c;"
+               style="color: #e74c3c;"
                onclick="return confirm('¿Eliminar esta meta?')">🗑️ Eliminar</a>
           </div>
         </div>

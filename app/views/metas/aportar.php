@@ -32,6 +32,21 @@
                  placeholder="Ej: Ahorro del mes, Venta de algo...">
         </div>
 
+        <div class="form-group">
+          <label>Cuenta de origen *</label>
+          <select name="id_cuenta" required>
+            <option value="">Selecciona...</option>
+            <?php foreach ($cuentas as $c): ?>
+              <option value="<?= $c['id_cuenta'] ?>">
+                <?= e($c['nombre']) ?> — <?= formatoCOP($c['saldo_actual']) ?>
+              </option>
+            <?php endforeach; ?>
+          </select>
+          <small style="color: #9fb3c8; font-size:0.8rem;">
+            ¿De qué cuenta sale el dinero?
+          </small>
+        </div>
+
         <div style="display:flex; gap:15px; margin-top:20px;">
           <button type="submit" class="btn btn-primary" style="flex:1;">Registrar Aporte</button>
           <a href="index.php" class="btn btn-secondary" style="flex:1; text-align:center;">Cancelar</a>

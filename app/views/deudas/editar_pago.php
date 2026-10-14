@@ -28,6 +28,19 @@
                  value="<?= htmlspecialchars($pago['nota'] ?? '') ?>">
         </div>
 
+        <div class="form-group">
+          <label>Cuenta de origen</label>
+          <select name="id_cuenta">
+            <option value="">Sin cuenta</option>
+            <?php foreach ($cuentas as $c): ?>
+              <option value="<?= $c['id_cuenta'] ?>" 
+                <?= $c['id_cuenta'] == $pago['id_cuenta'] ? 'selected' : '' ?>>
+                <?= e($c['nombre']) ?> — <?= formatoCOP($c['saldo_actual']) ?>
+              </option>
+            <?php endforeach; ?>
+          </select>
+        </div>
+
         <div style="display:flex; gap:15px; margin-top:20px;">
           <button type="submit" class="btn btn-primary" style="flex:1;">Actualizar Pago</button>
           <a href="index.php?accion=ver&id=<?= $pago['id_deuda'] ?>" class="btn btn-secondary" style="flex:1; text-align:center;">Cancelar</a>

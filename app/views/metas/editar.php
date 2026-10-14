@@ -29,7 +29,7 @@
         <label>Monto inicial (no incluye aportes)</label>
         <input type="number" name="monto_actual" step="0.01" min="0" 
                value="<?= $meta['monto_inicial'] ?>">
-        <small style="color:#9fb3c8; font-size:0.8rem;">
+        <small style="color: #9fb3c8; font-size:0.8rem;">
           Los aportes registrados se suman automáticamente al total.
         </small>
       </div>

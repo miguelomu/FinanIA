@@ -65,6 +65,7 @@
           <thead>
             <tr>
               <th>Fecha</th>
+              <th>Cuenta</th>
               <th>Nota</th>
               <th style="text-align:right;">Monto</th>
               <th style="text-align:center;">Acciones</th>
@@ -73,8 +74,18 @@
           <tbody>
             <?php foreach ($pagos as $p): ?>
               <tr>
-                <td><?= date('d/m/Y H:i', strtotime($p['fecha'])) ?></td>
-                <td><?= htmlspecialchars($p['nota'] ?: '—') ?></td>
+                <td><?= formatoFechaHora($p['fecha']) ?></td>
+                <td>
+                  <?php if ($p['cuenta_nombre']): ?>
+                    <span style="padding:3px 8px; border-radius:8px; font-size:0.75rem;
+                      background:<?= e($p['cuenta_color']) ?>22; color:<?= e($p['cuenta_color']) ?>;">
+                      <?= e($p['cuenta_nombre']) ?>
+                    </span>
+                  <?php else: ?>
+                    <span style="color:#7a8a9c;">—</span>
+                  <?php endif; ?>
+                </td>
+                <td><?= e($p['nota'] ?: '—') ?></td>
                 <td style="text-align:right; color:#27ae60; font-weight:bold;">
                   +$<?= number_format($p['monto'], 2) ?>
                 </td>

@@ -56,7 +56,7 @@
       <div class="progress-bar <?= $progreso >= 100 ? 'success' : '' ?>" style="width: <?= $progreso ?>%;"></div>
     </div>
 
-    <h2 style="color:#d4af37; margin-bottom:20px;">Historial de Aportes</h2>
+    <h2 style="color: #d4af37; margin-bottom:20px;">Historial de Aportes</h2>
 
     <?php if (empty($aportes)): ?>
       <div class="card" style="text-align:center; padding:40px;">
@@ -69,6 +69,7 @@
           <thead>
             <tr>
               <th>Fecha</th>
+              <th>Cuenta</th>
               <th>Nota</th>
               <th style="text-align:right;">Monto</th>
               <th style="text-align:center;">Acciones</th>
@@ -77,9 +78,19 @@
           <tbody>
             <?php foreach ($aportes as $a): ?>
               <tr>
-                <td><?= date('d/m/Y H:i', strtotime($a['fecha'])) ?></td>
+                <td><?= formatoFechaHora($a['fecha']) ?></td>
+                <td>
+                  <?php if ($a['cuenta_nombre']): ?>
+                    <span style="padding:3px 8px; border-radius:8px; font-size:0.75rem;
+                      background:<?= e($a['cuenta_color']) ?>22; color:<?= e($a['cuenta_color']) ?>;">
+                      <?= e($a['cuenta_nombre']) ?>
+                    </span>
+                  <?php else: ?>
+                    <span style="color: #7a8a9c;">—</span>
+                  <?php endif; ?>
+                </td>
                 <td><?= htmlspecialchars($a['nota'] ?: '—') ?></td>
-                <td style="text-align:right; color:#27ae60; font-weight:bold;">
+                <td style="text-align:right; color: #27ae60; font-weight:bold;">
                   +$<?= number_format($a['monto'], 2) ?>
                 </td>
                 <td style="text-align:center;">

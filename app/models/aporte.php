@@ -1,8 +1,6 @@
 <?php
 /**
  * Modelo: Aporte
- * 
- * Maneja los aportes individuales a las metas.
  */
 
 class Aporte
@@ -14,58 +12,50 @@ class Aporte
         $this->pdo = $pdo;
     }
 
-    /**
-     * Obtiene todos los aportes de una meta
-     */
     public function obtenerPorMeta($idMeta)
     {
         $stmt = $this->pdo->prepare(
-            "SELECT * FROM aporte_meta WHERE id_meta = ? ORDER BY fecha DESC"
+            "SELECT a.*, c.nombre AS cuenta_nombre, c.color AS cuenta_color
+             FROM aporte_meta a
+             LEFT JOIN cuenta c ON a.id_cuenta = c.id_cuenta
+             WHERE a.id_meta = ? 
+             ORDER BY a.fecha DESC"
         );
         $stmt->execute([$idMeta]);
         return $stmt->fetchAll();
     }
 
-    /**
-     * Obtiene un aporte por ID validando que pertenezca al usuario
-     */
     public function obtenerPorId($id, $idUsuario)
     {
         $stmt = $this->pdo->prepare(
-            "SELECT a.*, m.nombre AS meta_nombre, m.id_meta 
+            "SELECT a.*, m.nombre AS meta_nombre, m.id_meta,
+                    c.nombre AS cuenta_nombre
              FROM aporte_meta a
              INNER JOIN meta m ON a.id_meta = m.id_meta
+             LEFT JOIN cuenta c ON a.id_cuenta = c.id_cuenta
              WHERE a.id_aporte = ? AND a.id_usuario = ?"
         );
         $stmt->execute([$id, $idUsuario]);
         return $stmt->fetch();
     }
 
-    /**
-     * Crea un nuevo aporte
-     */
-    public function crear($idMeta, $idUsuario, $monto, $nota)
+    public function crear($idMeta, $idUsuario, $idCuenta, $monto, $nota)
     {
         $stmt = $this->pdo->prepare(
-            "INSERT INTO aporte_meta (id_meta, id_usuario, monto, nota) VALUES (?, ?, ?, ?)"
+            "INSERT INTO aporte_meta (id_meta, id_usuario, id_cuenta, monto, nota) 
+             VALUES (?, ?, ?, ?, ?)"
         );
-        return $stmt->execute([$idMeta, $idUsuario, $monto, $nota]);
+        return $stmt->execute([$idMeta, $idUsuario, $idCuenta ?: null, $monto, $nota]);
     }
 
-    /**
-     * Actualiza un aporte
-     */
-    public function actualizar($id, $monto, $nota)
+    public function actualizar($id, $idCuenta, $monto, $nota)
     {
         $stmt = $this->pdo->prepare(
-            "UPDATE aporte_meta SET monto = ?, nota = ? WHERE id_aporte = ?"
+            "UPDATE aporte_meta SET id_cuenta = ?, monto = ?, nota = ? WHERE id_aporte = ?"
         );
-        return $stmt->execute([$monto, $nota, $id]);
+        return $stmt->execute([$idCuenta ?: null, $monto, $nota, $id]);
     }
 
-    /**
-     * Elimina un aporte
-     */
     public function eliminar($id)
     {
         $stmt = $this->pdo->prepare("DELETE FROM aporte_meta WHERE id_aporte = ?");

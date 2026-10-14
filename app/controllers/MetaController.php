@@ -176,52 +176,60 @@ class MetaController
 
     public function aportar()
     {
-        $id = intval($_GET['id'] ?? 0);
+        $id = getInt('id');
         $meta = $this->model->obtenerPorId($id, $this->idUsuario);
 
         if (!$meta) {
-            header('Location: index.php');
-            exit;
+            redirigir('index.php');
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             requiereCsrf("index.php?accion=aportar&id=$id&error=csrf");
-            $monto = floatval($_POST['monto'] ?? 0);
-            $nota = trim($_POST['nota'] ?? '');
+
+            $monto = postFloat('monto');
+            $nota = postStr('nota');
+            $idCuenta = postInt('id_cuenta');
 
             if ($monto > 0) {
-                $this->modelAporte->crear($id, $this->idUsuario, $monto, $nota);
+                $this->modelAporte->crear($id, $this->idUsuario, $idCuenta, $monto, $nota);
                 $this->model->recalcular($id);
 
-                header("Location: index.php?accion=ver&id=$id&msg=aportado");
-                exit;
+                redirigir("index.php?accion=ver&id=$id&msg=aportado");
             }
         }
 
-        // 👇 CALCULAR EL PROGRESO ANTES DE RENDERIZAR
-        $progreso = $meta['monto_objetivo'] > 0 
-            ? min(100, ($meta['monto_actual'] / $meta['monto_objetivo']) * 100) 
-            : 0;
+        $progreso = calcularProgreso($meta['monto_actual'], $meta['monto_objetivo']);
+
+        // Cargar cuentas disponibles
+        require_once __DIR__ . '/../models/Cuenta.php';
+        $modelCuenta = new Cuenta($this->pdo);
+        $cuentas = $modelCuenta->obtenerTodas($this->idUsuario, true);
 
         $this->render('aportar', [
             'meta' => $meta,
-            'progreso' => $progreso,       // 👈 AGREGAR ESTA LÍNEA
+            'cuentas' => $cuentas,
+            'progreso' => $progreso,
             'usuario' => usuarioActual()
         ]);
     }
 
     public function editarAporte()
     {
-        $id = intval($_GET['id'] ?? 0);
+        $id = getInt('id');
         $aporte = $this->modelAporte->obtenerPorId($id, $this->idUsuario);
 
         if (!$aporte) {
-            header('Location: index.php');
-            exit;
+            redirigir('index.php');
         }
+
+        // Cargar cuentas disponibles
+        require_once __DIR__ . '/../models/Cuenta.php';
+        $modelCuenta = new Cuenta($this->pdo);
+        $cuentas = $modelCuenta->obtenerTodas($this->idUsuario, true);
 
         $this->render('editar_aporte', [
             'aporte' => $aporte,
+            'cuentas' => $cuentas,
             'usuario' => usuarioActual()
         ]);
     }
@@ -229,34 +237,31 @@ class MetaController
     public function actualizarAporte()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: index.php');
-            exit;
+            redirigir('index.php');
         }
 
         requiereCsrf('index.php?error=csrf');
 
-        $id = intval($_POST['id'] ?? 0);
-        $monto = floatval($_POST['monto'] ?? 0);
-        $nota = trim($_POST['nota'] ?? '');
+        $id = postInt('id');
+        $monto = postFloat('monto');
+        $nota = postStr('nota');
+        $idCuenta = postInt('id_cuenta');
 
         if ($monto <= 0) {
-            header("Location: index.php?accion=editarAporte&id=$id&error=monto_invalido");
-            exit;
+            redirigir("index.php?accion=editarAporte&id=$id&error=monto_invalido");
         }
 
         $aporte = $this->modelAporte->obtenerPorId($id, $this->idUsuario);
         if (!$aporte) {
-            header('Location: index.php');
-            exit;
+            redirigir('index.php');
         }
 
         $idMeta = $aporte['id_meta'];
 
-        $this->modelAporte->actualizar($id, $monto, $nota);
+        $this->modelAporte->actualizar($id, $idCuenta, $monto, $nota);
         $this->model->recalcular($idMeta);
 
-        header("Location: index.php?accion=ver&id=$idMeta&msg=editado");
-        exit;
+        redirigir("index.php?accion=ver&id=$idMeta&msg=editado");
     }
 
     public function eliminarAporte()

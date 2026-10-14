@@ -180,46 +180,57 @@ class DeudaController
 
     public function pagar()
     {
-        $id = intval($_GET['id'] ?? 0);
+        $id = getInt('id');
         $deuda = $this->model->obtenerPorId($id, $this->idUsuario);
 
         if (!$deuda) {
-            header('Location: index.php');
-            exit;
+            redirigir('index.php');
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            requiereCsrf("index.php?accion=aportar&id=$id&error=csrf");
-            $monto = floatval($_POST['monto'] ?? 0);
-            $nota = trim($_POST['nota'] ?? '');
+            requiereCsrf("index.php?accion=pagar&id=$id&error=csrf");
+
+            $monto = postFloat('monto');
+            $nota = postStr('nota');
+            $idCuenta = postInt('id_cuenta');
 
             if ($monto > 0) {
-                $this->modelPago->crear($id, $this->idUsuario, $monto, $nota);
+                $this->modelPago->crear($id, $this->idUsuario, $idCuenta, $monto, $nota);
                 $this->model->recalcular($id);
 
-                header("Location: index.php?accion=ver&id=$id&msg=pagado");
-                exit;
+                redirigir("index.php?accion=ver&id=$id&msg=pagado");
             }
         }
 
+        // Cargar cuentas disponibles
+        require_once __DIR__ . '/../models/Cuenta.php';
+        $modelCuenta = new Cuenta($this->pdo);
+        $cuentas = $modelCuenta->obtenerTodas($this->idUsuario, true);
+
         $this->render('pagar', [
             'deuda' => $deuda,
+            'cuentas' => $cuentas,
             'usuario' => usuarioActual()
         ]);
     }
 
     public function editarPago()
     {
-        $id = intval($_GET['id'] ?? 0);
+        $id = getInt('id');
         $pago = $this->modelPago->obtenerPorId($id, $this->idUsuario);
 
         if (!$pago) {
-            header('Location: index.php');
-            exit;
+            redirigir('index.php');
         }
+
+        // Cargar cuentas disponibles
+        require_once __DIR__ . '/../models/Cuenta.php';
+        $modelCuenta = new Cuenta($this->pdo);
+        $cuentas = $modelCuenta->obtenerTodas($this->idUsuario, true);
 
         $this->render('editar_pago', [
             'pago' => $pago,
+            'cuentas' => $cuentas,
             'usuario' => usuarioActual()
         ]);
     }
@@ -227,34 +238,31 @@ class DeudaController
     public function actualizarPago()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: index.php');
-            exit;
+            redirigir('index.php');
         }
 
         requiereCsrf('index.php?error=csrf');
 
-        $id = intval($_POST['id'] ?? 0);
-        $monto = floatval($_POST['monto'] ?? 0);
-        $nota = trim($_POST['nota'] ?? '');
+        $id = postInt('id');
+        $monto = postFloat('monto');
+        $nota = postStr('nota');
+        $idCuenta = postInt('id_cuenta');
 
         if ($monto <= 0) {
-            header("Location: index.php?accion=editarPago&id=$id&error=monto_invalido");
-            exit;
+            redirigir("index.php?accion=editarPago&id=$id&error=monto_invalido");
         }
 
         $pago = $this->modelPago->obtenerPorId($id, $this->idUsuario);
         if (!$pago) {
-            header('Location: index.php');
-            exit;
+            redirigir('index.php');
         }
 
         $idDeuda = $pago['id_deuda'];
 
-        $this->modelPago->actualizar($id, $monto, $nota);
+        $this->modelPago->actualizar($id, $idCuenta, $monto, $nota);
         $this->model->recalcular($idDeuda);
 
-        header("Location: index.php?accion=ver&id=$idDeuda&msg=editado");
-        exit;
+        redirigir("index.php?accion=ver&id=$idDeuda&msg=editado");
     }
 
     public function eliminarPago()
