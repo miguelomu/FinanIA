@@ -9,6 +9,7 @@ $paginaActual = basename($_SERVER['PHP_SELF']);
     <a href="/FinanIA/modulos/chatbot/index.php">🤖 Asistente IA</a>
     <a href="/FinanIA/modulos/cuentas/index.php">🏦 Cuentas</a>
     <a href="/FinanIA/modulos/transacciones/index.php" class="<?= $paginaActual === 'index.php' && strpos($_SERVER['PHP_SELF'], 'transacciones') ? 'active' : '' ?>">💸 Transacciones</a>
+    <a href="/FinanIA/modulos/recurrentes/index.php">🔄 Recurrentes</a>
     <a href="/FinanIA/modulos/presupuestos/index.php">📅 Presupuestos</a>
     <a href="/FinanIA/modulos/metas/index.php">🎯 Metas</a>
     <a href="/FinanIA/modulos/deudas/index.php">💳 Deudas</a>

@@ -33,6 +33,30 @@ $stmt = $pdo->prepare("SELECT
 $stmt->execute([$usuario['id']]);
 $metas = $stmt->fetch();
 
+// Alertas de presupuesto
+  $stmt = $pdo->prepare(
+      "SELECT c.nombre AS categoria, dp.limite,
+          COALESCE((
+              SELECT SUM(monto) FROM transaccion t
+              WHERE t.id_usuario = ?
+                AND t.id_categoria = dp.id_categoria
+                AND t.tipo = 'gasto'
+                AND MONTH(t.fecha) = ?
+                AND YEAR(t.fecha) = ?
+          ), 0) AS gastado
+      FROM presupuesto p
+      INNER JOIN detalle_presupuesto dp ON p.id_presupuesto = dp.id_presupuesto
+      INNER JOIN categoria c ON dp.id_categoria = c.id_categoria
+      WHERE p.id_usuario = ? AND p.mes = ? AND p.anio = ?
+      HAVING gastado >= (limite * 0.8)"
+  );
+  $stmt->execute([
+      $usuario['id'],
+      date('n'), date('Y'),
+      $usuario['id'], date('n'), date('Y')
+  ]);
+  $alertasPresupuesto = $stmt->fetchAll();
+
 include __DIR__ . '/../includes/header.php';
 ?>
 
@@ -47,6 +71,25 @@ include __DIR__ . '/../includes/header.php';
         <span class="badge badge-premium">Premium</span>
       </div>
     </div>
+
+    <!-- Alertas de presupuesto -->
+    <?php foreach ($alertasPresupuesto as $alerta): 
+        $porcentaje = $alerta['limite'] > 0 ? ($alerta['gastado'] / $alerta['limite']) * 100 : 0;
+        $excedido = $porcentaje >= 100;
+    ?>
+      <div style="background:<?= $excedido ? 'rgba(231,76,60,0.15)' : 'rgba(243,156,18,0.15)' ?>; 
+                  border-left:4px solid <?= $excedido ? '#e74c3c' : '#f39c12' ?>; 
+                  padding:15px; border-radius:8px; margin-bottom:15px;">
+        <strong style="color:<?= $excedido ? '#ff8a80' : '#f39c12' ?>;">
+          <?= $excedido ? '🚨' : '⚠️' ?> 
+          Presupuesto de <?= e($alerta['categoria']) ?>: <?= number_format($porcentaje, 0) ?>%
+        </strong>
+        <p style="color:#c9d6e3; font-size:0.85rem; margin-top:5px;">
+          Gastado: <?= formatoCOP($alerta['gastado']) ?> de <?= formatoCOP($alerta['limite']) ?>
+          <?= $excedido ? ' — ¡EXCEDIDO!' : ' — Cerca del límite' ?>
+        </p>
+      </div>
+    <?php endforeach; ?>
 
     <?php if (isset($_GET['msg']) && $_GET['msg'] === 'cambio_rol'): ?>
       <div class="alert alert-success">
