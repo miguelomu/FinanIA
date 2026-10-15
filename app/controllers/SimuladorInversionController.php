@@ -23,20 +23,12 @@ class SimuladorInversionController
 
     public function index()
     {
-        $tasas = [
-            'cdt' => $this->modelConfig->obtener('tasa_cdt_promedio', 12),
-            'ahorros' => $this->modelConfig->obtener('tasa_ahorros_promedio', 8.5),
-            'fondo' => $this->modelConfig->obtener('tasa_fondo_promedio', 14),
-            'inflacion' => $this->modelConfig->obtener('inflacion_anual', 5.2),
-            'retencion_cdt' => $this->modelConfig->obtener('retencion_fuente_cdt', 4)
-        ];
+        $tasas = $this->obtenerTasas();
 
         $this->render('index', [
             'tasas' => $tasas,
-            'resultados' => null,
-            'recomendacion' => null,
-            'monto' => 0,
-            'plazo' => 0,
+            'resultado' => null,
+            'meta_resultado' => null,
             'usuario' => usuarioActual()
         ]);
     }
@@ -49,56 +41,76 @@ class SimuladorInversionController
 
         requiereCsrf('index.php?error=csrf');
 
-        $monto = postFloat('monto');
-        $plazo = postInt('plazo');
+        $tasas = $this->obtenerTasas();
+        $tipo = postStr('tipo', 'cdt');
 
-        if ($monto <= 0 || $plazo <= 0) {
-            redirigir('index.php?error=campos_vacios');
+        $resultado = null;
+        $meta_resultado = null;
+
+        if ($tipo === 'cdt') {
+            $monto = postFloat('monto');
+            $plazo = postInt('plazo');
+            $aplicarGravamen = post('aplicar_gravamen') ? true : false;
+
+            if ($monto > 0 && $plazo > 0) {
+                $resultado = $this->model->calcularCDT(
+                    $monto, $plazo, $tasas['cdt'], $tasas['retencion_cdt'], $tasas['inflacion'], $aplicarGravamen
+                );
+                $resultado['nombre'] = 'CDT a ' . $plazo . ' meses';
+            }
+        } elseif ($tipo === 'fic') {
+            $montoInicial = postFloat('monto_inicial');
+            $aporteMensual = postFloat('aporte_mensual');
+            $plazo = postInt('plazo');
+
+            if ($aporteMensual > 0 && $plazo > 0) {
+                $resultado = $this->model->calcularFIC(
+                    $montoInicial, $aporteMensual, $plazo, $tasas['fic'], $tasas['inflacion']
+                );
+                $resultado['nombre'] = 'FIC con aportes mensuales';
+            }
+        } elseif ($tipo === 'comparador') {
+            $monto = postFloat('monto');
+            $plazo = postInt('plazo');
+
+            if ($monto > 0 && $plazo > 0) {
+                $resultado = [
+                    'tipo' => 'comparador',
+                    'productos' => $this->model->compararProductos($monto, $plazo, $tasas),
+                    'monto' => $monto,
+                    'plazo' => $plazo
+                ];
+            }
+        } elseif ($tipo === 'meta') {
+            $montoMeta = postFloat('monto_meta');
+            $plazo = postInt('plazo');
+            $montoInicial = postFloat('monto_inicial');
+
+            if ($montoMeta > 0 && $plazo > 0) {
+                $meta_resultado = $this->model->calcularMeta(
+                    $montoMeta, $plazo, $tasas['fic'], $montoInicial
+                );
+            }
         }
-
-        $tasas = [
-            'cdt' => $this->modelConfig->obtener('tasa_cdt_promedio', 12),
-            'ahorros' => $this->modelConfig->obtener('tasa_ahorros_promedio', 8.5),
-            'fondo' => $this->modelConfig->obtener('tasa_fondo_promedio', 14),
-            'inflacion' => $this->modelConfig->obtener('inflacion_anual', 5.2),
-            'retencion_cdt' => $this->modelConfig->obtener('retencion_fuente_cdt', 4)
-        ];
-
-        $alternativas = [
-            [
-                'nombre' => 'Cuenta de ahorros',
-                'tasa' => $tasas['ahorros'],
-                'retencion' => 0,
-                'aplica_gravamen' => true,
-                'color' => '#3498db'
-            ],
-            [
-                'nombre' => 'CDT a ' . $plazo . ' meses',
-                'tasa' => $tasas['cdt'],
-                'retencion' => $tasas['retencion_cdt'],
-                'aplica_gravamen' => false,
-                'color' => '#d4af37'
-            ],
-            [
-                'nombre' => 'Fondo de inversión',
-                'tasa' => $tasas['fondo'],
-                'retencion' => 0,
-                'aplica_gravamen' => false,
-                'color' => '#9b59b6'
-            ]
-        ];
-
-        $resultados = $this->model->comparar($monto, $plazo, $tasas['inflacion'], $alternativas);
-        $recomendacion = $this->model->recomendar($resultados, $tasas['inflacion']);
 
         $this->render('index', [
             'tasas' => $tasas,
-            'resultados' => $resultados,
-            'recomendacion' => $recomendacion,
-            'monto' => $monto,
-            'plazo' => $plazo,
+            'resultado' => $resultado,
+            'meta_resultado' => $meta_resultado,
+            'tipo_activo' => $tipo,
             'usuario' => usuarioActual()
         ]);
+    }
+
+    private function obtenerTasas()
+    {
+        return [
+            'cdt' => $this->modelConfig->obtener('tasa_cdt_promedio', 12),
+            'ahorros' => $this->modelConfig->obtener('tasa_ahorros_promedio', 8.5),
+            'fic' => $this->modelConfig->obtener('tasa_fic_promedio', 12),
+            'inflacion' => $this->modelConfig->obtener('inflacion_anual', 5.2),
+            'retencion_cdt' => $this->modelConfig->obtener('retencion_fuente_cdt', 4)
+        ];
     }
 
     private function render($vista, $datos = [])

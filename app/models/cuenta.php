@@ -20,14 +20,13 @@ class Cuenta
     public function obtenerTodas($idUsuario, $soloActivas = false)
     {
         $sql = "SELECT c.*,
-            c.saldo_inicial 
-              + COALESCE((SELECT SUM(CASE WHEN tipo='ingreso' THEN monto ELSE -monto END) 
-                          FROM transaccion WHERE id_cuenta = c.id_cuenta), 0)
-              - COALESCE((SELECT SUM(monto) FROM aporte_meta WHERE id_cuenta = c.id_cuenta), 0)
-              - COALESCE((SELECT SUM(monto) FROM pago_deuda WHERE id_cuenta = c.id_cuenta), 0)
-            AS saldo_actual
-            FROM cuenta c
-            WHERE c.id_usuario = ?";
+        c.saldo_inicial 
+        + COALESCE((SELECT SUM(CASE WHEN tipo='ingreso' THEN monto ELSE -monto END) 
+                    FROM transaccion WHERE id_cuenta = c.id_cuenta), 0)
+        - COALESCE((SELECT SUM(monto) FROM aporte_meta WHERE id_cuenta = c.id_cuenta), 0)
+        AS saldo_actual
+        FROM cuenta c
+        WHERE c.id_usuario = ?";
         
         $params = [$idUsuario];
 

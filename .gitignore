@@ -35,6 +35,7 @@ error.log
 composer.lock
 
 # Backups de base de datos con datos personales
+database/*_completo.sql
 database/*_personal.sql
 database/*_backup_*.sql
 
