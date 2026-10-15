@@ -109,6 +109,16 @@
           </div>
 
           <div class="form-group">
+            <label>Tasa EA personalizada (opcional)</label>
+            <input type="number" name="tasa_personalizada" step="0.01" min="0" 
+                  value="<?= isset($_POST['tasa_personalizada']) && ($tipo_activo ?? '') === 'cdt' ? $_POST['tasa_personalizada'] : '' ?>"
+                  placeholder="Ej: <?= number_format($tasas['cdt'], 2) ?> (dejar vacío para usar la del mercado)">
+            <small style="color:#9fb3c8; font-size:0.8rem;">
+              Deja en blanco para usar la tasa promedio del mercado (<?= number_format($tasas['cdt'], 2) ?>% EA)
+            </small>
+          </div>
+
+          <div class="form-group">
             <label>
               <input type="checkbox" name="aplicar_gravamen" value="1" style="width:auto;">
               Aplicar gravamen 4x1000 (si retiras a otra cuenta)
@@ -172,6 +182,16 @@
             </div>
           </div>
 
+          <div class="form-group">
+            <label>Tasa EA personalizada (opcional)</label>
+            <input type="number" name="tasa_personalizada" step="0.01" min="0" 
+                  value="<?= isset($_POST['tasa_personalizada']) && ($tipo_activo ?? '') === 'fic' ? $_POST['tasa_personalizada'] : '' ?>"
+                  placeholder="Ej: <?= number_format($tasas['fic'], 2) ?> (dejar vacío para usar la del mercado)">
+            <small style="color:#9fb3c8; font-size:0.8rem;">
+              Deja en blanco para usar la tasa promedio de FIC (<?= number_format($tasas['fic'], 2) ?>% EA)
+            </small>
+          </div>
+
           <div style="background:rgba(19,47,76,0.5); padding:15px; border-radius:10px; margin-top:15px;">
             <p style="color:#9fb3c8; font-size:0.85rem;">
               <strong style="color:#9b59b6;">Tasa FIC:</strong> 
@@ -219,6 +239,34 @@
               <input type="number" name="plazo" min="1" max="120" required 
                      value="<?= isset($_POST['plazo']) && ($tipo_activo ?? '') === 'comparador' ? $_POST['plazo'] : '' ?>"
                      placeholder="Ej: 12">
+            </div>
+          </div>
+
+          <h3 style="color:#d4af37; margin-top:25px; margin-bottom:15px; font-size:1rem;">
+            Tasas personalizadas (opcional)
+          </h3>
+          <p style="color:#9fb3c8; font-size:0.85rem; margin-bottom:15px;">
+            Deja vacío para usar los promedios del mercado
+          </p>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px;">
+            <div class="form-group">
+              <label>📜 CDT</label>
+              <input type="number" name="tasa_cdt" step="0.01" min="0" 
+                    value="<?= isset($_POST['tasa_cdt']) ? $_POST['tasa_cdt'] : '' ?>"
+                    placeholder="<?= number_format($tasas['cdt'], 2) ?>">
+            </div>
+            <div class="form-group">
+              <label>📈 FIC</label>
+              <input type="number" name="tasa_fic" step="0.01" min="0" 
+                    value="<?= isset($_POST['tasa_fic']) ? $_POST['tasa_fic'] : '' ?>"
+                    placeholder="<?= number_format($tasas['fic'], 2) ?>">
+            </div>
+            <div class="form-group">
+              <label>🏦 Ahorros</label>
+              <input type="number" name="tasa_ahorros" step="0.01" min="0" 
+                    value="<?= isset($_POST['tasa_ahorros']) ? $_POST['tasa_ahorros'] : '' ?>"
+                    placeholder="<?= number_format($tasas['ahorros'], 2) ?>">
             </div>
           </div>
 
@@ -270,6 +318,16 @@
             </div>
           </div>
 
+          <div class="form-group">
+            <label>Tasa EA esperada (opcional)</label>
+            <input type="number" name="tasa_personalizada" step="0.01" min="0" 
+                  value="<?= isset($_POST['tasa_personalizada']) && ($tipo_activo ?? '') === 'meta' ? $_POST['tasa_personalizada'] : '' ?>"
+                  placeholder="Ej: <?= number_format($tasas['fic'], 2) ?> (dejar vacío para usar la del FIC)">
+            <small style="color:#9fb3c8; font-size:0.8rem;">
+              ¿Qué rendimiento esperas? Deja en blanco para usar <?= number_format($tasas['fic'], 2) ?>% EA
+            </small>
+          </div>
+
           <button type="submit" class="btn btn-primary" style="width:100%; margin-top:20px;">
             🎯 Calcular aporte mensual
           </button>
@@ -308,6 +366,12 @@ function renderResultadoIndividual($r) {
     ?>
     <div class="card" style="border:2px solid <?= $color ?>; background:linear-gradient(135deg, <?= $color ?>15, rgba(19,47,76,0.6)); padding:30px; margin-bottom:25px;">
       <h2 style="color:<?= $color ?>; margin-bottom:20px;"><?= $icono ?> Resultado</h2>
+
+      <?php if (isset($r['tasa_usada'])): ?>
+        <p style="color:#9fb3c8; font-size:0.9rem; margin-bottom:20px;">
+          Tasa aplicada: <strong style="color:<?= $color ?>;"><?= number_format($r['tasa_usada'], 2) ?>% EA</strong>
+        </p>
+      <?php endif; ?>
       
       <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:20px; margin-bottom:25px;">
         <div>
@@ -447,6 +511,12 @@ function renderComparador($r) {
     ?>
     <div class="card" style="border:2px solid #d4af37; background:linear-gradient(135deg, rgba(212,175,55,0.15), rgba(19,47,76,0.6)); padding:30px; margin-bottom:25px;">
       <h2 style="color:#d4af37; margin-bottom:15px;">🏆 Mejor opción: <?= e($mejor['nombre']) ?></h2>
+      <p style="color:#9fb3c8; font-size:0.9rem; margin-bottom:15px;">
+        Tasas aplicadas: 
+        📜 CDT <strong><?= number_format($productos[0]['tasa_efectiva_nominal'] ?? 0, 2) ?>%</strong> · 
+        📈 FIC <strong><?= number_format($productos[1]['tasa_efectiva_nominal'] ?? 0, 2) ?>%</strong> · 
+        🏦 Ahorros <strong><?= number_format($productos[2]['tasa_efectiva_nominal'] ?? 0, 2) ?>%</strong>
+      </p>
       <p style="color:#c9d6e3;">
         Con una inversión de <?= formatoCOP($r['monto']) ?> a <?= $r['plazo'] ?> meses, 
         esta opción te genera <?= formatoCOP($mejor['valor_final_neto'] - $mejor['total_aportado']) ?> netos.
@@ -568,6 +638,12 @@ function renderMeta($r) {
           durante <?= $r['plazo_meses'] ?> meses
         </p>
       </div>
+
+      <?php if (isset($r['tasa_usada'])): ?>
+        <p style="color:#9fb3c8; font-size:0.85rem; text-align:center; margin-bottom:20px;">
+          Cálculo basado en una tasa de <strong style="color:#7ee8a8;"><?= number_format($r['tasa_usada'], 2) ?>% EA</strong>
+        </p>
+      <?php endif; ?>
 
       <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:20px;">
         <div>

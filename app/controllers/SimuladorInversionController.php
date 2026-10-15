@@ -51,32 +51,52 @@ class SimuladorInversionController
             $monto = postFloat('monto');
             $plazo = postInt('plazo');
             $aplicarGravamen = post('aplicar_gravamen') ? true : false;
+            // Tasa personalizada o la del mercado
+            $tasaPersonalizada = postFloat('tasa_personalizada');
+            $tasa = $tasaPersonalizada > 0 ? $tasaPersonalizada : $tasas['cdt'];
 
             if ($monto > 0 && $plazo > 0) {
                 $resultado = $this->model->calcularCDT(
-                    $monto, $plazo, $tasas['cdt'], $tasas['retencion_cdt'], $tasas['inflacion'], $aplicarGravamen
+                    $monto, $plazo, $tasa, $tasas['retencion_cdt'], $tasas['inflacion'], $aplicarGravamen
                 );
                 $resultado['nombre'] = 'CDT a ' . $plazo . ' meses';
+                $resultado['tasa_usada'] = $tasa;
             }
         } elseif ($tipo === 'fic') {
             $montoInicial = postFloat('monto_inicial');
             $aporteMensual = postFloat('aporte_mensual');
             $plazo = postInt('plazo');
+            $tasaPersonalizada = postFloat('tasa_personalizada');
+            $tasa = $tasaPersonalizada > 0 ? $tasaPersonalizada : $tasas['fic'];
 
             if ($aporteMensual > 0 && $plazo > 0) {
                 $resultado = $this->model->calcularFIC(
-                    $montoInicial, $aporteMensual, $plazo, $tasas['fic'], $tasas['inflacion']
+                    $montoInicial, $aporteMensual, $plazo, $tasa, $tasas['inflacion']
                 );
                 $resultado['nombre'] = 'FIC con aportes mensuales';
+                $resultado['tasa_usada'] = $tasa;
             }
         } elseif ($tipo === 'comparador') {
             $monto = postFloat('monto');
             $plazo = postInt('plazo');
+            
+            // Tasas personalizadas
+            $tasaCDT = postFloat('tasa_cdt');
+            $tasaFIC = postFloat('tasa_fic');
+            $tasaAhorros = postFloat('tasa_ahorros');
+
+            $tasasComparar = [
+                'cdt' => $tasaCDT > 0 ? $tasaCDT : $tasas['cdt'],
+                'fic' => $tasaFIC > 0 ? $tasaFIC : $tasas['fic'],
+                'ahorros' => $tasaAhorros > 0 ? $tasaAhorros : $tasas['ahorros'],
+                'inflacion' => $tasas['inflacion'],
+                'retencion_cdt' => $tasas['retencion_cdt']
+            ];
 
             if ($monto > 0 && $plazo > 0) {
                 $resultado = [
                     'tipo' => 'comparador',
-                    'productos' => $this->model->compararProductos($monto, $plazo, $tasas),
+                    'productos' => $this->model->compararProductos($monto, $plazo, $tasasComparar),
                     'monto' => $monto,
                     'plazo' => $plazo
                 ];
@@ -85,11 +105,14 @@ class SimuladorInversionController
             $montoMeta = postFloat('monto_meta');
             $plazo = postInt('plazo');
             $montoInicial = postFloat('monto_inicial');
+            $tasaPersonalizada = postFloat('tasa_personalizada');
+            $tasa = $tasaPersonalizada > 0 ? $tasaPersonalizada : $tasas['fic'];
 
             if ($montoMeta > 0 && $plazo > 0) {
                 $meta_resultado = $this->model->calcularMeta(
-                    $montoMeta, $plazo, $tasas['fic'], $montoInicial
+                    $montoMeta, $plazo, $tasa, $montoInicial
                 );
+                $meta_resultado['tasa_usada'] = $tasa;
             }
         }
 
