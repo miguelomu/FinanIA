@@ -54,17 +54,17 @@
         </div>
       </div>
 
-      <h3 style="color:#d4af37; margin:25px 0 15px;">Límites por Categoría</h3>
+      <h3 style="color: #d4af37; margin:25px 0 15px;">Límites por Categoría</h3>
       <div style="background:rgba(19,47,76,0.5); padding:20px; border-radius:12px;">
         <?php foreach ($categorias as $cat): 
           $valorActual = $limitesActuales[$cat['id_categoria']] ?? 0;
         ?>
           <div style="display:grid; grid-template-columns:1fr 200px; gap:15px; align-items:center; padding:10px 0; border-bottom:1px solid rgba(212,175,55,0.1);">
-            <span style="color:#c9d6e3;"><?= htmlspecialchars($cat['nombre']) ?></span>
+            <span style="color: #c9d6e3;"><?= htmlspecialchars($cat['nombre']) ?></span>
             <input type="number" 
                    name="limites[<?= $cat['id_categoria'] ?>]" 
                    step="0.01" min="0" value="<?= $valorActual ?>"
-                   style="padding:8px 12px; background:rgba(10,25,41,0.7); border:1px solid rgba(212,175,55,0.3); border-radius:8px; color:#e6edf3; width:100%;">
+                   style="padding:8px 12px; background:rgba(10,25,41,0.7); border:1px solid rgba(212,175,55,0.3); border-radius:8px; color: #e6edf3; width:100%;">
           </div>
         <?php endforeach; ?>
       </div>

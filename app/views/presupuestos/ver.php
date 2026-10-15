@@ -43,7 +43,7 @@ $meses = ['', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
            style="width: <?= min(100, $totales['progreso']) ?>%;"></div>
     </div>
 
-    <h2 style="color:#d4af37; margin-bottom:20px;">Detalle por Categoría</h2>
+    <h2 style="color: #d4af37; margin-bottom:20px;">Detalle por Categoría</h2>
 
     <div class="table-container">
       <table>
@@ -65,7 +65,7 @@ $meses = ['', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
             <tr>
               <td><?= htmlspecialchars($d['categoria_nombre']) ?></td>
               <td style="text-align:right;">$<?= number_format($d['limite'], 2) ?></td>
-              <td style="text-align:right; color:#e74c3c;">$<?= number_format($d['gastado'], 2) ?></td>
+              <td style="text-align:right; color: #e74c3c;">$<?= number_format($d['gastado'], 2) ?></td>
               <td style="text-align:right; font-weight:bold; color: <?= $disponible >= 0 ? '#27ae60' : '#e74c3c' ?>;">
                 $<?= number_format($disponible, 2) ?>
               </td>
@@ -73,7 +73,7 @@ $meses = ['', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
                 <div class="progress" style="margin:0;">
                   <div class="progress-bar <?= $claseBarra ?>" style="width: <?= min(100, $progreso) ?>%;"></div>
                 </div>
-                <small style="color:#9fb3c8;"><?= number_format($progreso, 1) ?>%</small>
+                <small style="color: #9fb3c8;"><?= number_format($progreso, 1) ?>%</small>
               </td>
             </tr>
           <?php endforeach; ?>

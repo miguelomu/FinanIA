@@ -38,7 +38,7 @@
           <div class="card">
             <h3><?= $meses[$p['mes']] ?> <?= $p['anio'] ?></h3>
             <div class="value">$<?= number_format($p['monto_total'], 2) ?></div>
-            <p style="color:#9fb3c8; font-size:0.85rem; margin-top:10px;">
+            <p style="color: #9fb3c8; font-size:0.85rem; margin-top:10px;">
               <?= $p['total_categorias'] ?> categoría(s)
             </p>
             <div class="btn-group" style="margin-top:15px;">
@@ -46,7 +46,7 @@
               <a href="index.php?accion=editar&id=<?= $p['id_presupuesto'] ?>" class="btn btn-secondary" style="font-size:0.75rem; padding:8px 12px;">✏️</a>
               <a href="index.php?accion=eliminar&id=<?= $p['id_presupuesto'] ?>" 
                  class="btn btn-secondary" 
-                 style="font-size:0.75rem; padding:8px 12px; color:#e74c3c;"
+                 style="font-size:0.75rem; padding:8px 12px; color: #e74c3c;"
                  onclick="return confirm('¿Eliminar este presupuesto?')">🗑️</a>
             </div>
           </div>

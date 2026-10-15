@@ -25,7 +25,7 @@
     <?php endif; ?>
 
     <!-- Panel de estabilidad -->
-    <h2 style="color:#d4af37; margin-bottom:20px;">📊 Análisis de estabilidad (últimos 6 meses)</h2>
+    <h2 style="color: #d4af37; margin-bottom:20px;">📊 Análisis de estabilidad (últimos 6 meses)</h2>
     
     <div class="cards-grid">
       <div class="card">
@@ -45,7 +45,7 @@
         <div class="value" style="color: <?= $estabilidad['estabilidad'] > 70 ? '#27ae60' : ($estabilidad['estabilidad'] > 40 ? '#f39c12' : '#e74c3c') ?>;">
           <?= number_format($estabilidad['estabilidad'], 0) ?>%
         </div>
-        <p style="color:#9fb3c8; font-size:0.75rem; margin-top:8px;">
+        <p style="color: #9fb3c8; font-size:0.75rem; margin-top:8px;">
           <?php if ($estabilidad['estabilidad'] > 70): ?>
             ✅ Ingresos estables
           <?php elseif ($estabilidad['estabilidad'] > 40): ?>
@@ -60,18 +60,18 @@
     <!-- Gráfica de ingresos mensuales -->
     <?php if (!empty($estabilidad['datos_mensuales'])): ?>
       <div class="card" style="padding:25px; margin-top:25px;">
-        <h3 style="color:#d4af37; margin-bottom:20px;">📈 Evolución de ingresos</h3>
+        <h3 style="color: #d4af37; margin-bottom:20px;">📈 Evolución de ingresos</h3>
         <canvas id="graficoIngresos" height="80"></canvas>
       </div>
     <?php endif; ?>
 
     <!-- Lista de fuentes -->
-    <h2 style="color:#d4af37; margin:35px 0 20px;">💼 Mis fuentes de ingreso</h2>
+    <h2 style="color: #d4af37; margin:35px 0 20px;">💼 Mis fuentes de ingreso</h2>
 
     <?php if (empty($fuentes)): ?>
       <div class="card" style="text-align:center; padding:40px;">
         <p style="font-size:1.2rem; margin-bottom:15px;">💼 No has registrado fuentes de ingreso</p>
-        <p style="color:#9fb3c8; margin-bottom:20px;">
+        <p style="color: #9fb3c8; margin-bottom:20px;">
           Registra de dónde viene tu dinero para que el sistema pueda proyectar tus ingresos.
         </p>
         <a href="index.php?accion=crear" class="btn btn-primary">Crear primera fuente</a>
@@ -84,18 +84,18 @@
               <h3 style="margin:0; font-size:1.1rem;"><?= e($f['nombre']) ?></h3>
               <?php if (!$f['activa']): ?>
                 <span style="padding:2px 8px; border-radius:8px; font-size:0.7rem;
-                  background:rgba(231,76,60,0.2); color:#ff8a80;">Inactiva</span>
+                  background:rgba(231,76,60,0.2); color: #ff8a80;">Inactiva</span>
               <?php endif; ?>
             </div>
 
-            <p style="color:#9fb3c8; font-size:0.8rem; margin-top:8px;">
+            <p style="color: #9fb3c8; font-size:0.8rem; margin-top:8px;">
               <?= e(capitalizar($f['tipo'])) ?> · <?= e(capitalizar($f['frecuencia'])) ?>
             </p>
 
             <div class="value positivo" style="font-size:1.4rem; margin-top:10px;">
               <?= formatoCOP($f['promedio_real'] > 0 ? $f['promedio_real'] : $f['monto_promedio']) ?>
             </div>
-            <p style="color:#7a8a9c; font-size:0.75rem;">
+            <p style="color: #7a8a9c; font-size:0.75rem;">
               <?= $f['total_ingresos'] ?> ingreso(s) registrado(s)
             </p>
 
@@ -103,7 +103,7 @@
               <a href="index.php?accion=editar&id=<?= $f['id_fuente'] ?>" class="btn btn-secondary" style="font-size:0.75rem; padding:8px 12px;">✏️ Editar</a>
               <a href="index.php?accion=eliminar&id=<?= $f['id_fuente'] ?>" 
                  class="btn btn-secondary" 
-                 style="font-size:0.75rem; padding:8px 12px; color:#e74c3c;"
+                 style="font-size:0.75rem; padding:8px 12px; color: #e74c3c;"
                  onclick="return confirm('¿Eliminar esta fuente?')">🗑️</a>
             </div>
           </div>

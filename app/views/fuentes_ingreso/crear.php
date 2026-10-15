@@ -54,7 +54,7 @@
         <label>Monto promedio estimado</label>
         <input type="number" name="monto_promedio" step="0.01" min="0" value="0" 
                placeholder="0.00">
-        <small style="color:#9fb3c8; font-size:0.8rem;">
+        <small style=" 9fb3c8; font-size:0.8rem;">
           Es un valor de referencia. El sistema calculará el promedio real con base en tus transacciones.
         </small>
       </div>

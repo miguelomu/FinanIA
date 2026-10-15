@@ -47,7 +47,7 @@
         <label>Saldo inicial</label>
         <input type="number" name="saldo_inicial" step="0.01" value="0" 
                placeholder="0.00">
-        <small style="color:#9fb3c8; font-size:0.8rem;">
+        <small style="color: #9fb3c8; font-size:0.8rem;">
           El dinero que tienes actualmente en esta cuenta.
         </small>
       </div>

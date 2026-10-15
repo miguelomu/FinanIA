@@ -21,7 +21,7 @@
         <div class="value negativo" style="font-size:1.8rem;">
           <?= formatoCOP($impacto['gastos_anual']) ?>
         </div>
-        <p style="color:#9fb3c8; font-size:0.75rem; margin-top:8px;">
+        <p style="color: #9fb3c8; font-size:0.75rem; margin-top:8px;">
           Es lo que gastas en un año completo
         </p>
       </div>
@@ -40,12 +40,12 @@
     </div>
 
     <!-- Gastos recurrentes activos -->
-    <h2 style="color:#d4af37; margin:35px 0 20px;">🔄 Tus movimientos recurrentes</h2>
+    <h2 style="color: #d4af37; margin:35px 0 20px;">🔄 Tus movimientos recurrentes</h2>
 
     <?php if (empty($gastos)): ?>
       <div class="card" style="text-align:center; padding:40px;">
         <p style="font-size:1.1rem; margin-bottom:15px;">🔄 No tienes movimientos recurrentes registrados</p>
-        <p style="color:#9fb3c8;">
+        <p style="color: #9fb3c8;">
           Marca la casilla "recurrente" al crear una transacción para que aparezca aquí.
         </p>
       </div>
@@ -87,7 +87,7 @@
                 <td style="text-align:right; font-weight:bold;">
                   <?= formatoCOP($g['monto']) ?>
                 </td>
-                <td style="text-align:right; color:#f39c12; font-weight:bold;">
+                <td style="text-align:right; color: #f39c12; font-weight:bold;">
                   <?= formatoCOP($g['monto'] * 12) ?>
                 </td>
               </tr>
@@ -99,8 +99,8 @@
 
     <!-- Suscripciones detectadas -->
     <?php if (!empty($suscripciones)): ?>
-      <h2 style="color:#d4af37; margin:40px 0 20px;">🔍 Posibles suscripciones detectadas</h2>
-      <p style="color:#9fb3c8; margin-bottom:20px; font-size:0.9rem;">
+      <h2 style="color: #d4af37; margin:40px 0 20px;">🔍 Posibles suscripciones detectadas</h2>
+      <p style="color: #9fb3c8; margin-bottom:20px; font-size:0.9rem;">
         Estos son gastos pequeños que se repiten varias veces. Pueden ser suscripciones 
         o gastos hormiga. Revísalos.
       </p>
@@ -123,7 +123,7 @@
                 <td><?= e($s['categoria'] ?? '—') ?></td>
                 <td style="text-align:center;"><?= $s['veces'] ?> veces</td>
                 <td style="text-align:right;"><?= formatoCOP($s['monto_promedio']) ?></td>
-                <td style="text-align:right; color:#e74c3c; font-weight:bold;">
+                <td style="text-align:right; color: #e74c3c; font-weight:bold;">
                   <?= formatoCOP($s['monto_total']) ?>
                 </td>
               </tr>

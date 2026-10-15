@@ -50,7 +50,7 @@
       <div class="progress-bar <?= $progreso >= 100 ? 'success' : '' ?>" style="width: <?= $progreso ?>%;"></div>
     </div>
 
-    <h2 style="color:#d4af37; margin-bottom:20px;">Historial de Pagos</h2>
+    <h2 style="color: #d4af37; margin-bottom:20px;">Historial de Pagos</h2>
 
     <?php if (empty($pagos)): ?>
       <div class="card" style="text-align:center; padding:40px;">
@@ -82,11 +82,11 @@
                       <?= e($p['cuenta_nombre']) ?>
                     </span>
                   <?php else: ?>
-                    <span style="color:#7a8a9c;">—</span>
+                    <span style="color: #7a8a9c;">—</span>
                   <?php endif; ?>
                 </td>
                 <td><?= e($p['nota'] ?: '—') ?></td>
-                <td style="text-align:right; color:#27ae60; font-weight:bold;">
+                <td style="text-align:right; color: #27ae60; font-weight:bold;">
                   +$<?= number_format($p['monto'], 2) ?>
                 </td>
                 <td style="text-align:center;">

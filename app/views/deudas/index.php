@@ -99,8 +99,8 @@
 
           <?php if ($d['tasa_interes'] > $tasaUsura): ?>
             <div style="background:rgba(231,76,60,0.2); border-left:4px solid #e74c3c; padding:12px; border-radius:6px; margin:10px 0;">
-              <strong style="color:#ff8a80;">🚨 ¡ALERTA! Tasa de usura</strong>
-              <p style="color:#ff8a80; font-size:0.85rem; margin-top:5px;">
+              <strong style="color: #ff8a80;">🚨 ¡ALERTA! Tasa de usura</strong>
+              <p style="color: #ff8a80; font-size:0.85rem; margin-top:5px;">
                 Esta deuda cobra <strong><?= number_format($d['tasa_interes'], 2) ?>% EA</strong>, 
                 superando la tasa de usura vigente (<strong><?= number_format($tasaUsura, 2) ?>% EA</strong>).
                 Esto es ilegal en Colombia. Puedes denunciar ante la Superintendencia Financiera.
@@ -108,8 +108,8 @@
             </div>
           <?php elseif ($d['tasa_interes'] > $tasaUsura * 0.85): ?>
             <div style="background:rgba(243,156,18,0.15); border-left:4px solid #f39c12; padding:12px; border-radius:6px; margin:10px 0;">
-              <strong style="color:#f39c12;">⚠️ Tasa alta</strong>
-              <p style="color:#f39c12; font-size:0.85rem; margin-top:5px;">
+              <strong style="color: #f39c12;">⚠️ Tasa alta</strong>
+              <p style="color: #f39c12; font-size:0.85rem; margin-top:5px;">
                 Esta deuda cobra <strong><?= number_format($d['tasa_interes'], 2) ?>% EA</strong>, 
                 cerca del límite de usura (<strong><?= number_format($tasaUsura, 2) ?>%</strong>).
                 Considera renegociar o buscar alternativas.
@@ -129,7 +129,7 @@
             <a href="index.php?accion=editar&id=<?= $d['id_deuda'] ?>" class="btn btn-secondary">✏️ Editar</a>
             <a href="index.php?accion=eliminar&id=<?= $d['id_deuda'] ?>" 
                class="btn btn-secondary"
-               style="color:#e74c3c;"
+               style="color: #e74c3c;"
                onclick="return confirm('¿Eliminar esta deuda? Se eliminarán también sus pagos.')">🗑️ Eliminar</a>
           </div>
         </div>

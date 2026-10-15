@@ -50,7 +50,7 @@
       </div>
     </div>
 
-    <p style="color:#9fb3c8; text-align:center; margin-bottom:30px;">
+    <p style="color: #9fb3c8; text-align:center; margin-bottom:30px;">
       <strong><?= $resumen['total_transacciones'] ?></strong> transacciones entre
       <strong><?= date('d/m/Y', strtotime($fechaDesde)) ?></strong> y
       <strong><?= date('d/m/Y', strtotime($fechaHasta)) ?></strong>
@@ -64,7 +64,7 @@
     <?php else: ?>
 
     <!-- Gráfica Ingresos vs Gastos -->
-    <h2 style="color:#d4af37; margin:30px 0 20px;">📊 Ingresos vs Gastos por Mes</h2>
+    <h2 style="color: #d4af37; margin:30px 0 20px;">📊 Ingresos vs Gastos por Mes</h2>
     <div class="card" style="padding:25px;">
       <canvas id="graficoMensual" height="100"></canvas>
     </div>
@@ -72,20 +72,20 @@
     <!-- Gráficas circulares -->
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:25px; margin-top:30px;">
       <div>
-        <h2 style="color:#d4af37; margin-bottom:20px;">💸 Gastos por Categoría</h2>
+        <h2 style="color: #d4af37; margin-bottom:20px;">💸 Gastos por Categoría</h2>
         <div class="card" style="padding:25px;">
           <?php if (empty($gastosPorCategoria)): ?>
-            <p style="text-align:center; color:#9fb3c8; padding:40px;">Sin gastos en el período</p>
+            <p style="text-align:center; color: #9fb3c8; padding:40px;">Sin gastos en el período</p>
           <?php else: ?>
             <canvas id="graficoGastos"></canvas>
           <?php endif; ?>
         </div>
       </div>
       <div>
-        <h2 style="color:#d4af37; margin-bottom:20px;">💰 Ingresos por Categoría</h2>
+        <h2 style="color: #d4af37; margin-bottom:20px;">💰 Ingresos por Categoría</h2>
         <div class="card" style="padding:25px;">
           <?php if (empty($ingresosPorCategoria)): ?>
-            <p style="text-align:center; color:#9fb3c8; padding:40px;">Sin ingresos en el período</p>
+            <p style="text-align:center; color: #9fb3c8; padding:40px;">Sin ingresos en el período</p>
           <?php else: ?>
             <canvas id="graficoIngresos"></canvas>
           <?php endif; ?>
@@ -94,10 +94,10 @@
     </div>
 
     <!-- Top 5 Gastos -->
-    <h2 style="color:#d4af37; margin:30px 0 20px;">🔝 Top 5 Gastos más Altos</h2>
+    <h2 style="color: #d4af37; margin:30px 0 20px;">🔝 Top 5 Gastos más Altos</h2>
     <?php if (empty($topGastos)): ?>
       <div class="card" style="text-align:center; padding:40px;">
-        <p style="color:#9fb3c8;">No hay gastos en el período seleccionado</p>
+        <p style="color: #9fb3c8;">No hay gastos en el período seleccionado</p>
       </div>
     <?php else: ?>
       <div class="table-container">
@@ -118,7 +118,7 @@
                 <td><?= date('d/m/Y', strtotime($g['fecha'])) ?></td>
                 <td><?= htmlspecialchars($g['categoria']) ?></td>
                 <td><?= htmlspecialchars($g['descripcion'] ?? '—') ?></td>
-                <td style="text-align:right; color:#e74c3c; font-weight:bold;">
+                <td style="text-align:right; color: #e74c3c; font-weight:bold;">
                   -$<?= number_format($g['monto'], 2) ?>
                 </td>
               </tr>

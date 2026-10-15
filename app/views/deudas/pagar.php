@@ -41,7 +41,7 @@
               </option>
             <?php endforeach; ?>
           </select>
-          <small style="color:#9fb3c8; font-size:0.8rem;">
+          <small style="color: #9fb3c8; font-size:0.8rem;">
             ¿De qué cuenta sale el dinero?
           </small>
         </div>

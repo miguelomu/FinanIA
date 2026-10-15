@@ -20,14 +20,13 @@ $esDesarrollador = function_exists('esDesarrollador') && esDesarrollador();
     <a href="/FinanIA/modulos/deudas/index.php">💳 Deudas</a>
     <a href="/FinanIA/modulos/presupuestos/index.php">📅 Presupuestos</a>
     <a href="/FinanIA/modulos/reportes/index.php">📈 Reportes</a>
-    <a href="/FinanIA/modulos/gastos_compartidos/index.php">👥 Gastos Compartidos</a>
     <a href="/FinanIA/modulos/fuentes_ingreso/index.php">💼 Fuentes de Ingreso</a>
     <a href="/FinanIA/modulos/recurrentes/index.php">🔄 Recurrentes</a>
     <a href="/FinanIA/modulos/logros/index.php">🏆 Mis Logros</a>
 
     <!-- Sección Premium -->
     <hr style="border-color:rgba(212,175,55,0.2); margin:15px 0;">
-    <p style="color:#d4af37; font-size:0.7rem; text-align:center; margin-bottom:10px; letter-spacing:1px;">
+    <p style="color: #d4af37; font-size:0.7rem; text-align:center; margin-bottom:10px; letter-spacing:1px;">
       ⭐ PREMIUM
     </p>
 
