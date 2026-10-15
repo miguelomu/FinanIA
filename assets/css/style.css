@@ -159,13 +159,14 @@ body {
 
 .sidebar nav a {
   display: block;
-  padding: 12px 15px;
+  padding: 8px 12px !important;
   color: #c9d6e3;
   text-decoration: none;
   border-radius: 8px;
-  margin-bottom: 5px;
-  font-size: 0.9rem;
+  margin-bottom: 2px !important;
+  font-size: 0.85rem !important;
   transition: all 0.2s;
+  line-height: 1.4;
 }
 
 .sidebar nav a:hover,
@@ -839,4 +840,92 @@ tbody tr:hover { background: rgba(212, 175, 55, 0.05); }
 body, .card, .meta-card, .sidebar, .table-container, .btn, 
 .topbar, .form-group input, .form-group select, .form-group textarea {
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* ============================================
+   SCROLLBAR PERSONALIZADO - FORZADO
+   ============================================ */
+
+/* Scrollbar del sidebar (Webkit: Chrome, Edge, Safari) */
+.sidebar::-webkit-scrollbar {
+  width: 6px !important;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: rgba(212, 175, 55, 0.4) !important;
+  border-radius: 3px !important;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: rgba(212, 175, 55, 0.8) !important;
+}
+
+/* Firefox */
+.sidebar {
+  scrollbar-width: thin !important;
+  scrollbar-color: rgba(212, 175, 55, 0.4) transparent !important;
+}
+
+/* Scrollbar del body (Webkit) */
+body::-webkit-scrollbar {
+  width: 8px !important;
+}
+
+body::-webkit-scrollbar-track {
+  background: rgba(10, 25, 41, 0.3) !important;
+}
+
+body::-webkit-scrollbar-thumb {
+  background: rgba(212, 175, 55, 0.5) !important;
+  border-radius: 4px !important;
+}
+
+body::-webkit-scrollbar-thumb:hover {
+  background: rgba(212, 175, 55, 0.9) !important;
+}
+
+/* Scrollbar de contenedores internos (main-content, tablas, etc.) */
+.main-content::-webkit-scrollbar,
+.table-container::-webkit-scrollbar,
+.chat-messages::-webkit-scrollbar {
+  width: 8px !important;
+  height: 8px !important;
+}
+
+.main-content::-webkit-scrollbar-track,
+.table-container::-webkit-scrollbar-track,
+.chat-messages::-webkit-scrollbar-track {
+  background: rgba(10, 25, 41, 0.3) !important;
+}
+
+.main-content::-webkit-scrollbar-thumb,
+.table-container::-webkit-scrollbar-thumb,
+.chat-messages::-webkit-scrollbar-thumb {
+  background: rgba(212, 175, 55, 0.5) !important;
+  border-radius: 4px !important;
+}
+
+.main-content::-webkit-scrollbar-thumb:hover,
+.table-container::-webkit-scrollbar-thumb:hover,
+.chat-messages::-webkit-scrollbar-thumb:hover {
+  background: rgba(212, 175, 55, 0.9) !important;
+}
+
+/* Modo claro */
+[data-tema="claro"] body::-webkit-scrollbar-track,
+[data-tema="claro"] .main-content::-webkit-scrollbar-track,
+[data-tema="claro"] .table-container::-webkit-scrollbar-track {
+  background: rgba(200, 200, 200, 0.4) !important;
+}
+
+[data-tema="claro"] .sidebar::-webkit-scrollbar-thumb {
+  background: rgba(184, 134, 11, 0.5) !important;
+}
+
+[data-tema="claro"] .sidebar::-webkit-scrollbar-thumb:hover {
+  background: rgba(184, 134, 11, 0.9) !important;
 }

@@ -78,6 +78,11 @@ include __DIR__ . '/../includes/header.php';
   <?php include __DIR__ . '/../includes/sidebar.php'; ?>
 
   <main class="main-content">
+    <?php if (isset($_GET['msg']) && $_GET['msg'] === 'premium_activado'): ?>
+      <div class="alert alert-success" style="background:linear-gradient(135deg,rgba(155,89,182,0.2),rgba(39,174,96,0.2)); border-left:4px solid #9b59b6;">
+        🌟 ¡Felicidades! Tu cuenta Premium está activa. Ya puedes disfrutar del Asistente IA, los simuladores y todas las funciones avanzadas.
+      </div>
+    <?php endif; ?>
     <div class="topbar">
       <h1>Dashboard Premium 🌟</h1>
       <div>

@@ -93,8 +93,9 @@ class Logro
     /**
      * Desbloquea un logro si no lo tiene ya
      */
-    private function desbloquear($clave, &$nuevos)
+    private function desbloquear($clave, &$nuevos = null)
     {
+        if ($nuevos === null) $nuevos = [];
         // Verificar que ya no lo tenga
         $stmt = $this->pdo->prepare(
             "SELECT ul.id_usuario_logro 
@@ -153,6 +154,15 @@ class Logro
             'logros' => $todos,
             'recientes' => array_slice(array_values($desbloqueados), 0, 3)
         ];
+    }
+
+    /**
+    * Desbloquea el logro de premium
+    */
+    public function desbloquearPremium()
+    {
+        $nuevos = [];
+        $this->desbloquear('usuario_premium', $nuevos);
     }
 
     // ==========================================
