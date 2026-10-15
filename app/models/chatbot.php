@@ -23,7 +23,7 @@ class Chatbot
     public function procesar($mensaje)
     {
         $mensaje = trim($mensaje);
-        $mensaje_lower = mb_strtolower($mensaje, 'UTF-8');
+        $mensaje_lower = $this->normalizarTexto($mensaje);
 
         // Guardar mensaje del usuario
         $this->guardarMensaje('user', $mensaje);
@@ -41,6 +41,22 @@ class Chatbot
             'respuesta' => $respuesta,
             'intencion' => $intencion
         ];
+    }
+
+    /**
+     * Normaliza un texto: minúsculas + sin tildes
+     * 
+     * "Cómo crear una meta" → "como crear una meta"
+     */
+    private function normalizarTexto($texto)
+    {
+        $texto = mb_strtolower($texto, 'UTF-8');
+        $texto = str_replace(
+            ['á', 'é', 'í', 'ó', 'ú', 'ü', 'ñ', 'à', 'è', 'ì', 'ò', 'ù'],
+            ['a', 'e', 'i', 'o', 'u', 'u', 'n', 'a', 'e', 'i', 'o', 'u'],
+            $texto
+        );
+        return $texto;
     }
 
     /**
@@ -91,13 +107,27 @@ class Chatbot
             'educacion_fondo' => ['fondo de emergencia', 'qué es un fondo de emergencia'],
             'educacion_interes' => ['interés compuesto', 'qué es el interés'],
 
+            // Ayuda específica por módulo
+            'ayuda_meta' => ['cómo creo una meta', 'cómo hacer una meta', 'ayuda con metas', 'cómo funciona metas'],
+            'ayuda_deuda' => ['cómo registro una deuda', 'cómo funciona deudas', 'ayuda con deudas', 'cómo pago una deuda'],
+            'ayuda_transaccion' => ['cómo registro una transacción', 'cómo agregar un gasto', 'cómo registro un ingreso'],
+            'ayuda_presupuesto' => ['cómo crear un presupuesto', 'cómo funciona presupuestos'],
+            'ayuda_simulador_deuda' => ['cómo funciona el simulador de deudas', 'para qué sirve simulador de deudas'],
+            'ayuda_simulador_inversion' => ['cómo funciona el simulador de inversiones', 'para qué sirve simulador de inversiones'],
+            'ayuda_patrimonio' => ['qué es el patrimonio neto', 'cómo funciona el patrimonio', 'para qué sirve patrimonio'],
+            'ayuda_cuentas' => ['cómo creo una cuenta', 'para qué sirven las cuentas', 'cómo funcionan las cuentas'],
+            'ayuda_premium' => ['cómo me hago premium', 'cómo ser premium', 'qué es premium', 'cómo actualizar a premium'],
+            'ayuda_salud' => ['cómo funciona salud financiera', 'qué es el puntaje de salud'],
+            'tour_modulos' => ['qué módulos tiene', 'qué puedo hacer en la app', 'explícame todo', 'qué funciones hay', 'lista de funciones'],
+
             // Ayuda
             'ayuda' => ['qué puedes hacer', 'ayuda', 'cómo funcionas', 'qué haces', 'opciones']
         ];
 
         foreach ($patrones as $intencion => $keywords) {
             foreach ($keywords as $kw) {
-                if (mb_strpos($msg, $kw) !== false) {
+                $kwNormalizada = $this->normalizarTexto($kw);
+                if (mb_strpos($msg, $kwNormalizada) !== false) {
                     return $intencion;
                 }
             }
@@ -138,6 +168,29 @@ class Chatbot
 
             case 'salud_financiera':
                 return $this->respuestaSaludFinanciera();
+
+            case 'ayuda_meta':
+                return $this->respuestaAyudaMeta();
+            case 'ayuda_deuda':
+                return $this->respuestaAyudaDeuda();
+            case 'ayuda_transaccion':
+                return $this->respuestaAyudaTransaccion();
+            case 'ayuda_presupuesto':
+                return $this->respuestaAyudaPresupuesto();
+            case 'ayuda_simulador_deuda':
+                return $this->respuestaAyudaSimuladorDeuda();
+            case 'ayuda_simulador_inversion':
+                return $this->respuestaAyudaSimuladorInversion();
+            case 'ayuda_patrimonio':
+                return $this->respuestaAyudaPatrimonio();
+            case 'ayuda_cuentas':
+                return $this->respuestaAyudaCuentas();
+            case 'ayuda_premium':
+                return $this->respuestaAyudaPremium();
+            case 'ayuda_salud':
+                return $this->respuestaAyudaSalud();
+            case 'tour_modulos':
+                return $this->respuestaTourModulos();
 
             case 'consultar_gasto_categoria':
                 return $this->respuestaGastoCategoria($msg);
@@ -988,4 +1041,208 @@ class Chatbot
         $stmt = $this->pdo->prepare("DELETE FROM chat_conversacion WHERE id_usuario = ?");
         $stmt->execute([$this->idUsuario]);
     }
+
+        // ==========================================
+    // RESPUESTAS DE AYUDA
+    // ==========================================
+
+    private function respuestaAyudaMeta()
+    {
+        return "🎯 **Cómo crear una meta**\n\n" .
+               "**Paso 1:** Ve al menú lateral → **Metas**\n" .
+               "**Paso 2:** Clic en **+ Nueva Meta**\n" .
+               "**Paso 3:** Llena los campos:\n" .
+               "  • Nombre (ej: Viaje a Europa)\n" .
+               "  • Monto objetivo\n" .
+               "  • Monto inicial (si ya tienes algo ahorrado)\n" .
+               "  • Fecha límite\n" .
+               "**Paso 4:** Guardar\n\n" .
+               "💡 **Luego puedes:**\n" .
+               "• Agregar aportes cuando ahorres → botón **+ Aporte**\n" .
+               "• Ver el historial completo con **📋 Ver Aportes**\n" .
+               "• El progreso se calcula automáticamente\n\n" .
+               "🎯 Tip: Las metas con fecha límite te motivan más.";
+    }
+
+    private function respuestaAyudaDeuda()
+    {
+        return "💳 **Cómo registrar una deuda**\n\n" .
+               "**Paso 1:** Menú lateral → **Deudas**\n" .
+               "**Paso 2:** Clic en **+ Nueva Deuda**\n" .
+               "**Paso 3:** Llena:\n" .
+               "  • Acreedor (Banco XYZ, tarjeta, etc.)\n" .
+               "  • Monto total que debes\n" .
+               "  • Tasa de interés anual (%)\n" .
+               "  • Fecha de vencimiento\n" .
+               "  • Pago mínimo mensual\n" .
+               "**Paso 4:** Guardar\n\n" .
+               "💡 **El sistema automáticamente:**\n" .
+               "• Calcula el progreso de pago\n" .
+               "• Alerta si la tasa supera la usura (28.79%)\n" .
+               "• Te avisa 30 días antes del vencimiento\n\n" .
+               "🔔 Cuando pagues, registra el pago con **+ Registrar Pago**.";
+    }
+
+    private function respuestaAyudaTransaccion()
+    {
+        return "💸 **Cómo registrar una transacción**\n\n" .
+               "**Paso 1:** Menú lateral → **Transacciones**\n" .
+               "**Paso 2:** Clic en **+ Nueva Transacción**\n" .
+               "**Paso 3:** Selecciona:\n" .
+               "  • Tipo: **Ingreso** o **Gasto**\n" .
+               "  • Monto\n" .
+               "  • Fecha\n" .
+               "  • Categoría (el selector se filtra según el tipo)\n" .
+               "  • Cuenta (de dónde sale o entra el dinero)\n" .
+               "  • Descripción (opcional)\n" .
+               "**Paso 4:** Guardar\n\n" .
+               "💡 **Las cuentas se actualizan automáticamente:**\n" .
+               "• Un ingreso → sube el saldo de la cuenta\n" .
+               "• Un gasto → baja el saldo\n\n" .
+               "📊 Aparecerá en el dashboard, reportes y presupuestos.";
+    }
+
+    private function respuestaAyudaPresupuesto()
+    {
+        return "📅 **Cómo crear un presupuesto**\n\n" .
+               "**Paso 1:** Menú lateral → **Presupuestos**\n" .
+               "**Paso 2:** Clic en **+ Nuevo Presupuesto**\n" .
+               "**Paso 3:** Selecciona mes y año\n" .
+               "**Paso 4:** Asigna un **límite** a cada categoría de gasto\n" .
+               "**Paso 5:** Guardar\n\n" .
+               "💡 **Cómo funciona:**\n" .
+               "• El sistema compara automáticamente con tu gasto real\n" .
+               "• Verás una barra de progreso por categoría\n" .
+               "• Alerta al llegar al **80%** y **100%**\n\n" .
+               "📊 Ideal para controlar gastos variables (comida, entretenimiento).";
+    }
+
+    private function respuestaAyudaSimuladorDeuda()
+    {
+        return "🏔️ **Simulador de Deudas**\n\n" .
+               "**Para qué sirve:** Comparar 2 estrategias de pago y ver cuánto ahorras.\n\n" .
+               "**Cómo usarlo:**\n" .
+               "**Paso 1:** Menú lateral → **Simulador de Deudas**\n" .
+               "**Paso 2:** Ingresa cuánto dinero extra puedes pagar al mes\n" .
+               "**Paso 3:** Clic en **Comparar estrategias**\n\n" .
+               "**Las 2 estrategias son:**\n" .
+               "🏔️ **Avalancha:** Paga primero la deuda con mayor interés\n" .
+               "  → Matemáticamente óptimo, ahorra más dinero\n\n" .
+               "⛄ **Bola de nieve:** Paga primero la deuda más pequeña\n" .
+               "  → Más motivador, victorias rápidas\n\n" .
+               "💡 El sistema te recomienda cuál usar según tu caso.";
+    }
+
+    private function respuestaAyudaSimuladorInversion()
+    {
+        return "💰 **Simulador de Inversiones**\n\n" .
+               "**Para qué sirve:** Comparar cuánto ganarías con CDT, cuenta de ahorros o fondo.\n\n" .
+               "**Cómo usarlo:**\n" .
+               "**Paso 1:** Menú lateral → **Simulador de Inversiones**\n" .
+               "**Paso 2:** Ingresa:\n" .
+               "  • Monto a invertir\n" .
+               "  • Plazo en meses\n" .
+               "**Paso 3:** Clic en **Comparar alternativas**\n\n" .
+               "**Lo que calcula:**\n" .
+               "• Rendimiento nominal (bruto)\n" .
+               "• Retención en la fuente (4% CDT)\n" .
+               "• Gravamen 4x1000\n" .
+               "• **Rendimiento real** (descontando inflación)\n\n" .
+               "💡 El **rendimiento real** es el número más importante. Si es negativo, pierdes poder adquisitivo.";
+    }
+
+    private function respuestaAyudaPatrimonio()
+    {
+        return "💎 **Patrimonio Neto**\n\n" .
+               "**Qué es:** Es la resta de tus activos menos tus pasivos.\n\n" .
+               "**Fórmula:**\n" .
+               "Patrimonio = Todo lo que tienes − Todo lo que debes\n\n" .
+               "**Ejemplo:**\n" .
+               "• Cuentas: $3.000.000\n" .
+               "• Inversiones: $1.000.000\n" .
+               "• Deudas: $500.000\n" .
+               "• **Patrimonio: $3.500.000**\n\n" .
+               "**Dónde verlo:** En el dashboard, es el número grande en dorado.\n\n" .
+               "💡 **Es el mejor indicador de tu salud financiera real.** Si crece mes a mes, vas bien.";
+    }
+
+    private function respuestaAyudaCuentas()
+    {
+        return "🏦 **Cómo funciona el sistema de cuentas**\n\n" .
+               "**Qué es:** Cada cuenta representa dónde tienes tu dinero.\n" .
+               "Ejemplos: Nequi, Bancolombia, efectivo, tarjeta, inversiones.\n\n" .
+               "**Cómo crear una:**\n" .
+               "**Paso 1:** Menú lateral → **Cuentas**\n" .
+               "**Paso 2:** Clic en **+ Nueva Cuenta**\n" .
+               "**Paso 3:** Llena:\n" .
+               "  • Nombre (ej: Nequi)\n" .
+               "  • Tipo (ahorros, efectivo, etc.)\n" .
+               "  • Saldo inicial\n" .
+               "  • Etiqueta (opcional: \"para arriendo\")\n" .
+               "**Paso 4:** Guardar\n\n" .
+               "💡 **El saldo se actualiza automáticamente** cuando registras transacciones, aportes o pagos.";
+    }
+
+    private function respuestaAyudaPremium()
+    {
+        return "⭐ **Cómo hacerte Premium**\n\n" .
+               "**Paso 1:** En el menú lateral, clic en **HAZTE PREMIUM**\n" .
+               "**Paso 2:** Elige método de pago:\n" .
+               "  • 💳 Tarjeta de crédito\n" .
+               "  • 💳 Tarjeta de débito\n" .
+               "  • 🏦 PSE\n" .
+               "  • 📱 Nequi\n" .
+               "  • 📱 Daviplata\n" .
+               "**Paso 3:** Llena los datos y confirma\n\n" .
+               "**Qué desbloqueas:**\n" .
+               "🤖 Chatbot IA (yo mismo)\n" .
+               "🏔️ Simulador de Deudas\n" .
+               "💰 Simulador de Inversiones\n" .
+               "⚙️ Configuración financiera\n\n" .
+               "💡 Costo: $14.900/mes + IVA\n" .
+               "🔒 Simulación para demo, no se procesa pago real.";
+    }
+
+    private function respuestaAyudaSalud()
+    {
+        return "🏆 **Salud Financiera (0-100)**\n\n" .
+               "**Qué es:** Un puntaje que evalúa tu situación financiera general.\n\n" .
+               "**Qué evalúa:**\n" .
+               "• 🛡️ **Fondo de emergencia** (25 pts)\n" .
+               "• 💳 **Nivel de deuda** (25 pts)\n" .
+               "• 💰 **Tasa de ahorro** (20 pts)\n" .
+               "• 📊 **Diversificación de ingresos** (15 pts)\n" .
+               "• 📈 **Estabilidad de ingresos** (15 pts)\n\n" .
+               "**Cómo interpretarlo:**\n" .
+               "• 85-100: 🌟 Excelente\n" .
+               "• 70-84: ✅ Bueno\n" .
+               "• 50-69: ⚠️ Regular\n" .
+               "• 30-49: 🔶 Deficiente\n" .
+               "• 0-29: 🚨 Crítico\n\n" .
+               "💡 **Pregúntame \"¿cuál es mi salud financiera?\" para ver tu puntaje.**";
+    }
+
+    private function respuestaTourModulos()
+    {
+        return "🎯 **FinanIA tiene estos módulos:**\n\n" .
+               "**💰 FINANZAS BÁSICAS**\n" .
+               "• **Cuentas:** Dónde tienes tu dinero (Nequi, banco, efectivo)\n" .
+               "• **Transacciones:** Registra ingresos y gastos\n" .
+               "• **Categorías:** Organiza tus movimientos\n" .
+               "• **Metas:** Ahorra para objetivos específicos\n" .
+               "• **Deudas:** Gestiona y paga lo que debes\n" .
+               "• **Presupuestos:** Límites mensuales por categoría\n\n" .
+               "**📊 ANÁLISIS**\n" .
+               "• **Reportes:** Gráficas y exportación a PDF\n" .
+               "• **Salud Financiera:** Puntaje 0-100\n" .
+               "• **Patrimonio Neto:** Lo que tienes menos lo que debes\n\n" .
+               "**⭐ PREMIUM**\n" .
+               "• **Chatbot IA:** Soy yo 😄\n" .
+               "• **Simulador de Deudas:** Compara estrategias de pago\n" .
+               "• **Simulador de Inversiones:** CDT vs ahorros vs fondo\n" .
+               "• **Configuración:** Ajusta tasas del mercado\n\n" .
+               "**Otros:** Logros, Fuentes de Ingreso, Recurrentes, Onboarding\n\n" .
+               "💡 Pregúntame sobre cualquier módulo y te explico cómo funciona.";
+    }
+
 }

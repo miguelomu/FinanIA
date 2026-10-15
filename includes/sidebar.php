@@ -23,7 +23,8 @@ $esDesarrollador = function_exists('esDesarrollador') && esDesarrollador();
     <a href="/FinanIA/modulos/fuentes_ingreso/index.php">💼 Fuentes de Ingreso</a>
     <a href="/FinanIA/modulos/recurrentes/index.php">🔄 Recurrentes</a>
     <a href="/FinanIA/modulos/logros/index.php">🏆 Mis Logros</a>
-
+    <a href="/FinanIA/modulos/ayuda/index.php">❓ Centro de Ayuda</a>
+    
     <!-- Sección Premium -->
     <hr style="border-color:rgba(212,175,55,0.2); margin:15px 0;">
     <p style="color: #d4af37; font-size:0.7rem; text-align:center; margin-bottom:10px; letter-spacing:1px;">

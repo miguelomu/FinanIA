@@ -162,6 +162,24 @@
   .sugerencias button:hover {
     background: rgba(212, 175, 55, 0.3);
   }
+
+  .message .bubble strong {
+  color: #d4af37;
+  font-weight: 700;
+}
+
+[data-tema="claro"] .message .bubble strong {
+  color: #b8860b;
+}
+
+.message .bubble em {
+  font-style: italic;
+  color: #c9d6e3;
+}
+
+.message .bubble br {
+  margin-bottom: 4px;
+}
 </style>
 
 <div class="layout">
@@ -302,12 +320,40 @@ async function enviarMensaje() {
 function agregarMensaje(rol, texto) {
   const div = document.createElement('div');
   div.className = 'message ' + rol;
+  
+  // Convertir markdown a HTML si es mensaje del bot
+  const contenidoHTML = rol === 'bot' ? convertirMarkdown(texto) : texto.replace(/\n/g, '<br>');
+  
   div.innerHTML = `
     <div class="avatar">${rol === 'user' ? '👤' : '🤖'}</div>
-    <div class="bubble">${texto.replace(/\n/g, '<br>')}</div>
+    <div class="bubble">${contenidoHTML}</div>
   `;
   chatMessages.appendChild(div);
   scrollAbajo();
+}
+
+/**
+ * Convierte Markdown básico a HTML:
+ * **negrita** → <strong>negrita</strong>
+ * *cursiva* → <em>cursiva</em>
+ * \n → <br>
+ */
+function convertirMarkdown(texto) {
+  let html = texto;
+  
+  // Escapar HTML para seguridad (evitar XSS)
+  html = html.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  
+  // Convertir **negrita** a <strong>
+  html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  
+  // Convertir *cursiva* a <em> (después de las negritas para no interferir)
+  html = html.replace(/\*([^*]+?)\*/g, '<em>$1</em>');
+  
+  // Convertir saltos de línea
+  html = html.replace(/\n/g, '<br>');
+  
+  return html;
 }
 </script>
 
