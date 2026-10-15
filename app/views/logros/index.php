@@ -6,9 +6,6 @@
   <main class="main-content">
     <div class="topbar">
       <h1>🏆 Mis Logros</h1>
-      <div style="display:flex; gap:10px; align-items:center;">
-        <?php include __DIR__ . '/../../../includes/toggle_tema.php'; ?>
-      </div>
     </div>
 
     <?php if (!empty($nuevos)): ?>
