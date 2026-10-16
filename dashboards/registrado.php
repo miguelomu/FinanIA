@@ -132,7 +132,7 @@ include __DIR__ . '/../includes/header.php';
     <?php endif; ?>
 
     <!-- 🏆 PATRIMONIO NETO - Número principal -->
-    <div class="card" style="border:2px solid #d4af37; background: linear-gradient(135deg, rgba(212,175,55,0.1), rgba(19,47,76,0.6)); text-align:center; padding:35px;">
+    <div class="card card-principal" style="border:2px solid #d4af37; background: linear-gradient(135deg, rgba(212,175,55,0.1), rgba(19,47,76,0.6)); text-align:center; padding:35px;">
       <h3 style="font-size:1rem; letter-spacing:2px;">💰 PATRIMONIO NETO</h3>
       <div class="value <?= $patrimonio['neto'] >= 0 ? 'positivo' : 'negativo' ?>" style="font-size:3rem; margin:15px 0;">
         <?= formatoCOP($patrimonio['neto']) ?>
