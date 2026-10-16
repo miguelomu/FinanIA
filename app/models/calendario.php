@@ -123,7 +123,73 @@ class Calendario
             $eventos[$fecha]['metas'][] = $m;
         }
 
+        // ============================================
+        // 4. TRANSACCIONES RECURRENTES PROYECTADAS
+        // ============================================
+        // Obtener transacciones recurrentes del usuario
+        $stmt = $this->pdo->prepare(
+            "SELECT t.id_transaccion AS id, t.descripcion, t.monto, t.tipo,
+                    DAY(t.fecha) AS dia_del_mes,
+                    c.nombre AS categoria, c.color AS categoria_color
+             FROM transaccion t
+             LEFT JOIN categoria c ON t.id_categoria = c.id_categoria
+             WHERE t.id_usuario = ? AND t.recurrente = TRUE
+             GROUP BY t.descripcion, t.id_categoria
+             ORDER BY t.monto DESC"
+        );
+        $stmt->execute([$this->idUsuario]);
+        $recurrentes = $stmt->fetchAll();
+
+        foreach ($recurrentes as $r) {
+            $dia = intval($r['dia_del_mes']);
+            
+            // Verificar que el día exista en este mes
+            $diasEnMes = intval(date('t', mktime(0, 0, 0, $mes, 1, $anio)));
+            if ($dia > $diasEnMes) $dia = $diasEnMes;
+            
+            $fecha = sprintf('%04d-%02d-%02d', $anio, $mes, $dia);
+
+            // Verificar si ya existe una transacción real ese día con la misma descripción
+            $yaExiste = false;
+            if (isset($eventos[$fecha])) {
+                foreach ($eventos[$fecha]['transacciones'] as $t) {
+                    if ($t['descripcion'] === $r['descripcion']) {
+                        $yaExiste = true;
+                        break;
+                    }
+                }
+            }
+
+            if ($yaExiste) continue; // No duplicar
+
+            // Agregar como recurrente proyectada
+            if (!isset($eventos[$fecha])) {
+                $eventos[$fecha] = [
+                    'transacciones' => [],
+                    'deudas' => [],
+                    'metas' => [],
+                    'recurrentes' => [],
+                    'totales' => ['ingresos' => 0, 'gastos' => 0]
+                ];
+            }
+            if (!isset($eventos[$fecha]['recurrentes'])) {
+                $eventos[$fecha]['recurrentes'] = [];
+            }
+
+            $eventos[$fecha]['recurrentes'][] = [
+                'id' => $r['id'],
+                'descripcion' => $r['descripcion'],
+                'monto' => $r['monto'],
+                'tipo' => $r['tipo'],
+                'categoria' => $r['categoria'],
+                'categoria_color' => $r['categoria_color'],
+                'fecha' => $fecha,
+                'proyectada' => true
+            ];
+        }
+
         return $eventos;
+
     }
 
     /**
@@ -176,5 +242,41 @@ class Calendario
             'gastos' => $gastos,
             'balance' => $ingresos - $gastos
         ];
+    }
+
+    /**
+     * Obtiene las transacciones recurrentes que aplican a un día específico
+     * (basado en el día del mes de la última transacción recurrente)
+     */
+    public function recurrentesDelDia($fecha)
+    {
+        $dia = intval(date('d', strtotime($fecha)));
+        
+        $stmt = $this->pdo->prepare(
+            "SELECT t.id_transaccion AS id, t.descripcion, t.monto, t.tipo,
+                    c.nombre AS categoria_nombre, c.color AS categoria_color,
+                    cu.nombre AS cuenta_nombre
+            FROM transaccion t
+            LEFT JOIN categoria c ON t.id_categoria = c.id_categoria
+            LEFT JOIN cuenta cu ON t.id_cuenta = cu.id_cuenta
+            WHERE t.id_usuario = ? 
+            AND t.recurrente = TRUE
+            AND DAY(t.fecha) = ?
+            GROUP BY t.descripcion
+            ORDER BY t.monto DESC"
+        );
+        $stmt->execute([$this->idUsuario, $dia]);
+        $recurrentes = $stmt->fetchAll();
+
+        // Verificar cuáles ya están registradas ese mismo día
+        $stmt = $this->pdo->prepare(
+            "SELECT descripcion FROM transaccion 
+            WHERE id_usuario = ? AND fecha = ?"
+        );
+        $stmt->execute([$this->idUsuario, $fecha]);
+        $existentes = array_column($stmt->fetchAll(), 'descripcion');
+
+        // Filtrar las que ya existen
+        return array_filter($recurrentes, fn($r) => !in_array($r['descripcion'], $existentes));
     }
 }

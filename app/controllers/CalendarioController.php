@@ -75,16 +75,28 @@ class CalendarioController
 
         $detalle = $this->model->detalleDia($fecha);
         
+        // Obtener recurrentes que aplican a este día
+        $recurrentes = $this->model->recurrentesDelDia($fecha);
+        
         // Formatear para JSON
         foreach ($detalle['transacciones'] as &$t) {
             $t['monto_formateado'] = formatoCOP($t['monto']);
+        }
+        foreach ($recurrentes as &$r) {
+            $r['monto_formateado'] = formatoCOP($r['monto']);
         }
 
         echo json_encode([
             'success' => true,
             'fecha' => $fecha,
             'fecha_formateada' => formatoFecha($fecha),
-            'detalle' => $detalle,
+            'detalle' => [
+                'transacciones' => $detalle['transacciones'],
+                'recurrentes' => $recurrentes,
+                'ingresos' => $detalle['ingresos'],
+                'gastos' => $detalle['gastos'],
+                'balance' => $detalle['balance']
+            ],
             'ingresos_formateado' => formatoCOP($detalle['ingresos']),
             'gastos_formateado' => formatoCOP($detalle['gastos']),
             'balance_formateado' => formatoCOP($detalle['balance'])

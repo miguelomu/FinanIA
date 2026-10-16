@@ -1885,3 +1885,117 @@ button {
     display: none;
   }
 }
+
+/* ============================================
+   MODAL DEL CALENDARIO
+   ============================================ */
+
+#modalDia .modal-confirm {
+  max-width: 600px;
+  width: 90%;
+  text-align: left;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  padding: 30px;
+}
+
+#modalDia .modal-titulo {
+  text-align: center;
+  margin-bottom: 5px;
+}
+
+#modalDia #modalDiaContenido {
+  overflow-y: auto;
+  flex: 1;
+  margin: 0 -10px;
+  padding: 0 10px;
+  max-height: 60vh;
+}
+
+/* Scroll personalizado del modal */
+#modalDia #modalDiaContenido::-webkit-scrollbar {
+  width: 6px;
+}
+
+#modalDia #modalDiaContenido::-webkit-scrollbar-thumb {
+  background: rgba(212, 175, 55, 0.4);
+  border-radius: 3px;
+}
+
+/* Fila de transacción dentro del modal */
+#modalDia .fila-transaccion {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: rgba(10, 25, 41, 0.5);
+  border-radius: 8px;
+  gap: 15px;
+}
+
+#modalDia .fila-transaccion-info {
+  flex: 1;
+  min-width: 0;
+}
+
+#modalDia .fila-transaccion-titulo {
+  color: #e6edf3;
+  font-size: 0.9rem;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#modalDia .fila-transaccion-meta {
+  color: #9fb3c8;
+  font-size: 0.75rem;
+  margin-top: 3px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#modalDia .fila-transaccion-monto {
+  font-weight: bold;
+  white-space: nowrap;
+  font-size: 0.95rem;
+}
+
+#modalDia .resumen-dia {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+#modalDia .resumen-item {
+  padding: 12px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+#modalDia .resumen-item .label {
+  font-size: 0.7rem;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+#modalDia .resumen-item .valor {
+  font-weight: bold;
+  font-size: 0.95rem;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  #modalDia .modal-confirm {
+    width: 95%;
+    padding: 20px;
+  }
+  
+  #modalDia .resumen-dia {
+    grid-template-columns: 1fr;
+  }
+}

@@ -196,6 +196,15 @@
       padding: 1px 3px;
     }
   }
+
+    .dia-indicador.recurrente {
+    background: rgba(52, 152, 219, 0.25);
+    color: #6bb6ff;
+  }
+  
+  .dia-con-recurrentes {
+    border-style: dashed !important;
+  }
 </style>
 
 <div class="layout">
@@ -292,11 +301,11 @@
               $numTrans = count($eventosDia['transacciones']);
               $numDeudas = count($eventosDia['deudas']);
               $numMetas = count($eventosDia['metas']);
+              $numRecurrentes = count($eventosDia['recurrentes'] ?? []);
 
-              // Totales
-              if ($numTrans > 0):
-                $totIngresos = $eventosDia['totales']['ingresos'];
-                $totGastos = $eventosDia['totales']['gastos'];
+              // Totales incluyendo recurrentes proyectadas
+              $totIngresos = $eventosDia['totales']['ingresos'];
+              $totGastos = $eventosDia['totales']['gastos'];
             ?>
               <?php if ($totIngresos > 0): ?>
                 <div class="dia-indicador ingreso">💰 +<?= number_format($totIngresos / 1000, 0) ?>k</div>
@@ -304,15 +313,18 @@
               <?php if ($totGastos > 0): ?>
                 <div class="dia-indicador gasto">💸 -<?= number_format($totGastos / 1000, 0) ?>k</div>
               <?php endif; ?>
-            <?php endif; ?>
 
-            <?php if ($numDeudas > 0): ?>
-              <div class="dia-indicador deuda">💳 <?= $numDeudas ?> venc.</div>
-            <?php endif; ?>
+              <?php if ($numRecurrentes > 0): ?>
+                <div class="dia-indicador recurrente" title="<?= $numRecurrentes ?> pago(s) recurrente(s) proyectado(s)">🔄 <?= $numRecurrentes ?> recurrente<?= $numRecurrentes > 1 ? 's' : '' ?></div>
+              <?php endif; ?>
 
-            <?php if ($numMetas > 0): ?>
-              <div class="dia-indicador meta">🎯 meta</div>
-            <?php endif; ?>
+              <?php if ($numDeudas > 0): ?>
+                <div class="dia-indicador deuda">💳 <?= $numDeudas ?> venc.</div>
+              <?php endif; ?>
+
+              <?php if ($numMetas > 0): ?>
+                <div class="dia-indicador meta">🎯 meta</div>
+              <?php endif; ?>
             <?php endif; ?>
           </div>
         </div>
@@ -394,20 +406,27 @@ async function verDia(fecha) {
     `;
 
     // Lista de transacciones
-    if (data.detalle.transacciones.length > 0) {
+    const todasLasTrans = [
+      ...data.detalle.transacciones.map(t => ({...t, esRecurrente: false})),
+      ...(data.detalle.recurrentes || []).map(r => ({...r, esRecurrente: true, monto_formateado: formatCOP(r.monto)}))
+    ];
+
+    if (todasLasTrans.length > 0) {
       html += '<div style="display:flex; flex-direction:column; gap:10px;">';
-      data.detalle.transacciones.forEach(t => {
+      todasLasTrans.forEach(t => {
         const signo = t.tipo === 'ingreso' ? '+' : '-';
         const color = t.tipo === 'ingreso' ? '#7ee8a8' : '#ff8a80';
+        const badge = t.esRecurrente ? '<span style="background:rgba(52,152,219,0.3); color:#6bb6ff; padding:2px 6px; border-radius:4px; font-size:0.65rem; margin-left:6px;">🔄 PROYECTADO</span>' : '';
+        
         html += `
-          <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; background:rgba(10,25,41,0.5); border-radius:8px;">
-            <div>
-              <div style="color:#e6edf3; font-size:0.9rem; font-weight:600;">${escapeHtml(t.descripcion || 'Sin descripción')}</div>
-              <div style="color:#9fb3c8; font-size:0.75rem; margin-top:3px;">
-                ${escapeHtml(t.categoria_nombre || 'Sin categoría')} · ${escapeHtml(t.cuenta_nombre || 'Sin cuenta')}
+          <div class="fila-transaccion" style="${t.esRecurrente ? 'border:1px dashed rgba(52,152,219,0.4);' : ''}">
+            <div class="fila-transaccion-info">
+              <div class="fila-transaccion-titulo">${escapeHtml(t.descripcion || 'Sin descripción')}${badge}</div>
+              <div class="fila-transaccion-meta">
+                ${escapeHtml(t.categoria_nombre || t.categoria || 'Sin categoría')}${t.cuenta_nombre ? ' · ' + escapeHtml(t.cuenta_nombre) : ''}
               </div>
             </div>
-            <div style="color:${color}; font-weight:bold;">
+            <div class="fila-transaccion-monto" style="color:${color};">
               ${signo}${t.monto_formateado}
             </div>
           </div>
@@ -444,6 +463,13 @@ document.addEventListener('keydown', (e) => {
 document.getElementById('modalDia').addEventListener('click', function(e) {
   if (e.target === this) cerrarModalDia();
 });
+
+function formatCOP(valor) {
+  return '$' + parseFloat(valor).toLocaleString('es-CO', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  });
+}
 </script>
 
 <?php include __DIR__ . '/../../../includes/footer.php'; ?>
