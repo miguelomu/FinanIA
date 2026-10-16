@@ -25,6 +25,7 @@ $esDesarrollador = function_exists('esDesarrollador') && esDesarrollador();
     </a>
     <a href="/FinanIA/modulos/cuentas/index.php">🏦 Cuentas</a>
     <a href="/FinanIA/modulos/transacciones/index.php">💸 Transacciones</a>
+    <a href="/FinanIA/modulos/importar/index.php">📂 Importar CSV</a>
     <a href="/FinanIA/modulos/categorias/index.php">🏷️ Categorías</a>
     <a href="/FinanIA/modulos/metas/index.php">🎯 Metas</a>
     <a href="/FinanIA/modulos/deudas/index.php">💳 Deudas</a>
