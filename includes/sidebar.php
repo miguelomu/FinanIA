@@ -31,6 +31,7 @@ $esDesarrollador = function_exists('esDesarrollador') && esDesarrollador();
     <a href="/FinanIA/modulos/deudas/index.php">💳 Deudas</a>
     <a href="/FinanIA/modulos/presupuestos/index.php">📅 Presupuestos</a>
     <a href="/FinanIA/modulos/reportes/index.php">📈 Reportes</a>
+    <a href="/FinanIA/modulos/calendario/index.php">📅 Calendario</a>
     <a href="/FinanIA/modulos/fuentes_ingreso/index.php">💼 Fuentes de Ingreso</a>
     <a href="/FinanIA/modulos/recurrentes/index.php">🔄 Recurrentes</a>
     <a href="/FinanIA/modulos/logros/index.php">🏆 Mis Logros</a>
