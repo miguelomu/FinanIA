@@ -9,6 +9,7 @@ require_once __DIR__ . '/../app/bootstrap.php';
 <title>Gestor Financiero</title>
 <link rel="stylesheet" href="/FinanIA/assets/css/style.css?v=<?= filemtime(__DIR__ . '/../assets/css/style.css') ?>">
 <script src="/FinanIA/assets/js/toast.js?v=<?= filemtime(__DIR__ . '/../assets/js/toast.js') ?>"></script>
+<script src="/FinanIA/assets/js/buscador.js?v=<?= filemtime(__DIR__ . '/../assets/js/buscador.js') ?>"></script>
 <script src="/FinanIA/assets/js/modal.js?v=<?= filemtime(__DIR__ . '/../assets/js/modal.js') ?>"></script>
 <script>
   // Aplicar tema ANTES de renderizar (evita parpadeo)

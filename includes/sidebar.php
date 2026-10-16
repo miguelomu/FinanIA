@@ -7,6 +7,16 @@ $esDesarrollador = function_exists('esDesarrollador') && esDesarrollador();
 <aside class="sidebar">
   <h2>💰 FinanIA</h2>
   
+  <div class="buscador-global" style="margin-bottom: 20px;">
+    <span class="buscador-icono">🔍</span>
+    <input type="text" 
+           class="buscador-input" 
+           placeholder="Buscar..." 
+           autocomplete="off">
+    <span class="buscador-atajo">Ctrl+K</span>
+    <div class="buscador-resultados"></div>
+  </div>
+  
   <nav>
     <!-- Comunes a todos -->
     <a href="/FinanIA/dashboards/<?= $usuario['rol'] ?>.php" 

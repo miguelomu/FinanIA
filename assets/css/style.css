@@ -1670,3 +1670,218 @@ button {
   transform: scale(1.1);
   box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.2);
 }
+
+/* ============================================
+   BÚSQUEDA GLOBAL
+   ============================================ */
+
+.buscador-global {
+  position: relative;
+  flex: 1;
+  max-width: 500px;
+  margin: 0 20px;
+}
+
+.buscador-input {
+  width: 100%;
+  padding: 10px 40px 10px 40px;
+  background: rgba(10, 25, 41, 0.7);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  border-radius: 25px;
+  color: #e6edf3;
+  font-size: 0.9rem;
+  font-family: inherit;
+  transition: all 0.25s;
+}
+
+.buscador-input::placeholder {
+  color: #7a8a9c;
+}
+
+.buscador-input:focus {
+  outline: none;
+  border-color: #d4af37;
+  box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.15);
+  background: rgba(10, 25, 41, 0.95);
+}
+
+.buscador-icono {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #7a8a9c;
+  pointer-events: none;
+  font-size: 1rem;
+}
+
+.buscador-atajo {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #7a8a9c;
+  font-size: 0.7rem;
+  background: rgba(212, 175, 55, 0.1);
+  padding: 3px 8px;
+  border-radius: 5px;
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  pointer-events: none;
+  font-family: 'Monaco', monospace;
+}
+
+.buscador-resultados {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  right: 0;
+  background: rgba(19, 47, 76, 0.98);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  border-radius: 15px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  max-height: 500px;
+  overflow-y: auto;
+  display: none;
+  z-index: 1000;
+  backdrop-filter: blur(15px);
+  animation: fadeInDown 0.2s ease-out;
+}
+
+.buscador-resultados.activo {
+  display: block;
+}
+
+.buscador-grupo {
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+}
+
+.buscador-grupo:last-child {
+  border-bottom: none;
+}
+
+.buscador-grupo-titulo {
+  padding: 0 20px 8px 20px;
+  color: #d4af37;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.buscador-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background 0.15s;
+  text-decoration: none;
+  color: inherit;
+}
+
+.buscador-item:hover,
+.buscador-item.seleccionado {
+  background: rgba(212, 175, 55, 0.1);
+}
+
+.buscador-item-icono {
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+
+.buscador-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.buscador-item-titulo {
+  color: #e6edf3;
+  font-size: 0.9rem;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.buscador-item-meta {
+  color: #9fb3c8;
+  font-size: 0.75rem;
+  margin-top: 2px;
+}
+
+.buscador-item-valor {
+  color: #d4af37;
+  font-size: 0.85rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.buscador-vacio {
+  padding: 40px 20px;
+  text-align: center;
+  color: #9fb3c8;
+}
+
+.buscador-vacio-icono {
+  font-size: 3rem;
+  margin-bottom: 10px;
+  opacity: 0.5;
+}
+
+.buscador-cargando {
+  padding: 30px;
+  text-align: center;
+  color: #9fb3c8;
+}
+
+.buscador-cargando::after {
+  content: '...';
+  animation: puntos 1.5s infinite;
+}
+
+@keyframes puntos {
+  0%, 20% { content: '.'; }
+  40% { content: '..'; }
+  60%, 100% { content: '...'; }
+}
+
+/* Modo claro */
+[data-tema="claro"] .buscador-input {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(212, 175, 55, 0.4);
+  color: #1a1a1a;
+}
+
+[data-tema="claro"] .buscador-resultados {
+  background: rgba(255, 255, 255, 0.98);
+  border-color: rgba(212, 175, 55, 0.4);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+}
+
+[data-tema="claro"] .buscador-item-titulo {
+  color: #1a1a1a;
+}
+
+[data-tema="claro"] .buscador-item:hover,
+[data-tema="claro"] .buscador-item.seleccionado {
+  background: rgba(212, 175, 55, 0.15);
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .buscador-global {
+    max-width: none;
+    margin: 0 10px;
+  }
+  
+  .buscador-atajo {
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .buscador-global {
+    display: none;
+  }
+}
