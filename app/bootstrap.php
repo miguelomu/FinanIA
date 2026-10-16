@@ -19,3 +19,4 @@ require_once __DIR__ . '/helpers/FormatoHelper.php';
 require_once __DIR__ . '/helpers/RequestHelper.php';
 require_once __DIR__ . '/helpers/TextoHelper.php';
 require_once __DIR__ . '/helpers/CsrfHelper.php';   // ← NUEVA LÍNEA
+require_once __DIR__ . '/helpers/ToastHelper.php';

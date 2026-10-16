@@ -9,19 +9,6 @@
       <a href="index.php?accion=crear" class="btn btn-primary">+ Nueva Transacción</a>
     </div>
 
-    <?php if (isset($_GET['msg'])): ?>
-      <div class="alert alert-success">
-        <?php
-        $mensajes = [
-          'creado' => 'Transacción creada exitosamente',
-          'actualizado' => 'Transacción actualizada exitosamente',
-          'eliminado' => 'Transacción eliminada exitosamente'
-        ];
-        echo $mensajes[$_GET['msg']] ?? 'Operación exitosa';
-        ?>
-      </div>
-    <?php endif; ?>
-
     <div class="cards-grid">
       <div class="card">
         <h3>Ingresos</h3>
@@ -100,7 +87,7 @@
                       <?= e($t['cuenta_nombre']) ?>
                     </span>
                   <?php else: ?>
-                    <span style="color:#7a8a9c;">—</span>
+                    <span style="color: #7a8a9c;">—</span>
                   <?php endif; ?>
                 </td>
                 <td><?= e($t['descripcion'] ?? '—') ?></td>

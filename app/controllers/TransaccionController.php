@@ -71,7 +71,8 @@ class TransaccionController
         $recurrente = post('recurrente') ? 1 : 0;
 
         if (empty($tipo) || empty($fecha) || empty($idCategoria)) {
-            redirigir('index.php?accion=crear&error=campos_vacios');
+            toastError('Campos vacíos', 'Debes llenar todos los campos obligatorios');
+            redirigir('index.php?accion=crear');
         }
 
         if ($monto <= 0) {
@@ -79,15 +80,18 @@ class TransaccionController
         }
 
         if (!in_array($tipo, ['ingreso', 'gasto'])) {
-            redirigir('index.php?accion=crear&error=campos_vacios');
+            toastError('Campos vacíos', 'Debes llenar todos los campos obligatorios');
+            redirigir('index.php?accion=crear');
         }
 
         if (!$this->model->categoriaEsDelUsuario($idCategoria, $this->idUsuario)) {
-            redirigir('index.php?accion=crear&error=campos_vacios');
+            toastError('Campos vacíos', 'Debes llenar todos los campos obligatorios');
+            redirigir('index.php?accion=crear');
         }
 
         if (!$this->model->cuentaEsDelUsuario($idCuenta, $this->idUsuario)) {
-            redirigir('index.php?accion=crear&error=campos_vacios');
+            toastError('Campos vacíos', 'Debes llenar todos los campos obligatorios');
+            redirigir('index.php?accion=crear');
         }
 
         $this->model->crear(
@@ -95,7 +99,8 @@ class TransaccionController
             $descripcion, $fecha, $metodoPago, $recurrente
         );
 
-        redirigir('index.php?msg=creado');
+        toastSuccess('Transacción creada', 'El movimiento se registró correctamente');
+        redirigir('index.php');
     }
 
     public function editar()
@@ -153,7 +158,8 @@ class TransaccionController
             $descripcion, $fecha, $metodoPago, $recurrente
         );
 
-        redirigir('index.php?msg=actualizado');
+        toastSuccess('Transacción actualizada', 'Los cambios se guardaron correctamente');
+        redirigir('index.php');
     }
 
     public function eliminar()
@@ -164,7 +170,8 @@ class TransaccionController
             $this->model->eliminar($id, $this->idUsuario);
         }
 
-        redirigir('index.php?msg=eliminado');
+        toastSuccess('Transacción eliminada', 'El movimiento se eliminó correctamente');
+        redirigir('index.php');
     }
 
     private function render($vista, $datos = [])
