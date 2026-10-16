@@ -707,55 +707,52 @@ class Chatbot
 
     private function respuestaRecomendacionInversion()
     {
-        // Verificar jerarquía financiera
+        // Obtener perfil del usuario
+        require_once __DIR__ . '/PerfilRiesgo.php';
+        $perfil = PerfilRiesgo::obtenerPerfil($this->pdo, $this->idUsuario);
+
         $stmt = $this->pdo->prepare(
             "SELECT COALESCE(SUM(monto_total - monto_pagado),0) AS deudas
-             FROM deuda WHERE id_usuario = ? AND estado != 'pagada'"
+            FROM deuda WHERE id_usuario = ? AND estado != 'pagada'"
         );
         $stmt->execute([$this->idUsuario]);
         $deudas = $stmt->fetch()['deudas'];
 
-        $stmt = $this->pdo->prepare(
-            "SELECT COALESCE(SUM(monto_actual),0) AS ahorrado
-             FROM meta WHERE id_usuario = ? AND estado = 'activa'"
-        );
-        $stmt->execute([$this->idUsuario]);
-        $ahorrado = $stmt->fetch()['ahorrado'];
-
-        $stmt = $this->pdo->prepare(
-            "SELECT COALESCE(AVG(gasto_mensual),0) AS promedio FROM (
-                SELECT DATE_FORMAT(fecha, '%Y-%m') AS mes, SUM(monto) AS gasto_mensual
-                FROM transaccion WHERE id_usuario = ? AND tipo='gasto'
-                GROUP BY mes
-            ) AS sub"
-        );
-        $stmt->execute([$this->idUsuario]);
-        $gastoPromedio = $stmt->fetch()['promedio'];
-
-        $fondoRecomendado = $gastoPromedio * 3;
-        $fondoActual = $ahorrado; // Aproximación
-
-        $respuesta = "💡 **Análisis de inversión:**\n\n";
+        $respuesta = "💡 **Análisis de inversión"; 
+        if ($perfil) {
+            $respuesta .= " para tu perfil " . ucfirst($perfil);
+        }
+        $respuesta .= ":**\n\n";
 
         // Jerarquía de prioridades
-        if ($fondoActual < $fondoRecomendado) {
-            $faltante = $fondoRecomendado - $fondoActual;
-            $respuesta .= "🚨 **NO inviertas todavía.**\n\n";
-            $respuesta .= "**Prioridad 1:** completa tu fondo de emergencia.\n";
-            $respuesta .= "Recomendado: " . formatoCOP($fondoRecomendado) . " (3 meses de gastos)\n";
-            $respuesta .= "Tienes: " . formatoCOP($fondoActual) . "\n";
-            $respuesta .= "Faltan: " . formatoCOP($faltante) . "\n\n";
-        }
-
         if ($deudas > 0) {
             $respuesta .= "🚨 **Tienes deudas por " . formatoCOP($deudas) . ".**\n";
-            $respuesta .= "Pagar una deuda al 25% EA equivale a invertir con rendimiento del 25%. ";
-            $respuesta .= "Ninguna inversión te da eso con bajo riesgo.\n\n";
-            $respuesta .= "**Prioridad 2:** paga tus deudas antes de invertir.";
-        } elseif ($fondoActual >= $fondoRecomendado) {
-            $respuesta .= "✅ **Buen momento para invertir.**\n\n";
-            $respuesta .= "Tienes fondo de emergencia completo y sin deudas.\n";
-            $respuesta .= "Te recomiendo el **Simulador de Inversiones** para comparar CDT, ahorros y fondos.";
+            $respuesta .= "Pagar deudas con interés alto es más rentable que cualquier inversión.\n\n";
+            $respuesta .= "**Prioridad:** paga tus deudas antes de invertir.";
+        } else {
+            $respuesta .= "✅ **No tienes deudas.** Buen momento para invertir.\n\n";
+
+            if ($perfil) {
+                $perfilData = PerfilRiesgo::calcular([
+                    'horizonte' => 'mediano',
+                    'reaccion' => 'no_hacer_nada',
+                    'objetivo' => 'crecer',
+                    'ahorro' => 'medio',
+                    'experiencia' => 'ninguna'
+                ]);
+                
+                $recomendaciones = [
+                    'conservador' => "📜 **Para tu perfil conservador, te recomiendo:**\n• Cuenta de ahorros de alto rendimiento\n• CDT a corto plazo (3-6 meses)\n• Prioriza el fondo de emergencia",
+                    'cauteloso' => "📜 **Para tu perfil cauteloso, te recomiendo:**\n• CDT a mediano plazo (12 meses)\n• Fondos de renta fija\n• Diversificación básica",
+                    'moderado' => "📈 **Para tu perfil moderado, te recomiendo:**\n• FIC con aportes mensuales\n• CDT a largo plazo\n• Fondos mixtos",
+                    'valiente' => "📈 **Para tu perfil valiente, te recomiendo:**\n• Fondos de renta variable\n• FIC agresivos\n• Portafolio diversificado",
+                    'arriesgado' => "🚀 **Para tu perfil arriesgado, te recomiendo:**\n• Acciones individuales\n• Fondos agresivos\n• Alta diversificación"
+                ];
+                
+                $respuesta .= $recomendaciones[$perfil] ?? "Visita el **Simulador de Inversiones** para comparar productos.";
+            } else {
+                $respuesta .= "Visita el **Simulador de Inversiones** para comparar CDT, FIC y cuentas de ahorro.";
+            }
         }
 
         return $respuesta;

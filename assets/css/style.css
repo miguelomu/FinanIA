@@ -1649,3 +1649,24 @@ button {
 .card-principal .value {
   transition: all 0.4s ease;
 }
+
+.paso-indicador {
+  transition: all 0.25s ease;
+  user-select: none;
+}
+
+.paso-indicador:hover {
+  transform: scale(1.15);
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+}
+
+.paso-indicador.completado {
+  background: rgba(39, 174, 96, 0.3) !important;
+  color: #7ee8a8 !important;
+  border: 2px solid #27ae60;
+}
+
+.paso-indicador.actual {
+  transform: scale(1.1);
+  box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.2);
+}

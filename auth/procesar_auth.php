@@ -59,7 +59,16 @@ if ($accion === 'registro') {
     $stmt = $pdo->prepare("INSERT INTO usuario (nombre, email, password_hash, rol) VALUES (?, ?, ?, 'registrado')");
     $stmt->execute([$nombre, $email, $hash]);
 
-    header('Location: login.php?success=registro_exitoso');
+    $idNuevoUsuario = $pdo->lastInsertId();
+
+    // Auto-login del usuario nuevo
+    $_SESSION['id_usuario'] = $idNuevoUsuario;
+    $_SESSION['nombre'] = $nombre;
+    $_SESSION['email'] = $email;
+    $_SESSION['rol'] = 'registrado';
+
+    // Redirigir al onboarding
+    header('Location: onboarding.php');
     exit;
 }
 
