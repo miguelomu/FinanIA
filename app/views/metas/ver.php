@@ -97,8 +97,14 @@
                   <div class="acciones" style="justify-content:center;">
                     <a href="index.php?accion=editarAporte&id=<?= $a['id_aporte'] ?>" class="btn-sm btn-editar">✏️ Editar</a>
                     <a href="index.php?accion=eliminarAporte&id=<?= $a['id_aporte'] ?>" 
-                       class="btn-sm btn-eliminar"
-                       onclick="return confirm('¿Eliminar este aporte? El monto se restará de la meta.')">🗑️ Eliminar</a>
+                      class="btn-sm btn-eliminar"
+                      onclick="return confirmar(event, {
+                        titulo: '¿Eliminar aporte?',
+                        mensaje: 'El monto se restará del total de tu meta.',
+                        tipo: 'warning',
+                        icono: '💰',
+                        confirmar: 'Eliminar aporte'
+                      })">🗑️ Eliminar</a>
                   </div>
                 </td>
               </tr>

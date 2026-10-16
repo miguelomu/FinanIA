@@ -128,9 +128,15 @@
             <a href="index.php?accion=ver&id=<?= $d['id_deuda'] ?>" class="btn btn-secondary">📋 Ver Pagos</a>
             <a href="index.php?accion=editar&id=<?= $d['id_deuda'] ?>" class="btn btn-secondary">✏️ Editar</a>
             <a href="index.php?accion=eliminar&id=<?= $d['id_deuda'] ?>" 
-               class="btn btn-secondary"
-               style="color: #e74c3c;"
-               onclick="return confirm('¿Eliminar esta deuda? Se eliminarán también sus pagos.')">🗑️ Eliminar</a>
+              class="btn btn-secondary"
+              style="color:#e74c3c;"
+              onclick="return confirmar(event, {
+                titulo: '¿Eliminar deuda?',
+                mensaje: 'Se eliminará esta deuda y todo su historial de pagos.',
+                tipo: 'danger',
+                icono: '💳',
+                confirmar: 'Eliminar deuda'
+              })">🗑️ Eliminar</a>
           </div>
         </div>
       <?php endforeach; ?>

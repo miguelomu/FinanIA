@@ -87,9 +87,15 @@
             <div class="btn-group" style="margin-top:15px;">
               <a href="index.php?accion=editar&id=<?= $c['id_cuenta'] ?>" class="btn btn-secondary" style="font-size:0.75rem; padding:8px 12px;">✏️ Editar</a>
               <a href="index.php?accion=eliminar&id=<?= $c['id_cuenta'] ?>" 
-                 class="btn btn-secondary" 
-                 style="font-size:0.75rem; padding:8px 12px; color: #e74c3c;"
-                 onclick="return confirm('¿Eliminar esta cuenta?')">🗑️ Eliminar</a>
+                class="btn btn-secondary" 
+                style="font-size:0.75rem; padding:8px 12px; color:#e74c3c;"
+                onclick="return confirmar(event, {
+                  titulo: '¿Eliminar cuenta?',
+                  mensaje: 'Solo se puede eliminar si no tiene movimientos.',
+                  tipo: 'danger',
+                  icono: '🏦',
+                  confirmar: 'Eliminar cuenta'
+                })">🗑️</a>
             </div>
           </div>
         <?php endforeach; ?>

@@ -93,8 +93,14 @@
                   <div class="acciones" style="justify-content:center;">
                     <a href="index.php?accion=editarPago&id=<?= $p['id_pago'] ?>" class="btn-sm btn-editar">✏️ Editar</a>
                     <a href="index.php?accion=eliminarPago&id=<?= $p['id_pago'] ?>" 
-                       class="btn-sm btn-eliminar"
-                       onclick="return confirm('¿Eliminar este pago?')">🗑️ Eliminar</a>
+                      class="btn-sm btn-eliminar"
+                      onclick="return confirmar(event, {
+                        titulo: '¿Eliminar pago?',
+                        mensaje: 'El monto se restará del total pagado.',
+                        tipo: 'warning',
+                        icono: '💵',
+                        confirmar: 'Eliminar pago'
+                      })">🗑️ Eliminar</a>
                   </div>
                 </td>
               </tr>

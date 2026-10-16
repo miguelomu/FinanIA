@@ -99,8 +99,14 @@
                   <div class="acciones" style="justify-content:center;">
                     <a href="index.php?accion=editar&id=<?= $t['id_transaccion'] ?>" class="btn-sm btn-editar">✏️ Editar</a>
                     <a href="index.php?accion=eliminar&id=<?= $t['id_transaccion'] ?>" 
-                       class="btn-sm btn-eliminar"
-                       onclick="return confirm('¿Seguro que quieres eliminar esta transacción?')">🗑️ Eliminar</a>
+                      class="btn-sm btn-eliminar"
+                      onclick="return confirmar(event, {
+                        titulo: '¿Eliminar transacción?',
+                        mensaje: 'Se eliminará permanentemente esta transacción.',
+                        tipo: 'danger',
+                        icono: '💸',
+                        confirmar: 'Eliminar'
+                      })">🗑️ Eliminar</a>
                   </div>
                 </td>
               </tr>

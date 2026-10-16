@@ -1120,3 +1120,119 @@ body::-webkit-scrollbar-thumb:hover {
     min-width: auto;
   }
 }
+
+/* ============================================
+   MODAL DE CONFIRMACIÓN
+   ============================================ */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s, visibility 0.3s;
+}
+
+.modal-overlay.activo {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-confirm {
+  background: rgba(19, 47, 76, 0.98);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  border-radius: 20px;
+  padding: 35px;
+  max-width: 480px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  transform: scale(0.9) translateY(20px);
+  transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  text-align: center;
+}
+
+.modal-overlay.activo .modal-confirm {
+  transform: scale(1) translateY(0);
+}
+
+.modal-icon {
+  font-size: 3.5rem;
+  margin-bottom: 15px;
+  line-height: 1;
+}
+
+.modal-icon.warning { color: #f39c12; }
+.modal-icon.danger { color: #e74c3c; }
+.modal-icon.info { color: #3498db; }
+
+.modal-titulo {
+  color: #e6edf3;
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.modal-mensaje {
+  color: #9fb3c8;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin-bottom: 25px;
+}
+
+.modal-botones {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.modal-botones .btn {
+  min-width: 120px;
+  padding: 12px 20px;
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+  color: #fff;
+  border: none;
+}
+
+.btn-danger:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+}
+
+/* Modo claro */
+[data-tema="claro"] .modal-confirm {
+  background: #ffffff;
+  border-color: rgba(212, 175, 55, 0.4);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+[data-tema="claro"] .modal-titulo {
+  color: #1a1a1a;
+}
+
+[data-tema="claro"] .modal-mensaje {
+  color: #4a5a6a;
+}
+
+/* Animación del modal */
+@keyframes modalShake {
+  0%, 100% { transform: scale(1) translateX(0); }
+  25% { transform: scale(1) translateX(-8px); }
+  75% { transform: scale(1) translateX(8px); }
+}
+
+.modal-confirm.shake {
+  animation: modalShake 0.4s ease-in-out;
+}

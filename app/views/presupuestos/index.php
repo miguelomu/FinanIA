@@ -45,9 +45,15 @@
               <a href="index.php?accion=ver&id=<?= $p['id_presupuesto'] ?>" class="btn btn-primary" style="font-size:0.75rem; padding:8px 12px;">Ver</a>
               <a href="index.php?accion=editar&id=<?= $p['id_presupuesto'] ?>" class="btn btn-secondary" style="font-size:0.75rem; padding:8px 12px;">✏️</a>
               <a href="index.php?accion=eliminar&id=<?= $p['id_presupuesto'] ?>" 
-                 class="btn btn-secondary" 
-                 style="font-size:0.75rem; padding:8px 12px; color: #e74c3c;"
-                 onclick="return confirm('¿Eliminar este presupuesto?')">🗑️</a>
+                class="btn btn-secondary" 
+                style="font-size:0.75rem; padding:8px 12px; color:#e74c3c;"
+                onclick="return confirmar(event, {
+                  titulo: '¿Eliminar presupuesto?',
+                  mensaje: 'Se eliminarán todos los límites configurados.',
+                  tipo: 'danger',
+                  icono: '📅',
+                  confirmar: 'Eliminar presupuesto'
+                })">🗑️</a>
             </div>
           </div>
         <?php endforeach; ?>

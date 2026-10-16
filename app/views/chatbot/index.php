@@ -190,7 +190,14 @@
       <h1>🤖 FinanIA - Asistente Financiero</h1>
       <form method="POST" action="index.php?accion=limpiar" style="margin:0;">
         <?= csrfField() ?>
-        <button type="submit" class="btn btn-secondary" onclick="return confirm('¿Borrar todo el historial?')">
+        <button type="submit" class="btn btn-secondary" 
+                onclick="return confirmar(event, {
+                  titulo: '¿Limpiar historial?',
+                  mensaje: 'Se eliminarán todas las conversaciones con el asistente.',
+                  tipo: 'warning',
+                  icono: '🗑️',
+                  confirmar: 'Limpiar todo'
+                })">
           🗑️ Limpiar historial
         </button>
       </form>

@@ -100,9 +100,15 @@
             <a href="index.php?accion=ver&id=<?= $m['id_meta'] ?>" class="btn btn-secondary">📋 Ver Aportes</a>
             <a href="index.php?accion=editar&id=<?= $m['id_meta'] ?>" class="btn btn-secondary">✏️ Editar</a>
             <a href="index.php?accion=eliminar&id=<?= $m['id_meta'] ?>" 
-               class="btn btn-secondary"
-               style="color: #e74c3c;"
-               onclick="return confirm('¿Eliminar esta meta?')">🗑️ Eliminar</a>
+              class="btn btn-secondary"
+              style="color:#e74c3c;"
+              onclick="return confirmar(event, {
+                titulo: '¿Eliminar meta?',
+                mensaje: 'Se perderá el historial de aportes de esta meta.',
+                tipo: 'danger',
+                icono: '🎯',
+                confirmar: 'Eliminar meta'
+              })">🗑️ Eliminar</a>
           </div>
         </div>
       <?php endforeach; ?>

@@ -77,8 +77,14 @@
                   <div class="acciones" style="justify-content:center;">
                     <a href="index.php?accion=editar&id=<?= $c['id_categoria'] ?>" class="btn-sm btn-editar">✏️ Editar</a>
                     <a href="index.php?accion=eliminar&id=<?= $c['id_categoria'] ?>" 
-                       class="btn-sm btn-eliminar"
-                       onclick="return confirm('¿Eliminar esta categoría?')">🗑️ Eliminar</a>
+                      class="btn-sm btn-eliminar"
+                      onclick="return confirmar(event, {
+                        titulo: '¿Eliminar categoría?',
+                        mensaje: 'No se puede eliminar si tiene transacciones asociadas.',
+                        tipo: 'danger',
+                        icono: '🏷️',
+                        confirmar: 'Eliminar categoría'
+                      })">🗑️ Eliminar</a>
                   </div>
                 </td>
               </tr>
