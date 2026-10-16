@@ -1,12 +1,11 @@
 <?php
 /**
  * Controlador: MetaController
- * 
- * Maneja la lógica de metas y aportes.
  */
 
 require_once __DIR__ . '/../models/Meta.php';
 require_once __DIR__ . '/../models/Aporte.php';
+require_once __DIR__ . '/../models/Cuenta.php';
 
 class MetaController
 {
@@ -29,7 +28,7 @@ class MetaController
 
     public function index()
     {
-        $estado = $_GET['estado'] ?? '';
+        $estado = get('estado', '');
         $metas = $this->model->obtenerTodas($this->idUsuario, $estado);
         $totales = $this->model->calcularTotales($metas);
 
@@ -49,31 +48,30 @@ class MetaController
     public function guardar()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: index.php');
-            exit;
+            redirigir('index.php');
         }
 
         requiereCsrf('index.php?error=csrf');
 
-        $nombre = trim($_POST['nombre'] ?? '');
-        $montoObjetivo = floatval($_POST['monto_objetivo'] ?? 0);
-        $montoInicial = floatval($_POST['monto_actual'] ?? 0);
-        $fechaInicio = $_POST['fecha_inicio'] ?? '';
-        $fechaLimite = $_POST['fecha_limite'] ?? '';
+        $nombre = postStr('nombre');
+        $montoObjetivo = postFloat('monto_objetivo');
+        $montoInicial = postFloat('monto_actual');
+        $fechaInicio = postStr('fecha_inicio');
+        $fechaLimite = postStr('fecha_limite');
 
         if (empty($nombre) || empty($fechaInicio) || empty($fechaLimite)) {
-            header('Location: index.php?accion=crear&error=campos_vacios');
-            exit;
+            toastError('Campos vacíos', 'Todos los campos obligatorios deben llenarse');
+            redirigir('index.php?accion=crear');
         }
 
         if ($montoObjetivo <= 0) {
-            header('Location: index.php?accion=crear&error=monto_invalido');
-            exit;
+            toastError('Monto inválido', 'El monto objetivo debe ser mayor a cero');
+            redirigir('index.php?accion=crear');
         }
 
         if (strtotime($fechaLimite) <= strtotime($fechaInicio)) {
-            header('Location: index.php?accion=crear&error=fecha_invalida');
-            exit;
+            toastError('Fechas inválidas', 'La fecha límite debe ser posterior a la de inicio');
+            redirigir('index.php?accion=crear');
         }
 
         $this->model->crear(
@@ -81,18 +79,17 @@ class MetaController
             $montoInicial, $fechaInicio, $fechaLimite
         );
 
-        header('Location: index.php?msg=creado');
-        exit;
+        toastSuccess('Meta creada', 'Tu meta se registró correctamente');
+        redirigir('index.php');
     }
 
     public function editar()
     {
-        $id = intval($_GET['id'] ?? 0);
+        $id = getInt('id');
         $meta = $this->model->obtenerPorId($id, $this->idUsuario);
 
         if (!$meta) {
-            header('Location: index.php');
-            exit;
+            redirigir('index.php');
         }
 
         $this->render('editar', [
@@ -104,23 +101,22 @@ class MetaController
     public function actualizar()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: index.php');
-            exit;
+            redirigir('index.php');
         }
 
         requiereCsrf('index.php?error=csrf');
 
-        $id = intval($_POST['id'] ?? 0);
-        $nombre = trim($_POST['nombre'] ?? '');
-        $montoObjetivo = floatval($_POST['monto_objetivo'] ?? 0);
-        $montoInicial = floatval($_POST['monto_actual'] ?? 0);
-        $fechaInicio = $_POST['fecha_inicio'] ?? '';
-        $fechaLimite = $_POST['fecha_limite'] ?? '';
-        $estado = $_POST['estado'] ?? 'activa';
+        $id = postInt('id');
+        $nombre = postStr('nombre');
+        $montoObjetivo = postFloat('monto_objetivo');
+        $montoInicial = postFloat('monto_actual');
+        $fechaInicio = postStr('fecha_inicio');
+        $fechaLimite = postStr('fecha_limite');
+        $estado = postStr('estado', 'activa');
 
         if (empty($nombre) || empty($fechaInicio) || empty($fechaLimite) || $montoObjetivo <= 0) {
-            header("Location: index.php?accion=editar&id=$id&error=campos_vacios");
-            exit;
+            toastError('Campos vacíos', 'Todos los campos obligatorios deben llenarse');
+            redirigir("index.php?accion=editar&id=$id");
         }
 
         if (!in_array($estado, ['activa', 'completada', 'cancelada'])) {
@@ -132,18 +128,19 @@ class MetaController
             $montoInicial, $fechaInicio, $fechaLimite, $estado
         );
 
-        header('Location: index.php?msg=actualizado');
-        exit;
+        toastSuccess('Meta actualizada', 'Los cambios se guardaron correctamente');
+        redirigir('index.php');
     }
 
     public function eliminar()
     {
-        $id = intval($_GET['id'] ?? 0);
+        $id = getInt('id');
         if ($id > 0) {
             $this->model->eliminar($id, $this->idUsuario);
         }
-        header('Location: index.php?msg=eliminado');
-        exit;
+
+        toastSuccess('Meta eliminada', 'La meta se eliminó correctamente');
+        redirigir('index.php');
     }
 
     // ==========================================
@@ -152,19 +149,15 @@ class MetaController
 
     public function ver()
     {
-        $id = intval($_GET['id'] ?? 0);
+        $id = getInt('id');
         $meta = $this->model->obtenerPorId($id, $this->idUsuario);
 
         if (!$meta) {
-            header('Location: index.php');
-            exit;
+            redirigir('index.php');
         }
 
         $aportes = $this->modelAporte->obtenerPorMeta($id);
-
-        $progreso = $meta['monto_objetivo'] > 0 
-            ? min(100, ($meta['monto_actual'] / $meta['monto_objetivo']) * 100) 
-            : 0;
+        $progreso = calcularProgreso($meta['monto_actual'], $meta['monto_objetivo']);
 
         $this->render('ver', [
             'meta' => $meta,
@@ -194,14 +187,16 @@ class MetaController
                 $this->modelAporte->crear($id, $this->idUsuario, $idCuenta, $monto, $nota);
                 $this->model->recalcular($id);
 
-                redirigir("index.php?accion=ver&id=$id&msg=aportado");
+                toastSuccess('Aporte registrado', 'El aporte se sumó a tu meta');
+                redirigir("index.php?accion=ver&id=$id");
+            } else {
+                toastError('Monto inválido', 'El monto debe ser mayor a cero');
+                redirigir("index.php?accion=aportar&id=$id");
             }
         }
 
         $progreso = calcularProgreso($meta['monto_actual'], $meta['monto_objetivo']);
 
-        // Cargar cuentas disponibles
-        require_once __DIR__ . '/../models/Cuenta.php';
         $modelCuenta = new Cuenta($this->pdo);
         $cuentas = $modelCuenta->obtenerTodas($this->idUsuario, true);
 
@@ -222,8 +217,6 @@ class MetaController
             redirigir('index.php');
         }
 
-        // Cargar cuentas disponibles
-        require_once __DIR__ . '/../models/Cuenta.php';
         $modelCuenta = new Cuenta($this->pdo);
         $cuentas = $modelCuenta->obtenerTodas($this->idUsuario, true);
 
@@ -248,7 +241,8 @@ class MetaController
         $idCuenta = postInt('id_cuenta');
 
         if ($monto <= 0) {
-            redirigir("index.php?accion=editarAporte&id=$id&error=monto_invalido");
+            toastError('Monto inválido', 'El monto debe ser mayor a cero');
+            redirigir("index.php?accion=editarAporte&id=$id");
         }
 
         $aporte = $this->modelAporte->obtenerPorId($id, $this->idUsuario);
@@ -261,17 +255,17 @@ class MetaController
         $this->modelAporte->actualizar($id, $idCuenta, $monto, $nota);
         $this->model->recalcular($idMeta);
 
-        redirigir("index.php?accion=ver&id=$idMeta&msg=editado");
+        toastSuccess('Aporte actualizado', 'Los cambios se guardaron correctamente');
+        redirigir("index.php?accion=ver&id=$idMeta");
     }
 
     public function eliminarAporte()
     {
-        $id = intval($_GET['id'] ?? 0);
-
+        $id = getInt('id');
         $aporte = $this->modelAporte->obtenerPorId($id, $this->idUsuario);
+
         if (!$aporte) {
-            header('Location: index.php');
-            exit;
+            redirigir('index.php');
         }
 
         $idMeta = $aporte['id_meta'];
@@ -279,8 +273,8 @@ class MetaController
         $this->modelAporte->eliminar($id);
         $this->model->recalcular($idMeta);
 
-        header("Location: index.php?accion=ver&id=$idMeta&msg=eliminado");
-        exit;
+        toastSuccess('Aporte eliminado', 'El aporte se eliminó de tu meta');
+        redirigir("index.php?accion=ver&id=$idMeta");
     }
 
     private function render($vista, $datos = [])

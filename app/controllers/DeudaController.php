@@ -1,12 +1,11 @@
 <?php
 /**
  * Controlador: DeudaController
- * 
- * Maneja la lógica de deudas y pagos.
  */
 
 require_once __DIR__ . '/../models/Deuda.php';
 require_once __DIR__ . '/../models/Pago.php';
+require_once __DIR__ . '/../models/Cuenta.php';
 require_once __DIR__ . '/../models/Configuracion.php';
 
 class DeudaController
@@ -14,34 +13,32 @@ class DeudaController
     private $pdo;
     private $model;
     private $modelPago;
-    private $idUsuario;
+    private $modelCuenta;
     private $modelConfig;
+    private $idUsuario;
 
     public function __construct($pdo, $idUsuario)
     {
         $this->pdo = $pdo;
         $this->model = new Deuda($pdo);
         $this->modelPago = new Pago($pdo);
+        $this->modelCuenta = new Cuenta($pdo);
         $this->modelConfig = new Configuracion($pdo);
         $this->idUsuario = $idUsuario;
     }
 
-    // ==========================================
-    // DEUDAS
-    // ==========================================
-
     public function index()
     {
-        $estado = $_GET['estado'] ?? '';
+        $estado = get('estado', '');
         $deudas = $this->model->obtenerTodas($this->idUsuario, $estado);
         $totales = $this->model->calcularTotales($deudas);
-        $tasaUsura = $this->modelConfig->tasaUsura();   // ← AGREGAR
+        $tasaUsura = $this->modelConfig->tasaUsura();
 
         $this->render('index', [
             'deudas' => $deudas,
             'totales' => $totales,
             'estado' => $estado,
-            'tasaUsura' => $tasaUsura,   // ← AGREGAR
+            'tasaUsura' => $tasaUsura,
             'usuario' => usuarioActual()
         ]);
     }
@@ -54,33 +51,32 @@ class DeudaController
     public function guardar()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: index.php');
-            exit;
+            redirigir('index.php');
         }
 
         requiereCsrf('index.php?error=csrf');
 
-        $acreedor = trim($_POST['acreedor'] ?? '');
-        $montoTotal = floatval($_POST['monto_total'] ?? 0);
-        $montoPagado = floatval($_POST['monto_pagado'] ?? 0);
-        $tasaInteres = floatval($_POST['tasa_interes'] ?? 0);
-        $fechaInicio = $_POST['fecha_inicio'] ?? '';
-        $fechaVencimiento = $_POST['fecha_vencimiento'] ?? '';
-        $pagoMinimo = floatval($_POST['pago_minimo'] ?? 0);
+        $acreedor = postStr('acreedor');
+        $montoTotal = postFloat('monto_total');
+        $montoPagado = postFloat('monto_pagado');
+        $tasaInteres = postFloat('tasa_interes');
+        $fechaInicio = postStr('fecha_inicio');
+        $fechaVencimiento = postStr('fecha_vencimiento');
+        $pagoMinimo = postFloat('pago_minimo');
 
         if (empty($acreedor) || empty($fechaInicio) || empty($fechaVencimiento)) {
-            header('Location: index.php?accion=crear&error=campos_vacios');
-            exit;
+            toastError('Campos vacíos', 'Todos los campos obligatorios deben llenarse');
+            redirigir('index.php?accion=crear');
         }
 
         if ($montoTotal <= 0) {
-            header('Location: index.php?accion=crear&error=monto_invalido');
-            exit;
+            toastError('Monto inválido', 'El monto total debe ser mayor a cero');
+            redirigir('index.php?accion=crear');
         }
 
         if (strtotime($fechaVencimiento) <= strtotime($fechaInicio)) {
-            header('Location: index.php?accion=crear&error=fecha_invalida');
-            exit;
+            toastError('Fechas inválidas', 'La fecha de vencimiento debe ser posterior a la de inicio');
+            redirigir('index.php?accion=crear');
         }
 
         $this->model->crear(
@@ -88,18 +84,17 @@ class DeudaController
             $tasaInteres, $fechaInicio, $fechaVencimiento, $pagoMinimo
         );
 
-        header('Location: index.php?msg=creado');
-        exit;
+        toastSuccess('Deuda registrada', 'Tu deuda se registró correctamente');
+        redirigir('index.php');
     }
 
     public function editar()
     {
-        $id = intval($_GET['id'] ?? 0);
+        $id = getInt('id');
         $deuda = $this->model->obtenerPorId($id, $this->idUsuario);
 
         if (!$deuda) {
-            header('Location: index.php');
-            exit;
+            redirigir('index.php');
         }
 
         $this->render('editar', [
@@ -111,25 +106,24 @@ class DeudaController
     public function actualizar()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: index.php');
-            exit;
+            redirigir('index.php');
         }
 
         requiereCsrf('index.php?error=csrf');
 
-        $id = intval($_POST['id'] ?? 0);
-        $acreedor = trim($_POST['acreedor'] ?? '');
-        $montoTotal = floatval($_POST['monto_total'] ?? 0);
-        $montoPagado = floatval($_POST['monto_pagado'] ?? 0);
-        $tasaInteres = floatval($_POST['tasa_interes'] ?? 0);
-        $fechaInicio = $_POST['fecha_inicio'] ?? '';
-        $fechaVencimiento = $_POST['fecha_vencimiento'] ?? '';
-        $pagoMinimo = floatval($_POST['pago_minimo'] ?? 0);
-        $estado = $_POST['estado'] ?? 'activa';
+        $id = postInt('id');
+        $acreedor = postStr('acreedor');
+        $montoTotal = postFloat('monto_total');
+        $montoPagado = postFloat('monto_pagado');
+        $tasaInteres = postFloat('tasa_interes');
+        $fechaInicio = postStr('fecha_inicio');
+        $fechaVencimiento = postStr('fecha_vencimiento');
+        $pagoMinimo = postFloat('pago_minimo');
+        $estado = postStr('estado', 'activa');
 
         if (empty($acreedor) || empty($fechaInicio) || empty($fechaVencimiento) || $montoTotal <= 0) {
-            header("Location: index.php?accion=editar&id=$id&error=campos_vacios");
-            exit;
+            toastError('Campos vacíos', 'Todos los campos obligatorios deben llenarse');
+            redirigir("index.php?accion=editar&id=$id");
         }
 
         if (!in_array($estado, ['activa', 'pagada', 'vencida'])) {
@@ -141,18 +135,19 @@ class DeudaController
             $tasaInteres, $fechaInicio, $fechaVencimiento, $pagoMinimo, $estado
         );
 
-        header('Location: index.php?msg=actualizado');
-        exit;
+        toastSuccess('Deuda actualizada', 'Los cambios se guardaron correctamente');
+        redirigir('index.php');
     }
 
     public function eliminar()
     {
-        $id = intval($_GET['id'] ?? 0);
+        $id = getInt('id');
         if ($id > 0) {
             $this->model->eliminar($id, $this->idUsuario);
         }
-        header('Location: index.php?msg=eliminado');
-        exit;
+
+        toastSuccess('Deuda eliminada', 'La deuda se eliminó correctamente');
+        redirigir('index.php');
     }
 
     // ==========================================
@@ -161,19 +156,15 @@ class DeudaController
 
     public function ver()
     {
-        $id = intval($_GET['id'] ?? 0);
+        $id = getInt('id');
         $deuda = $this->model->obtenerPorId($id, $this->idUsuario);
 
         if (!$deuda) {
-            header('Location: index.php');
-            exit;
+            redirigir('index.php');
         }
 
         $pagos = $this->modelPago->obtenerPorDeuda($id);
-
-        $progreso = $deuda['monto_total'] > 0 
-            ? min(100, ($deuda['monto_pagado'] / $deuda['monto_total']) * 100) 
-            : 0;
+        $progreso = calcularProgreso($deuda['monto_pagado'], $deuda['monto_total']);
 
         $this->render('ver', [
             'deuda' => $deuda,
@@ -203,14 +194,15 @@ class DeudaController
                 $this->modelPago->crear($id, $this->idUsuario, $idCuenta, $monto, $nota);
                 $this->model->recalcular($id);
 
-                redirigir("index.php?accion=ver&id=$id&msg=pagado");
+                toastSuccess('Pago registrado', 'El pago se sumó a tu deuda');
+                redirigir("index.php?accion=ver&id=$id");
+            } else {
+                toastError('Monto inválido', 'El monto debe ser mayor a cero');
+                redirigir("index.php?accion=pagar&id=$id");
             }
         }
 
-        // Cargar cuentas disponibles
-        require_once __DIR__ . '/../models/Cuenta.php';
-        $modelCuenta = new Cuenta($this->pdo);
-        $cuentas = $modelCuenta->obtenerTodas($this->idUsuario, true);
+        $cuentas = $this->modelCuenta->obtenerTodas($this->idUsuario, true);
 
         $this->render('pagar', [
             'deuda' => $deuda,
@@ -228,10 +220,7 @@ class DeudaController
             redirigir('index.php');
         }
 
-        // Cargar cuentas disponibles
-        require_once __DIR__ . '/../models/Cuenta.php';
-        $modelCuenta = new Cuenta($this->pdo);
-        $cuentas = $modelCuenta->obtenerTodas($this->idUsuario, true);
+        $cuentas = $this->modelCuenta->obtenerTodas($this->idUsuario, true);
 
         $this->render('editar_pago', [
             'pago' => $pago,
@@ -254,7 +243,8 @@ class DeudaController
         $idCuenta = postInt('id_cuenta');
 
         if ($monto <= 0) {
-            redirigir("index.php?accion=editarPago&id=$id&error=monto_invalido");
+            toastError('Monto inválido', 'El monto debe ser mayor a cero');
+            redirigir("index.php?accion=editarPago&id=$id");
         }
 
         $pago = $this->modelPago->obtenerPorId($id, $this->idUsuario);
@@ -267,17 +257,17 @@ class DeudaController
         $this->modelPago->actualizar($id, $idCuenta, $monto, $nota);
         $this->model->recalcular($idDeuda);
 
-        redirigir("index.php?accion=ver&id=$idDeuda&msg=editado");
+        toastSuccess('Pago actualizado', 'Los cambios se guardaron correctamente');
+        redirigir("index.php?accion=ver&id=$idDeuda");
     }
 
     public function eliminarPago()
     {
-        $id = intval($_GET['id'] ?? 0);
+        $id = getInt('id');
         $pago = $this->modelPago->obtenerPorId($id, $this->idUsuario);
 
         if (!$pago) {
-            header('Location: index.php');
-            exit;
+            redirigir('index.php');
         }
 
         $idDeuda = $pago['id_deuda'];
@@ -285,8 +275,8 @@ class DeudaController
         $this->modelPago->eliminar($id);
         $this->model->recalcular($idDeuda);
 
-        header("Location: index.php?accion=ver&id=$idDeuda&msg=eliminado");
-        exit;
+        toastSuccess('Pago eliminado', 'El pago se eliminó de tu deuda');
+        redirigir("index.php?accion=ver&id=$idDeuda");
     }
 
     private function render($vista, $datos = [])

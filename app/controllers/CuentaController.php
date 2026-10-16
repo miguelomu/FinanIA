@@ -50,16 +50,19 @@ class CuentaController
         $color = postStr('color', '#3498db');
 
         if (empty($nombre) || empty($tipo)) {
-            redirigir('index.php?accion=crear&error=campos_vacios');
+            toastError('Campos vacíos', 'Debes llenar todos los campos obligatorios');
+            redirigir('index.php?accion=crear');
         }
 
         if ($this->model->existeNombre($this->idUsuario, $nombre)) {
-            redirigir('index.php?accion=crear&error=nombre_existe');
+            toastError('Nombre duplicado', 'Ya tienes una cuenta con ese nombre');
+            redirigir('index.php?accion=crear');
         }
 
         $this->model->crear($this->idUsuario, $nombre, $tipo, $saldoInicial, $etiqueta, $color);
 
-        redirigir('index.php?msg=creado');
+        toastSuccess('Título', 'Mensaje');
+        redirigir('index.php');
     }
 
     public function editar()
@@ -103,7 +106,8 @@ class CuentaController
 
         $this->model->actualizar($id, $this->idUsuario, $nombre, $tipo, $saldoInicial, $etiqueta, $color, $activa);
 
-        redirigir('index.php?msg=actualizado');
+        toastSuccess('Cuenta actualizada', 'Los cambios se guardaron correctamente');
+        redirigir('index.php');
     }
 
     public function eliminar()
@@ -112,12 +116,14 @@ class CuentaController
 
         if ($id > 0) {
             if ($this->model->tieneMovimientos($id)) {
-                redirigir('index.php?error=con_movimientos');
+                toastError('No se puede eliminar', 'Esta cuenta tiene movimientos asociados');
+                redirigir('index.php');
             }
             $this->model->eliminar($id, $this->idUsuario);
         }
 
-        redirigir('index.php?msg=eliminado');
+        toastSuccess('Cuenta eliminada', 'La cuenta se eliminó correctamente');
+        redirigir('index.php');
     }
 
     private function render($vista, $datos = [])

@@ -1,13 +1,6 @@
 <?php
 /**
  * Controlador: CategoriaController
- * 
- * Maneja la lógica del módulo de categorías:
- * - Listar
- * - Crear
- * - Editar
- * - Actualizar
- * - Eliminar
  */
 
 require_once __DIR__ . '/../models/Categoria.php';
@@ -25,159 +18,129 @@ class CategoriaController
         $this->idUsuario = $idUsuario;
     }
 
-    /**
-     * Acción: Mostrar lista de categorías
-     */
     public function index()
     {
-        $tipo = $_GET['tipo'] ?? '';
+        $tipo = get('tipo', '');
         $categorias = $this->model->obtenerTodas($this->idUsuario, $tipo);
 
-        // Datos para la vista
-        $datos = [
+        $this->render('index', [
             'categorias' => $categorias,
             'tipo' => $tipo,
             'usuario' => usuarioActual()
-        ];
-
-        $this->render('index', $datos);
+        ]);
     }
 
-    /**
-     * Acción: Mostrar formulario de creación
-     */
     public function crear()
     {
-        $datos = ['usuario' => usuarioActual()];
-        $this->render('crear', $datos);
+        $this->render('crear', ['usuario' => usuarioActual()]);
     }
 
-    /**
-     * Acción: Guardar nueva categoría
-     */
     public function guardar()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: index.php');
-            exit;
+            redirigir('index.php');
         }
 
         requiereCsrf('index.php?error=csrf');
 
-        $nombre = trim($_POST['nombre'] ?? '');
-        $tipo = $_POST['tipo'] ?? '';
-        $color = $_POST['color'] ?? '#3498db';
-        $icono = trim($_POST['icono'] ?? '');
+        $nombre = postStr('nombre');
+        $tipo = postStr('tipo');
+        $color = postStr('color', '#3498db');
+        $icono = postStr('icono');
 
-        // Validaciones
         if (empty($nombre) || empty($tipo)) {
-            header('Location: index.php?accion=crear&error=campos_vacios');
-            exit;
+            toastError('Campos vacíos', 'El nombre y el tipo son obligatorios');
+            redirigir('index.php?accion=crear');
         }
 
         if (!in_array($tipo, ['ingreso', 'gasto'])) {
-            header('Location: index.php?accion=crear&error=campos_vacios');
-            exit;
+            toastError('Tipo inválido', 'Debes seleccionar ingreso o gasto');
+            redirigir('index.php?accion=crear');
         }
 
         if ($this->model->existeNombre($this->idUsuario, $nombre)) {
-            header('Location: index.php?accion=crear&error=nombre_existe');
-            exit;
+            toastError('Nombre duplicado', 'Ya tienes una categoría con ese nombre');
+            redirigir('index.php?accion=crear');
         }
 
         $this->model->crear($this->idUsuario, $nombre, $tipo, $color, $icono);
 
-        header('Location: index.php?msg=creado');
-        exit;
+        toastSuccess('Categoría creada', 'La categoría se registró correctamente');
+        redirigir('index.php');
     }
 
-    /**
-     * Acción: Mostrar formulario de edición
-     */
     public function editar()
     {
-        $id = intval($_GET['id'] ?? 0);
+        $id = getInt('id');
         $categoria = $this->model->obtenerPorId($id, $this->idUsuario);
 
         if (!$categoria) {
-            header('Location: index.php');
-            exit;
+            redirigir('index.php');
         }
 
-        $datos = [
+        $this->render('editar', [
             'categoria' => $categoria,
             'usuario' => usuarioActual()
-        ];
-
-        $this->render('editar', $datos);
+        ]);
     }
 
-    /**
-     * Acción: Actualizar categoría
-     */
     public function actualizar()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: index.php');
-            exit;
+            redirigir('index.php');
         }
 
         requiereCsrf('index.php?error=csrf');
 
-        $id = intval($_POST['id'] ?? 0);
-        $nombre = trim($_POST['nombre'] ?? '');
-        $tipo = $_POST['tipo'] ?? '';
-        $color = $_POST['color'] ?? '#3498db';
-        $icono = trim($_POST['icono'] ?? '');
+        $id = postInt('id');
+        $nombre = postStr('nombre');
+        $tipo = postStr('tipo');
+        $color = postStr('color', '#3498db');
+        $icono = postStr('icono');
 
         if (empty($nombre) || empty($tipo)) {
-            header("Location: index.php?accion=editar&id=$id&error=campos_vacios");
-            exit;
+            toastError('Campos vacíos', 'El nombre y el tipo son obligatorios');
+            redirigir("index.php?accion=editar&id=$id");
+        }
+
+        if (!in_array($tipo, ['ingreso', 'gasto'])) {
+            toastError('Tipo inválido', 'Debes seleccionar ingreso o gasto');
+            redirigir("index.php?accion=editar&id=$id");
         }
 
         if ($this->model->existeNombre($this->idUsuario, $nombre, $id)) {
-            header("Location: index.php?accion=editar&id=$id&error=nombre_existe");
-            exit;
+            toastError('Nombre duplicado', 'Ya tienes otra categoría con ese nombre');
+            redirigir("index.php?accion=editar&id=$id");
         }
 
         $this->model->actualizar($id, $this->idUsuario, $nombre, $tipo, $color, $icono);
 
-        header('Location: index.php?msg=actualizado');
-        exit;
+        toastSuccess('Categoría actualizada', 'Los cambios se guardaron correctamente');
+        redirigir('index.php');
     }
 
-    /**
-     * Acción: Eliminar categoría
-     */
     public function eliminar()
     {
-        $id = intval($_GET['id'] ?? 0);
+        $id = getInt('id');
 
-        if ($id <= 0) {
-            header('Location: index.php');
-            exit;
+        if ($id > 0) {
+            if ($this->model->tieneTransacciones($id)) {
+                toastWarning('No se puede eliminar', 'Esta categoría tiene transacciones asociadas');
+                redirigir('index.php');
+            }
+
+            if ($this->model->tienePresupuestos($id)) {
+                toastWarning('No se puede eliminar', 'Esta categoría tiene presupuestos asociados');
+                redirigir('index.php');
+            }
+
+            $this->model->eliminar($id, $this->idUsuario);
         }
 
-        // Verificar integridad referencial
-        if ($this->model->tieneTransacciones($id)) {
-            header('Location: index.php?error=con_transacciones');
-            exit;
-        }
-
-        if ($this->model->tienePresupuestos($id)) {
-            header('Location: index.php?error=con_transacciones');
-            exit;
-        }
-
-        $this->model->eliminar($id, $this->idUsuario);
-
-        header('Location: index.php?msg=eliminado');
-        exit;
+        toastSuccess('Categoría eliminada', 'La categoría se eliminó correctamente');
+        redirigir('index.php');
     }
 
-    /**
-     * Renderiza una vista con datos
-     */
     private function render($vista, $datos = [])
     {
         extract($datos);

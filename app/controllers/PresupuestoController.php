@@ -33,7 +33,6 @@ class PresupuestoController
 
     public function crear()
     {
-        // Solo categorías de gasto
         $categorias = $this->modelCategoria->obtenerTodas($this->idUsuario, 'gasto');
 
         $this->render('crear', [
@@ -45,43 +44,40 @@ class PresupuestoController
     public function guardar()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: index.php');
-            exit;
+            redirigir('index.php');
         }
 
         requiereCsrf('index.php?error=csrf');
 
-        $mes = intval($_POST['mes'] ?? 0);
-        $anio = intval($_POST['anio'] ?? 0);
+        $mes = postInt('mes');
+        $anio = postInt('anio');
         $limites = $_POST['limites'] ?? [];
 
         if ($mes < 1 || $mes > 12 || $anio < 2000) {
-            header('Location: index.php?accion=crear&error=campos_vacios');
-            exit;
+            toastError('Datos inválidos', 'Debes seleccionar un mes y año válidos');
+            redirigir('index.php?accion=crear');
         }
 
         if ($this->model->existe($this->idUsuario, $mes, $anio)) {
-            header('Location: index.php?accion=crear&error=ya_existe');
-            exit;
+            toastWarning('Presupuesto duplicado', 'Ya tienes un presupuesto para ese mes');
+            redirigir('index.php?accion=crear');
         }
 
-        // Filtrar solo categorías del usuario
         $limitesValidos = $this->filtrarLimites($limites);
 
         $this->model->crear($this->idUsuario, $mes, $anio, $limitesValidos);
 
-        header('Location: index.php?msg=creado');
-        exit;
+        toastSuccess('Presupuesto creado', 'Tu presupuesto mensual está listo');
+        redirigir('index.php');
     }
 
     public function editar()
     {
-        $id = intval($_GET['id'] ?? 0);
+        $id = getInt('id');
         $presupuesto = $this->model->obtenerPorId($id, $this->idUsuario);
 
         if (!$presupuesto) {
-            header('Location: index.php');
-            exit;
+            redirigir('index.php');
         }
 
         $categorias = $this->modelCategoria->obtenerTodas($this->idUsuario, 'gasto');
@@ -98,48 +94,47 @@ class PresupuestoController
     public function actualizar()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: index.php');
-            exit;
+            redirigir('index.php');
         }
 
         requiereCsrf('index.php?error=csrf');
 
-        $id = intval($_POST['id'] ?? 0);
-        $mes = intval($_POST['mes'] ?? 0);
-        $anio = intval($_POST['anio'] ?? 0);
+        $id = postInt('id');
+        $mes = postInt('mes');
+        $anio = postInt('anio');
         $limites = $_POST['limites'] ?? [];
 
         if ($this->model->existe($this->idUsuario, $mes, $anio, $id)) {
-            header("Location: index.php?accion=editar&id=$id&error=ya_existe");
-            exit;
+            toastWarning('Presupuesto duplicado', 'Ya tienes un presupuesto para ese mes');
+            redirigir("index.php?accion=editar&id=$id");
         }
 
         $limitesValidos = $this->filtrarLimites($limites);
 
         $this->model->actualizar($id, $mes, $anio, $limitesValidos);
 
-        header('Location: index.php?msg=actualizado');
-        exit;
+        toastSuccess('Presupuesto actualizado', 'Los cambios se guardaron correctamente');
+        redirigir('index.php');
     }
 
     public function eliminar()
     {
-        $id = intval($_GET['id'] ?? 0);
+        $id = getInt('id');
         if ($id > 0) {
             $this->model->eliminar($id, $this->idUsuario);
         }
-        header('Location: index.php?msg=eliminado');
-        exit;
+
+        toastSuccess('Presupuesto eliminado', 'El presupuesto se eliminó correctamente');
+        redirigir('index.php');
     }
 
     public function ver()
     {
-        $id = intval($_GET['id'] ?? 0);
+        $id = getInt('id');
         $presupuesto = $this->model->obtenerPorId($id, $this->idUsuario);
 
         if (!$presupuesto) {
-            header('Location: index.php');
-            exit;
+            redirigir('index.php');
         }
 
         $detalles = $this->model->obtenerDetalleConGasto(
@@ -159,9 +154,6 @@ class PresupuestoController
         ]);
     }
 
-    /**
-     * Filtra los límites para quedarse solo con categorías del usuario
-     */
     private function filtrarLimites($limites)
     {
         $categorias = $this->modelCategoria->obtenerTodas($this->idUsuario, 'gasto');

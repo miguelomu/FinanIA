@@ -115,6 +115,7 @@ if (method_exists($modelLogro, 'desbloquearPremium')) {
 }
 
 // Redirigir al dashboard premium
-header('Location: /FinanIA/dashboards/premium.php?msg=premium_activado');
+toastSuccess('¡Bienvenido a Premium!', 'Ya puedes usar el Chatbot IA, los simuladores y todas las funciones avanzadas');
+header('Location: /FinanIA/dashboards/premium.php');
 exit;
 ?>

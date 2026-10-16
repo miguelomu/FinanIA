@@ -59,7 +59,8 @@ class FuenteIngresoController
 
         $this->model->crear($this->idUsuario, $nombre, $tipo, $frecuencia, $montoPromedio, $color);
 
-        redirigir('index.php?msg=creado');
+        toastSuccess('Título', 'Mensaje');
+        redirigir('index.php');
     }
 
     public function editar()
