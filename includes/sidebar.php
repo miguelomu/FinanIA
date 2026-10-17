@@ -97,6 +97,56 @@ $esDesarrollador = function_exists('esDesarrollador') && esDesarrollador();
       </div>
     <?php endif; ?>
 
+      <!-- Botón instalar PWA -->
+      <button id="btnInstalarPWA" 
+              onclick="instalarPWA()" 
+              style="display:none; width:100%; padding:12px 15px; margin-top:15px;
+                    background:linear-gradient(135deg, #3498db, #2874a6); 
+                    color:#fff; border:none; border-radius:8px; cursor:pointer;
+                    font-size:0.85rem; font-weight:600;">
+        📲 Instalar app
+      </button>
+
+      <script>
+      // Variables globales para PWA
+      let deferredPrompt = null;
+
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        
+        // Mostrar botón de instalar
+        const btn = document.getElementById('btnInstalarPWA');
+        if (btn) btn.style.display = 'block';
+      });
+
+      function instalarPWA() {
+        if (!deferredPrompt) {
+          toast('info', 'Ya instalada', 'La app ya está instalada o tu navegador no la soporta');
+          return;
+        }
+        
+        deferredPrompt.prompt();
+        
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            toast('success', '¡Instalada!', 'FinanIA se agregó a tu pantalla de inicio');
+          }
+          deferredPrompt = null;
+          
+          const btn = document.getElementById('btnInstalarPWA');
+          if (btn) btn.style.display = 'none';
+        });
+      }
+
+      // Ocultar botón si ya está instalada
+      window.addEventListener('appinstalled', () => {
+        const btn = document.getElementById('btnInstalarPWA');
+        if (btn) btn.style.display = 'none';
+        toast('success', '¡Instalada!', 'FinanIA se agregó a tu pantalla de inicio');
+      });
+      </script>
+
     <a href="/FinanIA/auth/logout.php" style="color:#e74c3c; margin-top:15px;">
       🚪 Cerrar Sesión
     </a>

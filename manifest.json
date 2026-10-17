@@ -1,0 +1,69 @@
+{
+  "name": "FinanIA - Gestor Financiero Inteligente",
+  "short_name": "FinanIA",
+  "description": "Gestor inteligente de finanzas personales para estudiantes colombianos",
+  "start_url": "/FinanIA/dashboards/registrado.php",
+  "scope": "/FinanIA/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0a1929",
+  "theme_color": "#d4af37",
+  "lang": "es-CO",
+  "dir": "ltr",
+  "categories": ["finance", "productivity", "education"],
+  "icons": [
+    {
+      "src": "/FinanIA/assets/img/pwa/icon-72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/FinanIA/assets/img/pwa/icon-96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/FinanIA/assets/img/pwa/icon-144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/FinanIA/assets/img/pwa/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/FinanIA/assets/img/pwa/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Nueva Transacción",
+      "short_name": "Transacción",
+      "description": "Registrar una nueva transacción",
+      "url": "/FinanIA/modulos/transacciones/index.php?accion=crear",
+      "icons": [{ "src": "/FinanIA/assets/img/pwa/icon-96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Mi Calendario",
+      "short_name": "Calendario",
+      "description": "Ver el calendario financiero",
+      "url": "/FinanIA/modulos/calendario/index.php",
+      "icons": [{ "src": "/FinanIA/assets/img/pwa/icon-96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Mi Dashboard",
+      "short_name": "Dashboard",
+      "description": "Ver el dashboard principal",
+      "url": "/FinanIA/dashboards/registrado.php",
+      "icons": [{ "src": "/FinanIA/assets/img/pwa/icon-96.png", "sizes": "96x96" }]
+    }
+  ]
+}
