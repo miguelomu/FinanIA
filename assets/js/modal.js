@@ -2,15 +2,7 @@
  * Modal de confirmación personalizado
  * 
  * Uso:
- *   <a href="eliminar.php?id=5" onclick="return confirmar(event, {
- *     titulo: '¿Eliminar transacción?',
- *     mensaje: 'Esta acción no se puede deshacer.',
- *     tipo: 'danger',
- *     confirmar: 'Eliminar'
- *   })">Eliminar</a>
- * 
- * O simplificado:
- *   <a href="..." onclick="return confirmar(event)">Eliminar</a>
+ *   <a href="eliminar.php?id=5" onclick="return confirmar(event, {...})">Eliminar</a>
  */
 
 (function() {
@@ -30,8 +22,8 @@
         <h3 class="modal-titulo" id="modalTitulo">¿Estás seguro?</h3>
         <p class="modal-mensaje" id="modalMensaje">Esta acción no se puede deshacer.</p>
         <div class="modal-botones">
-          <button class="btn btn-secondary" onclick="cerrarModal(false)">Cancelar</button>
-          <button class="btn btn-danger" id="modalBtnConfirmar" onclick="cerrarModal(true)">Confirmar</button>
+          <button type="button" class="btn btn-secondary" onclick="cerrarModal(false)">Cancelar</button>
+          <button type="button" class="btn btn-danger" id="modalBtnConfirmar" onclick="cerrarModal(true)">Confirmar</button>
         </div>
       </div>
     `;
@@ -42,20 +34,24 @@
 
   /**
    * Muestra el modal de confirmación
-   * 
-   * @param {Event} event - Evento del clic (para prevenir el default)
-   * @param {Object} opciones - Configuración del modal
    */
   window.confirmar = function(event, opciones = {}) {
+    // Prevenir la navegación por defecto
     event.preventDefault();
+    event.stopPropagation();
     
+    // Obtener el href del elemento
+    const elemento = event.currentTarget || event.target.closest('a');
+    const href = elemento ? elemento.getAttribute('href') : null;
+
     const config = {
       titulo: opciones.titulo || '¿Estás seguro?',
       mensaje: opciones.mensaje || 'Esta acción no se puede deshacer.',
       tipo: opciones.tipo || 'danger',
       icono: opciones.icono || (opciones.tipo === 'danger' ? '🗑️' : '⚠️'),
       confirmar: opciones.confirmar || 'Confirmar',
-      href: event.currentTarget.href || null
+      href: opciones.href || href,
+      form: opciones.form || null
     };
 
     const modal = document.getElementById('modalConfirm');
@@ -70,9 +66,12 @@
     mensaje.textContent = config.mensaje;
     btnConfirmar.textContent = config.confirmar;
 
+    // Callback al confirmar
     callbackActual = function() {
       if (config.href) {
         window.location.href = config.href;
+      } else if (config.form) {
+        document.querySelector(config.form).submit();
       }
     };
 
@@ -91,13 +90,15 @@
     modal.classList.remove('activo');
     
     if (confirmado && callbackActual) {
-      callbackActual();
+      const cb = callbackActual;
+      callbackActual = null;
+      cb();
+    } else {
+      callbackActual = null;
     }
-    
-    callbackActual = null;
   };
 
-  // Cerrar al hacer clic en el overlay (fuera del modal)
+  // Cerrar al hacer clic en el overlay
   document.addEventListener('click', function(e) {
     if (e.target.classList.contains('modal-overlay')) {
       cerrarModal(false);

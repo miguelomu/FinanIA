@@ -113,7 +113,8 @@ class FuenteIngresoController
         if ($id > 0) {
             $this->model->eliminar($id, $this->idUsuario);
         }
-        redirigir('index.php?msg=eliminado');
+        toastSuccess('Fuente eliminada', 'La fuente de ingreso se eliminó');
+        redirigir('index.php');
     }
 
     private function render($vista, $datos = [])

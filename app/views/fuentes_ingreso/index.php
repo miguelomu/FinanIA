@@ -101,7 +101,7 @@
 
             <div class="btn-group" style="margin-top:15px;">
               <a href="index.php?accion=editar&id=<?= $f['id_fuente'] ?>" class="btn btn-secondary" style="font-size:0.75rem; padding:8px 12px;">✏️ Editar</a>
-              <a href="index.php?accion=eliminar&id=<?= $p['id_presupuesto'] ?>" 
+              <a href="index.php?accion=eliminar&id=<?= $f['id_fuente'] ?>" 
                 class="btn btn-secondary" 
                 style="font-size:0.75rem; padding:8px 12px; color:#e74c3c;"
                 onclick="return confirmar(event, {

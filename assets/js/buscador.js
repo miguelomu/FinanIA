@@ -177,49 +177,60 @@
     // UTILIDADES
     // ============================================
     function iconoPorTipo(tipo) {
-      return {
-        transaccion: '💸',
-        meta: '🎯',
-        deuda: '💳',
-        cuenta: '🏦',
-        categoria: '🏷️'
-      }[tipo] || '📌';
+        return {
+            transaccion: '💸',
+            meta: '🎯',
+            deuda: '💳',
+            cuenta: '🏦',
+            categoria: '🏷️',
+            fuente: '💼',
+            recurrente: '🔄'
+        }[tipo] || '📌';
     }
 
     function metaPorTipo(item) {
-      if (item.tipo_item === 'transaccion') {
-        return item.categoria || 'Sin categoría';
-      }
-      if (item.tipo_item === 'meta') {
-        return `Progreso: ${item.progreso}% · Vence ${formatFecha(item.fecha_limite)}`;
-      }
-      if (item.tipo_item === 'deuda') {
-        return `Tasa ${item.tasa_interes}% · ${capitalizar(item.estado)}`;
-      }
-      if (item.tipo_item === 'cuenta') {
-        return capitalizar(item.tipo);
-      }
-      if (item.tipo_item === 'categoria') {
-        return capitalizar(item.tipo);
-      }
-      return '';
+        if (item.tipo_item === 'transaccion') {
+            return item.categoria || 'Sin categoría';
+        }
+        if (item.tipo_item === 'meta') {
+            return `Progreso: ${item.progreso}% · Vence ${formatFecha(item.fecha_limite)}`;
+        }
+        if (item.tipo_item === 'deuda') {
+            return `Tasa ${item.tasa_interes}% · ${capitalizar(item.estado)}`;
+        }
+        if (item.tipo_item === 'cuenta') {
+            return capitalizar(item.tipo);
+        }
+        if (item.tipo_item === 'categoria') {
+            return capitalizar(item.tipo);
+        }
+        if (item.tipo_item === 'fuente') {
+            return `${capitalizar(item.tipo)} · ${capitalizar(item.frecuencia)}`;
+        }
+        if (item.tipo_item === 'recurrente') {
+            return `${capitalizar(item.categoria || 'Sin categoría')} · Recurrente mensual`;
+        }
+        return '';
     }
 
     function valorPorTipo(item) {
-      if (item.tipo_item === 'transaccion') {
-        const signo = item.tipo === 'ingreso' ? '+' : '-';
-        return `<span style="color:${item.tipo === 'ingreso' ? '#27ae60' : '#e74c3c'};">${signo}${formatCOP(item.monto)}</span>`;
-      }
-      if (item.tipo_item === 'cuenta') {
-        return `<span style="color:#27ae60;">${formatCOP(item.saldo_actual)}</span>`;
-      }
-      if (item.tipo_item === 'meta') {
-        return `<span style="color:#d4af37;">${item.progreso}%</span>`;
-      }
-      if (item.tipo_item === 'deuda') {
-        return `<span style="color:#e74c3c;">${formatCOP(item.pendiente)}</span>`;
-      }
-      return '';
+        if (item.tipo_item === 'transaccion' || item.tipo_item === 'recurrente') {
+            const signo = item.tipo === 'ingreso' ? '+' : '-';
+            return `<span style="color:${item.tipo === 'ingreso' ? '#27ae60' : '#e74c3c'};">${signo}${formatCOP(item.monto)}</span>`;
+        }
+        if (item.tipo_item === 'cuenta') {
+            return `<span style="color:#27ae60;">${formatCOP(item.saldo_actual)}</span>`;
+        }
+        if (item.tipo_item === 'meta') {
+            return `<span style="color:#d4af37;">${item.progreso}%</span>`;
+        }
+        if (item.tipo_item === 'deuda') {
+            return `<span style="color:#e74c3c;">${formatCOP(item.pendiente)}</span>`;
+        }
+        if (item.tipo_item === 'fuente') {
+            return `<span style="color:#27ae60;">${formatCOP(item.monto_promedio)}</span>`;
+        }
+        return '';
     }
 
     function formatCOP(valor) {

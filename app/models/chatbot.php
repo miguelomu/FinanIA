@@ -120,13 +120,22 @@ class Chatbot
             'ayuda_salud' => ['cómo funciona salud financiera', 'qué es el puntaje de salud'],
             'tour_modulos' => ['qué módulos tiene', 'qué puedo hacer en la app', 'explícame todo', 'qué funciones hay', 'lista de funciones'],
 
+            // Nuevas funcionalidades
+            'ayuda_importar_csv' => ['importar csv', 'importar extracto', 'subir extracto', 'subir csv', 'importar transacciones del banco', 'importo un csv', 'importar un csv', 'como importar csv', 'como importo un csv'],
+            'ayuda_busqueda' => ['como buscar', 'busqueda global', 'ctrl k', 'atajo de busqueda', 'buscar en la app'],
+            'ayuda_calendario' => ['calendario', 'vista mensual', 'como funciona el calendario'],
+            'ayuda_recurrentes' => ['transacciones recurrentes', 'pagos recurrentes', 'que son los recurrentes'],
+            'ayuda_logros' => ['logros', 'medallas', 'como gano logros', 'que son los logros'],
+            'ayuda_perfil' => ['perfil de riesgo', 'perfil de inversionista', 'que perfil soy'],
+            'ayuda_simulador_inversion' => ['simulador de inversiones', 'como invertir', 'cdt', 'fic', 'comparador de inversiones', 'calculadora de meta'],
+            
             // Ayuda
             'ayuda' => ['qué puedes hacer', 'ayuda', 'cómo funcionas', 'qué haces', 'opciones']
         ];
 
         foreach ($patrones as $intencion => $keywords) {
             foreach ($keywords as $kw) {
-                $kwNormalizada = $this->normalizarTexto($kw);
+                $kwNormalizada = $this->normalizarTexto($kw);   // ← importante
                 if (mb_strpos($msg, $kwNormalizada) !== false) {
                     return $intencion;
                 }
@@ -239,6 +248,19 @@ class Chatbot
 
             case 'crear_deuda':
                 return $this->respuestaCrearDeuda($msg);
+
+            case 'ayuda_importar_csv':
+                return $this->respuestaAyudaImportarCSV();
+            case 'ayuda_busqueda':
+                return $this->respuestaAyudaBusqueda();
+            case 'ayuda_calendario':
+                return $this->respuestaAyudaCalendario();
+            case 'ayuda_recurrentes':
+                return $this->respuestaAyudaRecurrentes();
+            case 'ayuda_logros':
+                return $this->respuestaAyudaLogros();
+            case 'ayuda_perfil':
+                return $this->respuestaAyudaPerfil();
 
             default:
                 return $this->respuestaDesconocida();
@@ -1240,6 +1262,102 @@ class Chatbot
                "• **Configuración:** Ajusta tasas del mercado\n\n" .
                "**Otros:** Logros, Fuentes de Ingreso, Recurrentes, Onboarding\n\n" .
                "💡 Pregúntame sobre cualquier módulo y te explico cómo funciona.";
+    }
+
+    // ==========================================
+    // RESPUESTAS DE NUEVAS FUNCIONALIDADES
+    // ==========================================
+
+    private function respuestaAyudaImportarCSV()
+    {
+        return "📂 **Importar extractos bancarios CSV**\n\n" .
+               "**Para qué sirve:** Sube el CSV de tu banco y el sistema importa automáticamente todas las transacciones.\n\n" .
+               "**Cómo usarlo:**\n" .
+               "**Paso 1:** Descarga el CSV de tu banco (Bancolombia, Davivienda, Nequi, Nu).\n" .
+               "**Paso 2:** Ve a **📂 Importar CSV** en el menú lateral.\n" .
+               "**Paso 3:** Arrastra el archivo a la zona de carga.\n" .
+               "**Paso 4:** Revisa la previsualización.\n" .
+               "**Paso 5:** Selecciona la cuenta destino y confirma.\n\n" .
+               "💡 **El sistema automáticamente:**\n" .
+               "• Detecta las columnas de fecha, monto y descripción\n" .
+               "• Determina si es ingreso o gasto por el signo\n" .
+               "• Categoriza según palabras clave (Éxito → Comida, Uber → Transporte)\n\n" .
+               "📥 También hay una **plantilla de ejemplo** descargable.";
+    }
+
+    private function respuestaAyudaBusqueda()
+    {
+        return "🔍 **Búsqueda Global**\n\n" .
+               "**Para qué sirve:** Buscar cualquier cosa del sistema en segundos.\n\n" .
+               "**Cómo usarlo:**\n" .
+               "• Presiona **Ctrl + K** (o Cmd + K en Mac) en cualquier página.\n" .
+               "• El cursor se pone automáticamente en la barra de búsqueda.\n" .
+               "• Escribe al menos 2 letras.\n\n" .
+               "**Búsqueda en:**\n" .
+               "• 💸 Transacciones\n" .
+               "• 🎯 Metas\n" .
+               "• 💳 Deudas\n" .
+               "• 🏦 Cuentas\n" .
+               "• 🏷️ Categorías\n\n" .
+               "**Atajos:**\n" .
+               "• **↑↓** para navegar entre resultados\n" .
+               "• **Enter** para abrir el resultado\n" .
+               "• **Esc** para cerrar";
+    }
+
+    private function respuestaAyudaCalendario()
+    {
+        return "📅 **Calendario Financiero**\n\n" .
+               "**Qué muestra:**\n" .
+               "• 💸 Transacciones por día (verde = ingreso, rojo = gasto)\n" .
+               "• 💳 Vencimientos de deudas (amarillo)\n" .
+               "• 🎯 Fechas límite de metas (morado)\n" .
+               "• 🔄 **Pagos recurrentes proyectados** (azul, borde punteado)\n\n" .
+               "**Cómo usarlo:**\n" .
+               "**Paso 1:** Ve a **📅 Calendario** en el menú lateral.\n" .
+               "**Paso 2:** Navega entre meses con **← Anterior** y **Siguiente →**.\n" .
+               "**Paso 3:** Haz clic en cualquier día para ver el detalle completo.\n\n" .
+               "💡 **Ventaja:** Verás los pagos recurrentes (Netflix, arriendo, cuotas) **proyectados** en los próximos meses, aunque aún no los hayas registrado.";
+    }
+
+    private function respuestaAyudaRecurrentes()
+    {
+        return "🔄 **Transacciones recurrentes**\n\n" .
+               "**Qué son:** Pagos que se repiten cada mes (arriendo, Netflix, cuotas).\n\n" .
+               "**Cómo marcarlas:**\n" .
+               "Al crear una transacción, marca la casilla **'Recurrente'**.\n\n" .
+               "**Dónde verlas:**\n" .
+               "• En el módulo **🔄 Recurrentes** aparecen agrupadas con su impacto anual.\n" .
+               "• En el **📅 Calendario** se proyectan automáticamente en los próximos meses con un borde punteado azul.\n\n" .
+               "💡 **Ejemplo:** Si registras el arriendo como recurrente, verás el gasto proyectado en el calendario de todos los meses siguientes sin tener que registrarlo de nuevo.";
+    }
+
+    private function respuestaAyudaLogros()
+    {
+        return "🏆 **Sistema de Logros**\n\n" .
+               "**Qué son:** Medallas que desbloqueas al cumplir hitos financieros.\n\n" .
+               "**Categorías:**\n" .
+               "• 🎯 **Inicio** — Primeros pasos (registrarte, crear cuenta, primer movimiento)\n" .
+               "• 💰 **Ahorro** — Metas cumplidas, fondo de emergencia\n" .
+               "• 💳 **Deuda** — Pagar deudas completas\n" .
+               "• 📊 **Disciplina** — Registrar consecutivamente, hitos de transacciones\n" .
+               "• 👑 **Maestría** — Salud financiera alta, logros avanzados\n\n" .
+               "**Dónde verlos:** Ve a **🏆 Mis Logros** en el menú lateral.\n\n" .
+               "💡 Cada logro otorga **puntos** que suman a tu perfil financiero.";
+    }
+
+    private function respuestaAyudaPerfil()
+    {
+        return "📊 **Tu Perfil de Inversionista**\n\n" .
+               "**Qué es:** Un análisis que hacemos con **5 preguntas sobre tu tolerancia al riesgo** durante el onboarding.\n\n" .
+               "**Perfiles posibles:**\n" .
+               "• 🛡️ **Conservador** — Prefieres seguridad sobre rendimiento\n" .
+               "• 🌱 **Cauteloso** — Balance entre seguridad y crecimiento\n" .
+               "• ⚖️ **Moderado** — Riesgo moderado a largo plazo\n" .
+               "• 🚀 **Valiente** — Alta tolerancia a la volatilidad\n" .
+               "• 🔥 **Arriesgado** — Buscas máximos rendimientos\n\n" .
+               "**Cómo se usa:** El **Chatbot** y el **Simulador de Inversiones** personalizan sus recomendaciones según tu perfil.\n\n" .
+               "💡 Pregúntame \"¿debería invertir?\" para ver recomendaciones personalizadas.";
     }
 
 }

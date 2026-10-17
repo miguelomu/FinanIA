@@ -84,7 +84,9 @@ class FuenteIngreso
 
     public function eliminar($id, $idUsuario)
     {
-        $stmt = $this->pdo->prepare("DELETE FROM fuente_ingreso WHERE id_fuente = ? AND id_usuario = ?");
+        $stmt = $this->pdo->prepare(
+            "DELETE FROM fuente_ingreso WHERE id_fuente = ? AND id_usuario = ?"
+        );
         return $stmt->execute([$id, $idUsuario]);
     }
 

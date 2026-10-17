@@ -161,6 +161,58 @@ try {
         ];
     }
 
+        // ============================================
+    // 6. FUENTES DE INGRESO
+    // ============================================
+    $stmt = $pdo->prepare(
+        "SELECT id_fuente AS id, nombre AS titulo, 
+                tipo, frecuencia, monto_promedio, color
+         FROM fuente_ingreso
+         WHERE id_usuario = ? AND nombre LIKE ?
+         LIMIT 5"
+    );
+    $stmt->execute([$idUsuario, $busqueda]);
+    $fuentes = $stmt->fetchAll();
+
+    if (!empty($fuentes)) {
+        foreach ($fuentes as &$f) {
+            $f['url'] = '/FinanIA/modulos/fuentes_ingreso/index.php?accion=editar&id=' . $f['id'];
+            $f['tipo_item'] = 'fuente';
+        }
+        $resultados[] = [
+            'categoria' => '💼 Fuentes de Ingreso',
+            'items' => $fuentes
+        ];
+    }
+
+    // ============================================
+    // 7. TRANSACCIONES RECURRENTES
+    // ============================================
+    $stmt = $pdo->prepare(
+        "SELECT t.id_transaccion AS id, t.descripcion AS titulo, 
+                t.monto, t.tipo,
+                c.nombre AS categoria
+         FROM transaccion t
+         LEFT JOIN categoria c ON t.id_categoria = c.id_categoria
+         WHERE t.id_usuario = ? AND t.recurrente = TRUE 
+               AND (t.descripcion LIKE ? OR c.nombre LIKE ?)
+         GROUP BY t.descripcion
+         LIMIT 5"
+    );
+    $stmt->execute([$idUsuario, $busqueda, $busqueda]);
+    $recurrentes = $stmt->fetchAll();
+
+    if (!empty($recurrentes)) {
+        foreach ($recurrentes as &$r) {
+            $r['url'] = '/FinanIA/modulos/recurrentes/index.php';
+            $r['tipo_item'] = 'recurrente';
+        }
+        $resultados[] = [
+            'categoria' => '🔄 Recurrentes',
+            'items' => $recurrentes
+        ];
+    }
+
     echo json_encode([
         'success' => true,
         'query' => $query,

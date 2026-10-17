@@ -7,15 +7,14 @@ $esDesarrollador = function_exists('esDesarrollador') && esDesarrollador();
 <aside class="sidebar">
   <h2>💰 FinanIA</h2>
   
-  <div class="buscador-global" style="margin-bottom: 20px;">
-    <span class="buscador-icono">🔍</span>
-    <input type="text" 
-           class="buscador-input" 
-           placeholder="Buscar..." 
-           autocomplete="off">
-    <span class="buscador-atajo">Ctrl+K</span>
-    <div class="buscador-resultados"></div>
-  </div>
+  <div class="buscador-global">
+  <span class="buscador-icono" style="position:absolute; left:15px; top:50%; transform:translateY(-50%); color:#d4af37;">🔍</span>
+  <input type="text" 
+         class="buscador-input" 
+         placeholder="Buscar (Ctrl+K)..." 
+         autocomplete="off">
+  <div class="buscador-resultados"></div>
+</div>
   
   <nav>
     <!-- Comunes a todos -->
