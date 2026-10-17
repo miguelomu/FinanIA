@@ -129,6 +129,8 @@ class Chatbot
             'ayuda_perfil' => ['perfil de riesgo', 'perfil de inversionista', 'que perfil soy'],
             'ayuda_simulador_inversion' => ['simulador de inversiones', 'como invertir', 'cdt', 'fic', 'comparador de inversiones', 'calculadora de meta'],
             
+            'ayuda_inversion' => ['ideas de inversion', 'donde invierto', 'como invertir', 'mejores inversiones', 'que hago con mi dinero', 'invertir en que', 'productos para invertir', 'inversiones tangibles', 'inversiones intangibles'],
+
             // Ayuda
             'ayuda' => ['qué puedes hacer', 'ayuda', 'cómo funcionas', 'qué haces', 'opciones']
         ];
@@ -261,6 +263,9 @@ class Chatbot
                 return $this->respuestaAyudaLogros();
             case 'ayuda_perfil':
                 return $this->respuestaAyudaPerfil();
+
+            case 'ayuda_inversion':
+                return $this->respuestaAyudaInversion();
 
             default:
                 return $this->respuestaDesconocida();
@@ -1358,6 +1363,26 @@ class Chatbot
                "• 🔥 **Arriesgado** — Buscas máximos rendimientos\n\n" .
                "**Cómo se usa:** El **Chatbot** y el **Simulador de Inversiones** personalizan sus recomendaciones según tu perfil.\n\n" .
                "💡 Pregúntame \"¿debería invertir?\" para ver recomendaciones personalizadas.";
+    }
+
+    private function respuestaAyudaInversion()
+    {
+        // Obtener perfil del usuario
+        require_once __DIR__ . '/PerfilRiesgo.php';
+        $perfil = PerfilRiesgo::obtenerPerfil($this->pdo, $this->idUsuario);
+        $perfilTexto = $perfil ? ucfirst($perfil) : 'Moderado';
+
+        return "💡 **Ideas de Inversión**\n\n" .
+            "En el módulo **Ideas de Inversión** (Premium) puedes descubrir dónde poner tu dinero.\n\n" .
+            "**📈 Inversión Intangible:**\n" .
+            "• Te muestro todas las opciones (CDT, FIC, ETFs, Acciones, Cripto) ordenadas según tu perfil **{$perfilTexto}**.\n" .
+            "• La primera aparece marcada como **RECOMENDADA** con su justificación.\n" .
+            "• Cada opción incluye riesgo, liquidez, proyección de rendimiento real y dónde invertir.\n\n" .
+            "**📦 Inversión Tangible:**\n" .
+            "• Ingresa cuánto quieres invertir y el sistema calcula automáticamente cuántos productos puedes comprar (bisutería, hogar, mascotas).\n" .
+            "• Verás la inversión total, el ingreso por venta, la ganancia y el **ROI**.\n" .
+            "• Al desplegar cada producto, verás un **gráfico de barras** con la proyección.\n\n" .
+            "👉 Ve al menú lateral y haz clic en **💡 Ideas de Inversión** para empezar.";
     }
 
 }

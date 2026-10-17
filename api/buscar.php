@@ -213,6 +213,31 @@ try {
         ];
     }
 
+    // ============================================
+    // 8. PRODUCTOS DE INVERSIÓN (tangibles)
+    // ============================================
+    $stmt = $pdo->prepare(
+        "SELECT id_producto AS id, nombre AS titulo, 
+                categoria, costo_unitario, precio_venta_sugerido
+         FROM producto_inversion
+         WHERE activo = TRUE AND nombre LIKE ?
+         LIMIT 5"
+    );
+    $stmt->execute([$busqueda]);
+    $productos = $stmt->fetchAll();
+
+    if (!empty($productos)) {
+        foreach ($productos as &$p) {
+            $p['url'] = '/modulos/inversion/index.php';
+            $p['tipo_item'] = 'producto_inversion';
+            $p['ganancia'] = $p['precio_venta_sugerido'] - $p['costo_unitario'];
+        }
+        $resultados[] = [
+            'categoria' => '💡 Productos de Inversión',
+            'items' => $productos
+        ];
+    }
+
     echo json_encode([
         'success' => true,
         'query' => $query,

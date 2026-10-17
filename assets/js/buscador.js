@@ -177,15 +177,16 @@
     // UTILIDADES
     // ============================================
     function iconoPorTipo(tipo) {
-        return {
-            transaccion: '💸',
-            meta: '🎯',
-            deuda: '💳',
-            cuenta: '🏦',
-            categoria: '🏷️',
-            fuente: '💼',
-            recurrente: '🔄'
-        }[tipo] || '📌';
+      return {
+        transaccion: '💸',
+        meta: '🎯',
+        deuda: '💳',
+        cuenta: '🏦',
+        categoria: '🏷️',
+        fuente: '💼',
+        recurrente: '🔄',
+        producto_inversion: '💡'   // ← NUEVO
+      }[tipo] || '📌';
     }
 
     function metaPorTipo(item) {
@@ -210,6 +211,9 @@
         if (item.tipo_item === 'recurrente') {
             return `${capitalizar(item.categoria || 'Sin categoría')} · Recurrente mensual`;
         }
+        if (item.tipo_item === 'producto_inversion') {
+            return `Costo: ${formatCOP(item.costo_unitario)} · Ganancia: +${formatCOP(item.ganancia)}`;
+        }
         return '';
     }
 
@@ -229,6 +233,9 @@
         }
         if (item.tipo_item === 'fuente') {
             return `<span style="color:#27ae60;">${formatCOP(item.monto_promedio)}</span>`;
+        }
+        if (item.tipo_item === 'producto_inversion') {
+            return `<span style="color:#d4af37;">${capitalizar(item.categoria)}</span>`;
         }
         return '';
     }

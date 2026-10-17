@@ -3,11 +3,6 @@
 -- Versión completa actualizada
 -- ============================================
 
-CREATE DATABASE IF NOT EXISTS gestor_financiero
-CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
-USE gestor_financiero;
-
 -- ============================================
 -- 1. USUARIO
 -- ============================================

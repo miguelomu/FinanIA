@@ -173,6 +173,14 @@ include __DIR__ . '/../../includes/header.php';
                 [
                     'pregunta' => '¿Qué puede hacer el Chatbot IA?',
                     'respuesta' => 'Analiza tus datos reales y responde: "¿cuánto tengo?", "¿cuánto debo?", "¿podré ahorrar 5 millones en 6 meses?", "¿debería invertir?". Además <strong>personaliza sus respuestas según tu perfil de riesgo</strong>.'
+                ],
+                [
+                    'pregunta' => '¿Cómo funciona "Ideas de Inversión"?',
+                    'respuesta' => 'Es una herramienta Premium que te dice <strong>dónde invertir tu dinero</strong> según tu perfil de riesgo y presupuesto. Tiene dos secciones: <br><br>📈 <strong>Inversión Intangible:</strong> Te muestra todas las opciones (CDT, FIC, ETFs, Acciones, Cripto) ordenadas según tu perfil. La primera aparece marcada como <strong>"RECOMENDADA"</strong> con su justificación. Al hacer clic en cada una, ves riesgo, liquidez, proyección de rendimiento real (descontando inflación) y dónde invertir.<br><br>📦 <strong>Inversión Tangible:</strong> Ingresa cuánto quieres invertir y el sistema calcula automáticamente <strong>cuántos productos puedes comprar</strong> (bisutería, hogar, mascotas), la inversión total, el ingreso por venta, la ganancia y el <strong>ROI</strong>. Al desplegar cada producto, ves un <strong>gráfico de barras</strong> con la proyección. Incluye proveedores sugeridos y dónde comprar.'
+                ],
+                [
+                    'pregunta' => '¿Cómo se calcula la rentabilidad de los productos tangibles?',
+                    'respuesta' => 'El sistema usa la fórmula: <strong>Unidades = Presupuesto ÷ Costo Unitario</strong> (respetando el mínimo de compra). Luego calcula:<br>• Inversión total = Unidades × Costo Unitario<br>• Ingreso total = Unidades × Precio de Venta<br>• Ganancia = Ingreso − Inversión<br>• ROI = (Ganancia ÷ Inversión) × 100%<br><br>Todo se muestra con números exactos y un gráfico comparativo.'
                 ]
             ]
         ]

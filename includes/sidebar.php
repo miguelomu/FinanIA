@@ -44,6 +44,7 @@ $esDesarrollador = function_exists('esDesarrollador') && esDesarrollador();
 
     <?php if ($esPremium): ?>
       <a href="/FinanIA/modulos/chatbot/index.php">🤖 Asistente IA</a>
+      <a href="/FinanIA/modulos/inversion/index.php">💡 Ideas de Inversión</a>
       <a href="/FinanIA/modulos/simulador/index.php">🏔️ Simulador de Deudas</a>
       <a href="/FinanIA/modulos/simulador_inversion/index.php">💰 Simulador de Inversiones</a>
       <a href="/FinanIA/modulos/configuracion/index.php">⚙️ Configuración</a>
@@ -53,6 +54,11 @@ $esDesarrollador = function_exists('esDesarrollador') && esDesarrollador();
          style="opacity:0.5; cursor:pointer;"
          title="Actualiza a Premium para acceder">
         🔒 🤖 Asistente IA
+      </a>
+      <a href="/FinanIA/premium/index.php" 
+        style="opacity:0.5; cursor:pointer;"
+        title="Actualiza a Premium para acceder">
+        🔒 💡 Ideas de Inversión
       </a>
       <a href="/FinanIA/premium/index.php" 
          style="opacity:0.5; cursor:pointer;"

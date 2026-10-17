@@ -78,6 +78,18 @@ function getInt($clave, $default = 0)
 }
 
 /**
+ * Obtiene un valor de $_GET como decimal
+ * 
+ * @param string $clave
+ * @param float $default
+ * @return float
+ */
+function getFloat($clave, $default = 0)
+{
+    return floatval($_GET[$clave] ?? $default);
+}
+
+/**
  * Verifica si la petición es POST
  * 
  * @return bool

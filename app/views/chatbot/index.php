@@ -188,15 +188,16 @@
   <main class="main-content">
     <div class="topbar">
       <h1>🤖 FinanIA - Asistente Financiero</h1>
-      <form method="POST" action="index.php?accion=limpiar" style="margin:0;">
+      <form method="POST" action="index.php?accion=limpiar" style="margin:0;" id="formLimpiar">
         <?= csrfField() ?>
-        <button type="submit" class="btn btn-secondary" 
-                onclick="return confirmar(event, {
+        <button type="button" class="btn btn-secondary" 
+                onclick="confirmar(event, {
                   titulo: '¿Limpiar historial?',
-                  mensaje: 'Se eliminarán todas las conversaciones con el asistente.',
+                  mensaje: 'Se eliminarán todas las conversaciones con el asistente. Esta acción no se puede deshacer.',
                   tipo: 'warning',
                   icono: '🗑️',
-                  confirmar: 'Limpiar todo'
+                  confirmar: 'Limpiar todo',
+                  form: '#formLimpiar'
                 })">
           🗑️ Limpiar historial
         </button>
