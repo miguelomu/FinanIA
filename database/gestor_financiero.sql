@@ -1,6 +1,6 @@
 -- ============================================
 -- BASE DE DATOS: GESTOR FINANCIERO (FinanIA)
--- Versión completa actualizada
+-- Versión completa actualizada - 16 tablas
 -- ============================================
 
 -- ============================================
@@ -18,6 +18,26 @@ CREATE TABLE IF NOT EXISTS usuario (
     onboarding_completado BOOLEAN DEFAULT FALSE,
     premium_desde DATETIME NULL,
     metodo_pago VARCHAR(255) NULL,
+    -- Perfil personal
+    ocupacion ENUM('estudiante','empleado','freelance','independiente','desempleado','otro') DEFAULT NULL,
+    tipo_ingreso ENUM('fijo','variable','mixto') DEFAULT NULL,
+    dependientes INT DEFAULT 0,
+    -- Situación financiera
+    tiene_banco BOOLEAN DEFAULT TRUE,
+    tiene_fondo_emergencia BOOLEAN DEFAULT FALSE,
+    tiene_deudas BOOLEAN DEFAULT FALSE,
+    pago_mensual_deudas DECIMAL(12,2) DEFAULT 0,
+    -- Ingresos
+    ingreso_mensual DECIMAL(12,2) DEFAULT 0,
+    -- Perfil de riesgo
+    perfil_riesgo ENUM('conservador','cauteloso','moderado','valiente','arriesgado') DEFAULT NULL,
+    horizonte_inversion ENUM('corto','mediano','largo','muy_largo') DEFAULT NULL,
+    reaccion_caida ENUM('vender_todo','vender_algo','no_hacer_nada','comprar_mas') DEFAULT NULL,
+    objetivo_dinero ENUM('preservar','ingresos','crecer','maximizar') DEFAULT NULL,
+    porcentaje_ahorro ENUM('cero','bajo','medio','alto') DEFAULT NULL,
+    experiencia_inversion ENUM('ninguna','cdt','fondos','avanzada') DEFAULT NULL,
+    -- Bienvenida
+    bienvenida_vista BOOLEAN DEFAULT FALSE,
     fecha_registro DATETIME DEFAULT CURRENT_TIMESTAMP,
     ultimo_acceso DATETIME NULL
 );
@@ -234,6 +254,23 @@ CREATE TABLE IF NOT EXISTS chat_conversacion (
 );
 
 -- ============================================
+-- 16. PRODUCTO_INVERSION
+-- ============================================
+CREATE TABLE IF NOT EXISTS producto_inversion (
+    id_producto INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(150) NOT NULL,
+    categoria ENUM('bisuteria','hogar','tecnologia','pet','otros') DEFAULT 'otros',
+    proveedor_sugerido VARCHAR(200) NULL,
+    donde_comprar VARCHAR(255) NULL,
+    costo_unitario DECIMAL(12,2) NOT NULL,
+    precio_venta_sugerido DECIMAL(12,2) NOT NULL,
+    cantidad_minima INT DEFAULT 1,
+    notas TEXT NULL,
+    activo BOOLEAN DEFAULT TRUE,
+    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- ============================================
 -- DATOS POR DEFECTO
 -- ============================================
 
@@ -246,7 +283,13 @@ INSERT INTO configuracion_financiera (clave, valor, descripcion) VALUES
 ('tasa_ahorros_promedio', 8.50, 'Tasa promedio cuenta de ahorros'),
 ('tasa_fondo_promedio', 14.00, 'Rendimiento promedio fondo de inversión'),
 ('retencion_fuente_cdt', 4.00, 'Retención en la fuente para rendimientos financieros (%)'),
-('gravamen_movimientos', 0.40, 'Gravamen a movimientos financieros 4x1000 (%)')
+('gravamen_movimientos', 0.40, 'Gravamen a movimientos financieros 4x1000 (%)'),
+('tasa_fic_promedio', 12.00, 'Rendimiento promedio FIC en Colombia'),
+('tasa_fic_avanzado', 14.00, 'Rendimiento FIC agresivo'),
+('tasa_fic_conservador', 10.20, 'Rendimiento FIC conservador'),
+('tasa_cdt_180d', 11.50, 'Tasa CDT a 180 días'),
+('tasa_cdt_360d', 12.50, 'Tasa CDT a 360 días'),
+('tasa_cdt_720d', 13.00, 'Tasa CDT a 720 días')
 ON DUPLICATE KEY UPDATE valor = VALUES(valor);
 
 -- Logros por defecto
@@ -267,4 +310,11 @@ INSERT INTO logro (clave, nombre, descripcion, icono, color, categoria, puntos) 
 ('salud_70', 'Finanzas sanas', 'Salud financiera mayor a 70', '🌟', '#d4af37', 'maestria', 50),
 ('salud_90', 'Maestro financiero', 'Salud financiera mayor a 90', '👑', '#d4af37', 'maestria', 150),
 ('usuario_premium', 'Premium', 'Actualizaste a Premium', '⭐', '#9b59b6', 'maestria', 25)
+ON DUPLICATE KEY UPDATE nombre = VALUES(nombre);
+
+-- Productos de inversión tangible por defecto
+INSERT INTO producto_inversion (nombre, categoria, proveedor_sugerido, donde_comprar, costo_unitario, precio_venta_sugerido, cantidad_minima, notas) VALUES
+('Cadena de Acero con Dije', 'bisuteria', 'Awork Joyería / Brilho', 'Bogotá / Online', 5000, 15000, 12, 'Alta rotación, márgenes del 200%. Venta en redes sociales.'),
+('Set de Organizadores de Cocina', 'hogar', 'Importadora Casa Colombia', 'Online / Mayorista', 15000, 35000, 6, 'Buena demanda en hogares. Margen del 133%.'),
+('Juguete Interactivo para Mascotas', 'pet', 'Distribuidor local', 'Pet shops mayoristas', 12000, 28000, 10, 'Mercado en crecimiento. Margen del 133%.')
 ON DUPLICATE KEY UPDATE nombre = VALUES(nombre);
