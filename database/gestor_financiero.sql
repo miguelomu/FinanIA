@@ -318,3 +318,15 @@ INSERT INTO producto_inversion (nombre, categoria, proveedor_sugerido, donde_com
 ('Set de Organizadores de Cocina', 'hogar', 'Importadora Casa Colombia', 'Online / Mayorista', 15000, 35000, 6, 'Buena demanda en hogares. Margen del 133%.'),
 ('Juguete Interactivo para Mascotas', 'pet', 'Distribuidor local', 'Pet shops mayoristas', 12000, 28000, 10, 'Mercado en crecimiento. Margen del 133%.')
 ON DUPLICATE KEY UPDATE nombre = VALUES(nombre);
+
+-- ============================================
+-- 17. CHAT_CONTEXTO
+-- ============================================
+CREATE TABLE IF NOT EXISTS chat_contexto (
+    id_contexto INT AUTO_INCREMENT PRIMARY KEY,
+    id_usuario INT UNIQUE NOT NULL,
+    ultima_intencion VARCHAR(50) NULL,
+    datos_pendientes TEXT NULL,
+    fecha_actualizacion DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario) ON DELETE CASCADE
+);
