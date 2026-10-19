@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Consultas Multitabla - FinanIA</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
+  
+  body {
+    background: linear-gradient(135deg, #0a1929 0%, #132f4c 50%, #0a1929 100%);
+    color: #e6edf3;
+    min-height: 100vh;
+    padding: 30px 20px;
+    line-height: 1.7;
+  }
+  
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  header {
+    text-align: center;
+    padding: 40px 20px;
+    background: rgba(19, 47, 76, 0.6);
+    border-radius: 20px;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    margin-bottom: 30px;
+    backdrop-filter: blur(10px);
+  }
+  
+  header .icono {
+    font-size: 4rem;
+    margin-bottom: 15px;
+  }
+  
+  header h1 {
+    color: #d4af37;
+    font-size: 2rem;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+  }
+  
+  header p {
+    color: #9fb3c8;
+    font-size: 1.05rem;
+  }
+
+  /* Estadísticas */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+  }
+
+  .stat {
+    background: rgba(19, 47, 76, 0.5);
+    border-radius: 15px;
+    padding: 25px;
+    text-align: center;
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    transition: all 0.3s;
+  }
+
+  .stat:hover {
+    transform: translateY(-5px);
+    border-color: rgba(212, 175, 55, 0.5);
+  }
+
+  .stat .numero {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #d4af37;
+    margin-bottom: 5px;
+  }
+
+  .stat .etiqueta {
+    color: #9fb3c8;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* Índice de consultas */
+  .indice-consultas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: rgba(19, 47, 76, 0.4);
+    border-radius: 15px;
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    justify-content: center;
+  }
+
+  .indice-consultas a {
+    padding: 10px 20px;
+    background: rgba(10, 25, 41, 0.7);
+    color: #d4af37;
+    text-decoration: none;
+    border-radius: 25px;
+    font-size: 0.9rem;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    transition: all 0.3s;
+  }
+
+  .indice-consultas a:hover {
+    background: linear-gradient(135deg, #d4af37, #b8860b);
+    color: #0a1929;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+  }
+
+  /* Consultas */
+  .consulta {
+    background: rgba(19, 47, 76, 0.5);
+    border-radius: 20px;
+    margin-bottom: 30px;
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    overflow: hidden;
+    animation: fadeInUp 0.6s ease-out backwards;
+  }
+
+  .consulta:nth-child(1) { animation-delay: 0.1s; }
+  .consulta:nth-child(2) { animation-delay: 0.2s; }
+  .consulta:nth-child(3) { animation-delay: 0.3s; }
+  .consulta:nth-child(4) { animation-delay: 0.4s; }
+  .consulta:nth-child(5) { animation-delay: 0.5s; }
+  .consulta:nth-child(6) { animation-delay: 0.6s; }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .consulta-header {
+    padding: 25px 30px;
+    background: linear-gradient(90deg, rgba(212, 175, 55, 0.15), rgba(19, 47, 76, 0.5));
+    border-bottom: 2px solid rgba(212, 175, 55, 0.3);
+  }
+
+  .consulta-header h2 {
+    color: #d4af37;
+    font-size: 1.3rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+
+  .consulta-header .subtitulo {
+    color: #9fb3c8;
+    font-size: 0.9rem;
+    margin-left: 42px;
+  }
+
+  .consulta-body {
+    padding: 25px 30px;
+  }
+
+  .consulta-descripcion {
+    color: #c9d6e3;
+    margin-bottom: 20px;
+    padding: 15px 20px;
+    background: rgba(10, 25, 41, 0.5);
+    border-left: 4px solid #3498db;
+    border-radius: 8px;
+    font-size: 0.95rem;
+  }
+
+  .consulta-descripcion strong {
+    color: #6bb6ff;
+  }
+
+  /* Tablas relacionadas */
+  .tablas-relacionadas {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+
+  .tabla-tag {
+    padding: 6px 14px;
+    background: rgba(155, 89, 182, 0.2);
+    color: #d5a6ff;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border: 1px solid rgba(155, 89, 182, 0.3);
+    font-family: 'Courier New', monospace;
+  }
+
+  /* Código SQL */
+  .sql-codigo {
+    background: #0d1117;
+    border-radius: 12px;
+    padding: 25px;
+    margin: 20px 0;
+    overflow-x: auto;
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    position: relative;
+  }
+
+  .sql-codigo::before {
+    content: 'SQL';
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 0.7rem;
+    color: #d4af37;
+    font-weight: bold;
+    letter-spacing: 2px;
+    opacity: 0.6;
+  }
+
+  .sql-codigo pre {
+    color: #c9d6e3;
+    font-family: 'Courier New', Consolas, monospace;
+    font-size: 0.9rem;
+    line-height: 1.7;
+    margin: 0;
+    white-space: pre;
+  }
+
+  .sql-codigo .keyword { color: #ff7b72; font-weight: bold; }
+  .sql-codigo .function { color: #d2a8ff; }
+  .sql-codigo .string { color: #a5d6ff; }
+  .sql-codigo .comment { color: #8b949e; font-style: italic; }
+  .sql-codigo .table { color: #ffa657; }
+  .sql-codigo .operator { color: #ff7b72; }
+
+  /* Resultado esperado */
+  .resultado-esperado {
+    background: rgba(39, 174, 96, 0.08);
+    border-left: 4px solid #27ae60;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 20px;
+  }
+
+  .resultado-esperado h4 {
+    color: #7ee8a8;
+    margin-bottom: 12px;
+    font-size: 0.95rem;
+  }
+
+  .resultado-esperado p {
+    color: #c9d6e3;
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+  }
+
+  .resultado-tabla {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    font-size: 0.85rem;
+    background: rgba(10, 25, 41, 0.5);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .resultado-tabla th {
+    background: rgba(39, 174, 96, 0.2);
+    color: #7ee8a8;
+    padding: 10px 12px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .resultado-tabla td {
+    padding: 10px 12px;
+    color: #c9d6e3;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+  }
+
+  .resultado-tabla tr:last-child td {
+    border-bottom: none;
+  }
+
+  /* Utilidad */
+  .utilidad {
+    background: rgba(243, 156, 18, 0.08);
+    border-left: 4px solid #f39c12;
+    border-radius: 8px;
+    padding: 15px 20px;
+    margin-top: 20px;
+    font-size: 0.9rem;
+    color: #f39c12;
+  }
+
+  .utilidad strong {
+    color: #f39c12;
+  }
+
+  /* Botón volver arriba */
+  .btn-top {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #d4af37, #b8860b);
+    color: #0a1929;
+    border: none;
+    cursor: pointer;
+    font-size: 1.5rem;
+    box-shadow: 0 5px 20px rgba(212, 175, 55, 0.4);
+    transition: all 0.3s;
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  .btn-top.visible {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .btn-top:hover {
+    transform: translateY(-5px);
+  }
+
+  footer {
+    text-align: center;
+    padding: 30px;
+    color: #7a8a9c;
+    font-size: 0.9rem;
+    margin-top: 30px;
+  }
+
+  @media (max-width: 768px) {
+    header h1 { font-size: 1.4rem; }
+    .consulta-header { padding: 20px; }
+    .consulta-header h2 { font-size: 1.1rem; }
+    .consulta-body { padding: 20px; }
+    .sql-codigo { padding: 15px; }
+    .sql-codigo pre { font-size: 0.8rem; }
+    .btn-top { bottom: 15px; right: 15px; }
+  }
+</style>
+</head>
+<body>
+
+  <button onclick="volverPresentacion()" class="btn-volver">
+  ← Volver a la presentación
+</button>
+
+<script>
+  function volverPresentacion() {
+    // Intentar cerrar la pestaña (funciona si se abrió con window.open)
+    window.close();
+    
+    // Si después de 300ms la pestaña sigue abierta, redirigir
+    setTimeout(function() {
+      window.location.href = '../presentacion/index.html';
+    }, 300);
+  }
+</script>
+
+<style>.btn-volver {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #d4af37, #b8860b);
+  color: #0a1929;
+  border: none;
+  border-radius: 25px;
+  font-weight: bold;
+  font-size: 0.9rem;
+  box-shadow: 0 5px 20px rgba(212, 175, 55, 0.4);
+  z-index: 9999;
+  transition: all 0.3s;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  cursor: pointer;
+}
+.btn-volver:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(212, 175, 55, 0.6);
+}
+</style>
+
+<div class="container">
+
+  <header>
+    <div class="icono">🔗</div>
+    <h1>Consultas Multitabla SQL</h1>
+    <p>JOINs entre 3 o más tablas relacionadas - FinanIA</p>
+  </header>
+
+  <!-- Estadísticas -->
+  <div class="stats">
+    <div class="stat">
+      <div class="numero">6</div>
+      <div class="etiqueta">Consultas multitabla</div>
+    </div>
+    <div class="stat">
+      <div class="numero">3-5</div>
+      <div class="etiqueta">Tablas por consulta</div>
+    </div>
+    <div class="stat">
+      <div class="numero">100%</div>
+      <div class="etiqueta">Con JOIN</div>
+    </div>
+  </div>
+
+  <!-- Índice -->
+  <div class="indice-consultas">
+    <a href="#consulta1">1. Transacciones con detalle</a>
+    <a href="#consulta2">2. Saldo por cuenta</a>
+    <a href="#consulta3">3. Progreso de metas</a>
+    <a href="#consulta4">4. Deudas y pagos</a>
+    <a href="#consulta5">5. Presupuesto vs real</a>
+    <a href="#consulta6">6. Reporte consolidado</a>
+  </div>
+
+  <!-- ============================================
+       CONSULTA 1
+       ============================================ -->
+  <section class="consulta" id="consulta1">
+    <div class="consulta-header">
+      <h2>💸 1. Transacciones con Detalle Completo</h2>
+      <div class="subtitulo">Obtiene las transacciones con su categoría, cuenta y usuario</div>
+    </div>
+    <div class="consulta-body">
+      <div class="consulta-descripcion">
+        <strong>Objetivo:</strong> Mostrar todas las transacciones de un usuario con el nombre de su categoría y el nombre de la cuenta asociada. Esto permite ver el detalle completo en un solo listado.
+      </div>
+
+      <div class="tablas-relacionadas">
+        <span class="tabla-tag">transaccion</span>
+        <span class="tabla-tag">categoria</span>
+        <span class="tabla-tag">cuenta</span>
+        <span class="tabla-tag">usuario</span>
+      </div>
+
+      <div class="sql-codigo">
+        <pre><span class="keyword">SELECT</span> 
+    u.nombre <span class="keyword">AS</span> usuario,
+    t.fecha,
+    t.descripcion,
+    c.nombre <span class="keyword">AS</span> categoria,
+    cu.nombre <span class="keyword">AS</span> cuenta,
+    t.tipo,
+    t.monto
+<span class="keyword">FROM</span> <span class="table">transaccion</span> t
+<span class="keyword">INNER JOIN</span> <span class="table">usuario</span> u <span class="keyword">ON</span> t.id_usuario = u.id_usuario
+<span class="keyword">INNER JOIN</span> <span class="table">categoria</span> c <span class="keyword">ON</span> t.id_categoria = c.id_categoria
+<span class="keyword">LEFT JOIN</span> <span class="table">cuenta</span> cu <span class="keyword">ON</span> t.id_cuenta = cu.id_cuenta
+<span class="keyword">WHERE</span> t.id_usuario = 100
+<span class="keyword">ORDER BY</span> t.fecha <span class="keyword">DESC</span>
+<span class="keyword">LIMIT</span> 10;</pre>
+      </div>
+
+      <div class="resultado-esperado">
+        <h4>✅ Resultado esperado</h4>
+        <table class="resultado-tabla">
+          <thead>
+            <tr>
+              <th>usuario</th>
+              <th>fecha</th>
+              <th>descripcion</th>
+              <th>categoria</th>
+              <th>cuenta</th>
+              <th>tipo</th>
+              <th>monto</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Carlos Demo</td>
+              <td>2026-10-15</td>
+              <td>Supermercado</td>
+              <td>Comida</td>
+              <td>Nequi</td>
+              <td>gasto</td>
+              <td>$85.000</td>
+            </tr>
+            <tr>
+              <td>Carlos Demo</td>
+              <td>2026-10-14</td>
+              <td>Salario mensual</td>
+              <td>Salario</td>
+              <td>Bancolombia</td>
+              <td>ingreso</td>
+              <td>$3.500.000</td>
+            </tr>
+            <tr>
+              <td>Carlos Demo</td>
+              <td>2026-10-13</td>
+              <td>Gasolina</td>
+              <td>Transporte</td>
+              <td>Efectivo</td>
+              <td>gasto</td>
+              <td>$45.000</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="utilidad">
+        💡 <strong>Utilidad:</strong> Esta consulta alimenta el listado principal de transacciones y los reportes del dashboard.
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       CONSULTA 2
+       ============================================ -->
+  <section class="consulta" id="consulta2">
+    <div class="consulta-header">
+      <h2>🏦 2. Saldo Actual por Cuenta</h2>
+      <div class="subtitulo">Calcula el saldo real de cada cuenta sumando ingresos y restando gastos, aportes y pagos</div>
+    </div>
+    <div class="consulta-body">
+      <div class="consulta-descripcion">
+        <strong>Objetivo:</strong> Calcular el saldo actual de cada cuenta del usuario considerando su saldo inicial, todas las transacciones, los aportes a metas y los pagos de deudas.
+      </div>
+
+      <div class="tablas-relacionadas">
+        <span class="tabla-tag">cuenta</span>
+        <span class="tabla-tag">transaccion</span>
+        <span class="tabla-tag">aporte_meta</span>
+        <span class="tabla-tag">pago_deuda</span>
+      </div>
+
+      <div class="sql-codigo">
+        <pre><span class="keyword">SELECT</span> 
+    cu.nombre <span class="keyword">AS</span> cuenta,
+    cu.tipo,
+    cu.saldo_inicial,
+    <span class="function">COALESCE</span>(<span class="keyword">SUM</span>(<span class="keyword">CASE</span> <span class="keyword">WHEN</span> t.tipo = <span class="string">'ingreso'</span> <span class="keyword">THEN</span> t.monto <span class="keyword">ELSE</span> -t.monto <span class="keyword">END</span>), 0) <span class="keyword">AS</span> movimientos,
+    <span class="function">COALESCE</span>((<span class="keyword">SELECT</span> <span class="keyword">SUM</span>(monto) <span class="keyword">FROM</span> <span class="table">aporte_meta</span> 
+              <span class="keyword">WHERE</span> id_cuenta = cu.id_cuenta), 0) <span class="keyword">AS</span> aportes,
+    <span class="function">COALESCE</span>((<span class="keyword">SELECT</span> <span class="keyword">SUM</span>(monto) <span class="keyword">FROM</span> <span class="table">pago_deuda</span> 
+              <span class="keyword">WHERE</span> id_cuenta = cu.id_cuenta), 0) <span class="keyword">AS</span> pagos,
+    cu.saldo_inicial 
+        + <span class="function">COALESCE</span>(<span class="keyword">SUM</span>(<span class="keyword">CASE</span> <span class="keyword">WHEN</span> t.tipo = <span class="string">'ingreso'</span> <span class="keyword">THEN</span> t.monto <span class="keyword">ELSE</span> -t.monto <span class="keyword">END</span>), 0)
+        - <span class="function">COALESCE</span>((<span class="keyword">SELECT</span> <span class="keyword">SUM</span>(monto) <span class="keyword">FROM</span> <span class="table">aporte_meta</span> 
+                    <span class="keyword">WHERE</span> id_cuenta = cu.id_cuenta), 0)
+        - <span class="function">COALESCE</span>((<span class="keyword">SELECT</span> <span class="keyword">SUM</span>(monto) <span class="keyword">FROM</span> <span class="table">pago_deuda</span> 
+                    <span class="keyword">WHERE</span> id_cuenta = cu.id_cuenta), 0) 
+    <span class="keyword">AS</span> saldo_actual
+<span class="keyword">FROM</span> <span class="table">cuenta</span> cu
+<span class="keyword">LEFT JOIN</span> <span class="table">transaccion</span> t <span class="keyword">ON</span> t.id_cuenta = cu.id_cuenta
+<span class="keyword">WHERE</span> cu.id_usuario = 100 <span class="keyword">AND</span> cu.activa = <span class="keyword">TRUE</span>
+<span class="keyword">GROUP BY</span> cu.id_cuenta, cu.nombre, cu.tipo, cu.saldo_inicial
+<span class="keyword">ORDER BY</span> saldo_actual <span class="keyword">DESC</span>;</pre>
+      </div>
+
+      <div class="resultado-esperado">
+        <h4>✅ Resultado esperado</h4>
+        <table class="resultado-tabla">
+          <thead>
+            <tr>
+              <th>cuenta</th>
+              <th>tipo</th>
+              <th>saldo_inicial</th>
+              <th>movimientos</th>
+              <th>aportes</th>
+              <th>pagos</th>
+              <th>saldo_actual</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Bancolombia</td>
+              <td>ahorros</td>
+              <td>$8.000.000</td>
+              <td>+$6.950.000</td>
+              <td>$800.000</td>
+              <td>$350.000</td>
+              <td>$13.800.000</td>
+            </tr>
+            <tr>
+              <td>Nequi</td>
+              <td>ahorros</td>
+              <td>$4.500.000</td>
+              <td>+$850.000</td>
+              <td>$500.000</td>
+              <td>$0</td>
+              <td>$4.850.000</td>
+            </tr>
+            <tr>
+              <td>Efectivo</td>
+              <td>efectivo</td>
+              <td>$1.500.000</td>
+              <td>-$1.150.000</td>
+              <td>$0</td>
+              <td>$1.150.000</td>
+              <td>-$800.000</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="utilidad">
+        💡 <strong>Utilidad:</strong> Esta consulta alimenta el panel de patrimonio neto del dashboard y la página de cuentas.
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       CONSULTA 3
+       ============================================ -->
+  <section class="consulta" id="consulta3">
+    <div class="consulta-header">
+      <h2>🎯 3. Progreso de Metas con Aportes</h2>
+      <div class="subtitulo">Calcula el progreso real de cada meta sumando todos sus aportes</div>
+    </div>
+    <div class="consulta-body">
+      <div class="consulta-descripcion">
+        <strong>Objetivo:</strong> Mostrar el progreso de cada meta del usuario, sumando los aportes individuales y calculando el porcentaje completado.
+      </div>
+
+      <div class="tablas-relacionadas">
+        <span class="tabla-tag">meta</span>
+        <span class="tabla-tag">aporte_meta</span>
+        <span class="tabla-tag">cuenta</span>
+        <span class="tabla-tag">usuario</span>
+      </div>
+
+      <div class="sql-codigo">
+        <pre><span class="keyword">SELECT</span> 
+    u.nombre <span class="keyword">AS</span> usuario,
+    m.nombre <span class="keyword">AS</span> meta,
+    m.monto_objetivo,
+    m.monto_inicial,
+    <span class="function">COALESCE</span>(<span class="keyword">SUM</span>(a.monto), 0) <span class="keyword">AS</span> total_aportes,
+    m.monto_inicial + <span class="function">COALESCE</span>(<span class="keyword">SUM</span>(a.monto), 0) <span class="keyword">AS</span> total_ahorrado,
+    <span class="function">ROUND</span>(
+        ((m.monto_inicial + <span class="function">COALESCE</span>(<span class="keyword">SUM</span>(a.monto), 0)) / m.monto_objetivo) * 100, 
+        1
+    ) <span class="keyword">AS</span> progreso_porcentaje,
+    <span class="keyword">COUNT</span>(a.id_aporte) <span class="keyword">AS</span> numero_aportes,
+    m.fecha_limite,
+    m.estado
+<span class="keyword">FROM</span> <span class="table">meta</span> m
+<span class="keyword">INNER JOIN</span> <span class="table">usuario</span> u <span class="keyword">ON</span> m.id_usuario = u.id_usuario
+<span class="keyword">LEFT JOIN</span> <span class="table">aporte_meta</span> a <span class="keyword">ON</span> m.id_meta = a.id_meta
+<span class="keyword">WHERE</span> m.id_usuario = 100
+<span class="keyword">GROUP BY</span> m.id_meta, u.nombre, m.nombre, m.monto_objetivo, 
+         m.monto_inicial, m.fecha_limite, m.estado
+<span class="keyword">ORDER BY</span> progreso_porcentaje <span class="keyword">DESC</span>;</pre>
+      </div>
+
+      <div class="resultado-esperado">
+        <h4>✅ Resultado esperado</h4>
+        <table class="resultado-tabla">
+          <thead>
+            <tr>
+              <th>meta</th>
+              <th>objetivo</th>
+              <th>inicial</th>
+              <th>aportes</th>
+              <th>ahorrado</th>
+              <th>%</th>
+              <th>#aportes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Curso de inglés</td>
+              <td>$1.500.000</td>
+              <td>$0</td>
+              <td>$1.500.000</td>
+              <td>$1.500.000</td>
+              <td>100%</td>
+              <td>1</td>
+            </tr>
+            <tr>
+              <td>Viaje a San Andrés</td>
+              <td>$3.500.000</td>
+              <td>$500.000</td>
+              <td>$1.350.000</td>
+              <td>$1.850.000</td>
+              <td>52.9%</td>
+              <td>3</td>
+            </tr>
+            <tr>
+              <td>Fondo de emergencia</td>
+              <td>$6.000.000</td>
+              <td>$0</td>
+              <td>$1.500.000</td>
+              <td>$1.500.000</td>
+              <td>25%</td>
+              <td>3</td>
+            </tr>
+            <tr>
+              <td>MacBook Pro</td>
+              <td>$8.000.000</td>
+              <td>$0</td>
+              <td>$1.600.000</td>
+              <td>$1.600.000</td>
+              <td>20%</td>
+              <td>2</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="utilidad">
+        💡 <strong>Utilidad:</strong> Esta consulta alimenta el módulo de metas y el cálculo del fondo de emergencia.
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       CONSULTA 4
+       ============================================ -->
+  <section class="consulta" id="consulta4">
+    <div class="consulta-header">
+      <h2>💳 4. Deudas con Historial de Pagos</h2>
+      <div class="subtitulo">Muestra cada deuda con su saldo pendiente y el total de pagos realizados</div>
+    </div>
+    <div class="consulta-body">
+      <div class="consulta-descripcion">
+        <strong>Objetivo:</strong> Mostrar todas las deudas del usuario con su saldo pendiente, el total pagado, el número de pagos y el estado actual.
+      </div>
+
+      <div class="tablas-relacionadas">
+        <span class="tabla-tag">deuda</span>
+        <span class="tabla-tag">pago_deuda</span>
+        <span class="tabla-tag">usuario</span>
+        <span class="tabla-tag">cuenta</span>
+      </div>
+
+      <div class="sql-codigo">
+        <pre><span class="keyword">SELECT</span> 
+    u.nombre <span class="keyword">AS</span> usuario,
+    d.acreedor,
+    d.monto_total,
+    d.tasa_interes,
+    <span class="function">COALESCE</span>(<span class="keyword">SUM</span>(p.monto), 0) <span class="keyword">AS</span> total_pagado,
+    d.monto_total - <span class="function">COALESCE</span>(<span class="keyword">SUM</span>(p.monto), 0) <span class="keyword">AS</span> saldo_pendiente,
+    <span class="keyword">COUNT</span>(p.id_pago) <span class="keyword">AS</span> numero_pagos,
+    d.fecha_vencimiento,
+    d.estado,
+    <span class="keyword">CASE</span> 
+        <span class="keyword">WHEN</span> d.tasa_interes &gt; 28.79 <span class="keyword">THEN</span> <span class="string">'⚠️ Tasa de usura'</span>
+        <span class="keyword">ELSE</span> <span class="string">'✅ Tasa normal'</span>
+    <span class="keyword">END</span> <span class="keyword">AS</span> alerta_usura
+<span class="keyword">FROM</span> <span class="table">deuda</span> d
+<span class="keyword">INNER JOIN</span> <span class="table">usuario</span> u <span class="keyword">ON</span> d.id_usuario = u.id_usuario
+<span class="keyword">LEFT JOIN</span> <span class="table">pago_deuda</span> p <span class="keyword">ON</span> d.id_deuda = p.id_deuda
+<span class="keyword">WHERE</span> d.id_usuario = 100 <span class="keyword">AND</span> d.estado != <span class="string">'pagada'</span>
+<span class="keyword">GROUP BY</span> d.id_deuda, u.nombre, d.acreedor, d.monto_total, 
+         d.tasa_interes, d.fecha_vencimiento, d.estado
+<span class="keyword">ORDER BY</span> d.tasa_interes <span class="keyword">DESC</span>;</pre>
+      </div>
+
+      <div class="resultado-esperado">
+        <h4>✅ Resultado esperado</h4>
+        <table class="resultado-tabla">
+          <thead>
+            <tr>
+              <th>acreedor</th>
+              <th>monto_total</th>
+              <th>tasa</th>
+              <th>pagado</th>
+              <th>pendiente</th>
+              <th>#pagos</th>
+              <th>alerta</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Tarjeta Visa</td>
+              <td>$2.500.000</td>
+              <td>24.50%</td>
+              <td>$800.000</td>
+              <td>$1.700.000</td>
+              <td>3</td>
+              <td>✅ Tasa normal</td>
+            </tr>
+            <tr>
+              <td>Crédito educativo</td>
+              <td>$5.000.000</td>
+              <td>12.00%</td>
+              <td>$350.000</td>
+              <td>$4.650.000</td>
+              <td>1</td>
+              <td>✅ Tasa normal</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="utilidad">
+        💡 <strong>Utilidad:</strong> Esta consulta alimenta el módulo de deudas y la alerta de tasa de usura del dashboard.
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       CONSULTA 5       ============================================ -->
+  <section class="consulta" id="consulta5">
+    <div class="consulta-header">
+      <h2>📅 5. Presupuesto vs Gasto Real</h2>
+      <div class="subtitulo">Compara el límite presupuestado con el gasto real por categoría</div>
+    </div>
+    <div class="consulta-body">
+      <div class="consulta-descripcion">
+        <strong>Objetivo:</strong> Comparar el presupuesto asignado a cada categoría con el gasto real del mes, mostrando el porcentaje de uso y si se excedió el límite.
+      </div>
+
+      <div class="tablas-relacionadas">
+        <span class="tabla-tag">presupuesto</span>
+        <span class="tabla-tag">detalle_presupuesto</span>
+        <span class="tabla-tag">categoria</span>
+        <span class="tabla-tag">transaccion</span>
+      </div>
+
+      <div class="sql-codigo">
+        <pre><span class="keyword">SELECT</span> 
+    c.nombre <span class="keyword">AS</span> categoria,
+    dp.limite <span class="keyword">AS</span> presupuestado,
+    <span class="function">COALESCE</span>(<span class="keyword">SUM</span>(t.monto), 0) <span class="keyword">AS</span> gastado,
+    dp.limite - <span class="function">COALESCE</span>(<span class="keyword">SUM</span>(t.monto), 0) <span class="keyword">AS</span> disponible,
+    <span class="function">ROUND</span>(
+        (<span class="function">COALESCE</span>(<span class="keyword">SUM</span>(t.monto), 0) / dp.limite) * 100, 
+        1
+    ) <span class="keyword">AS</span> porcentaje_usado,
+    <span class="keyword">CASE</span> 
+        <span class="keyword">WHEN</span> <span class="function">COALESCE</span>(<span class="keyword">SUM</span>(t.monto), 0) &gt;= dp.limite <span class="keyword">THEN</span> <span class="string">'🚨 EXCEDIDO'</span>
+        <span class="keyword">WHEN</span> <span class="function">COALESCE</span>(<span class="keyword">SUM</span>(t.monto), 0) &gt;= (dp.limite * 0.8) <span class="keyword">THEN</span> <span class="string">'⚠️ Alerta 80%'</span>
+        <span class="keyword">ELSE</span> <span class="string">'✅ Normal'</span>
+    <span class="keyword">END</span> <span class="keyword">AS</span> estado_presupuesto
+<span class="keyword">FROM</span> <span class="table">presupuesto</span> p
+<span class="keyword">INNER JOIN</span> <span class="table">detalle_presupuesto</span> dp <span class="keyword">ON</span> p.id_presupuesto = dp.id_presupuesto
+<span class="keyword">INNER JOIN</span> <span class="table">categoria</span> c <span class="keyword">ON</span> dp.id_categoria = c.id_categoria
+<span class="keyword">LEFT JOIN</span> <span class="table">transaccion</span> t <span class="keyword">ON</span> t.id_categoria = c.id_categoria
+    <span class="keyword">AND</span> t.tipo = <span class="string">'gasto'</span>
+    <span class="keyword">AND</span> <span class="function">MONTH</span>(t.fecha) = p.mes
+    <span class="keyword">AND</span> <span class="function">YEAR</span>(t.fecha) = p.anio
+<span class="keyword">WHERE</span> p.id_usuario = 100 
+    <span class="keyword">AND</span> p.mes = <span class="function">MONTH</span>(<span class="function">CURDATE</span>())
+    <span class="keyword">AND</span> p.anio = <span class="function">YEAR</span>(<span class="function">CURDATE</span>())
+<span class="keyword">GROUP BY</span> c.nombre, dp.limite
+<span class="keyword">ORDER BY</span> porcentaje_usado <span class="keyword">DESC</span>;</pre>
+      </div>
+
+      <div class="resultado-esperado">
+        <h4>✅ Resultado esperado</h4>
+        <table class="resultado-tabla">
+          <thead>
+            <tr>
+              <th>categoria</th>
+              <th>presupuestado</th>
+              <th>gastado</th>
+              <th>disponible</th>
+              <th>%</th>
+              <th>estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Comida</td>
+              <td>$550.000</td>
+              <td>$540.000</td>
+              <td>$10.000</td>
+              <td>98.2%</td>
+              <td>⚠️ Alerta 80%</td>
+            </tr>
+            <tr>
+              <td>Servicios</td>
+              <td>$350.000</td>
+              <td>$340.000</td>
+              <td>$10.000</td>
+              <td>97.1%</td>
+              <td>⚠️ Alerta 80%</td>
+            </tr>
+            <tr>
+              <td>Transporte</td>
+              <td>$250.000</td>
+              <td>$180.000</td>
+              <td>$70.000</td>
+              <td>72%</td>
+              <td>✅ Normal</td>
+            </tr>
+            <tr>
+              <td>Entretenimiento</td>
+              <td>$250.000</td>
+              <td>$220.000</td>
+              <td>$30.000</td>
+              <td>88%</td>
+              <td>⚠️ Alerta 80%</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="utilidad">
+        💡 <strong>Utilidad:</strong> Esta consulta alimenta el módulo de presupuestos y las alertas del dashboard.
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       CONSULTA 6
+       ============================================ -->
+  <section class="consulta" id="consulta6">
+    <div class="consulta-header">
+      <h2>📊 6. Reporte Consolidado por Categoría</h2>
+      <div class="subtitulo">Resumen de ingresos, gastos y balance agrupados por categoría</div>
+    </div>
+    <div class="consulta-body">
+      <div class="consulta-descripcion">
+        <strong>Objetivo:</strong> Generar un reporte consolidado que muestra, para cada categoría del usuario, el total de ingresos, gastos y el balance neto en un rango de fechas.
+      </div>
+
+      <div class="tablas-relacionadas">
+        <span class="tabla-tag">categoria</span>
+        <span class="tabla-tag">transaccion</span>
+        <span class="tabla-tag">usuario</span>
+        <span class="tabla-tag">cuenta</span>
+      </div>
+
+      <div class="sql-codigo">
+        <pre><span class="keyword">SELECT</span> 
+    u.nombre <span class="keyword">AS</span> usuario,
+    c.nombre <span class="keyword">AS</span> categoria,
+    c.tipo <span class="keyword">AS</span> tipo_categoria,
+    <span class="function">COUNT</span>(t.id_transaccion) <span class="keyword">AS</span> numero_transacciones,
+    <span class="function">COALESCE</span>(<span class="keyword">SUM</span>(<span class="keyword">CASE</span> 
+        <span class="keyword">WHEN</span> t.tipo = <span class="string">'ingreso'</span> <span class="keyword">THEN</span> t.monto 
+        <span class="keyword">ELSE</span> 0 
+    <span class="keyword">END</span>), 0) <span class="keyword">AS</span> total_ingresos,
+    <span class="function">COALESCE</span>(<span class="keyword">SUM</span>(<span class="keyword">CASE</span> 
+        <span class="keyword">WHEN</span> t.tipo = <span class="string">'gasto'</span> <span class="keyword">THEN</span> t.monto 
+        <span class="keyword">ELSE</span> 0 
+    <span class="keyword">END</span>), 0) <span class="keyword">AS</span> total_gastos,
+    <span class="function">COALESCE</span>(<span class="keyword">SUM</span>(<span class="keyword">CASE</span> 
+        <span class="keyword">WHEN</span> t.tipo = <span class="string">'ingreso'</span> <span class="keyword">THEN</span> t.monto 
+        <span class="keyword">ELSE</span> -t.monto 
+    <span class="keyword">END</span>), 0) <span class="keyword">AS</span> balance_neto,
+    <span class="function">ROUND</span>(<span class="function">AVG</span>(t.monto), 2) <span class="keyword">AS</span> promedio_por_transaccion
+<span class="keyword">FROM</span> <span class="table">categoria</span> c
+<span class="keyword">INNER JOIN</span> <span class="table">usuario</span> u <span class="keyword">ON</span> c.id_usuario = u.id_usuario
+<span class="keyword">LEFT JOIN</span> <span class="table">transaccion</span> t <span class="keyword">ON</span> c.id_categoria = t.id_categoria
+    <span class="keyword">AND</span> t.fecha <span class="keyword">BETWEEN</span> <span class="string">'2026-01-01'</span> <span class="keyword">AND</span> <span class="string">'2026-12-31'</span>
+<span class="keyword">WHERE</span> c.id_usuario = 100
+<span class="keyword">GROUP BY</span> u.nombre, c.id_categoria, c.nombre, c.tipo
+<span class="keyword">HAVING</span> numero_transacciones &gt; 0
+<span class="keyword">ORDER BY</span> balance_neto <span class="keyword">DESC</span>;</pre>
+      </div>
+
+      <div class="resultado-esperado">
+        <h4>✅ Resultado esperado</h4>
+        <table class="resultado-tabla">
+          <thead>
+            <tr>
+              <th>categoria</th>
+              <th>tipo</th>
+              <th>#trans</th>
+              <th>ingresos</th>
+              <th>gastos</th>
+              <th>balance</th>
+              <th>promedio</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Salario</td>
+              <td>ingreso</td>
+              <td>3</td>
+              <td>$10.700.000</td>
+              <td>$0</td>
+              <td>+$10.700.000</td>
+              <td>$3.566.666</td>
+            </tr>
+            <tr>
+              <td>Freelance</td>
+              <td>ingreso</td>
+              <td>2</td>
+              <td>$1.250.000</td>
+              <td>$0</td>
+              <td>+$1.250.000</td>
+              <td>$625.000</td>
+            </tr>
+            <tr>
+              <td>Comida</td>
+              <td>gasto</td>
+              <td>8</td>
+              <td>$0</td>
+              <td>$1.100.000</td>
+              <td>-$1.100.000</td>
+              <td>$137.500</td>
+            </tr>
+            <tr>
+              <td>Transporte</td>
+              <td>gasto</td>
+              <td>5</td>
+              <td>$0</td>
+              <td>$380.000</td>
+              <td>-$380.000</td>
+              <td>$76.000</td>
+            </tr>
+            <tr>
+              <td>Servicios</td>
+              <td>gasto</td>
+              <td>4</td>
+              <td>$0</td>
+              <td>$350.000</td>
+              <td>-$350.000</td>
+              <td>$87.500</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="utilidad">
+        💡 <strong>Utilidad:</strong> Esta consulta alimenta la gráfica circular de gastos por categoría del dashboard y los reportes.
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    © 2026 · FinanIA - Gestor Inteligente Financiero<br>
+    Documento de Consultas Multitabla SQL
+  </footer>
+
+</div>
+
+<button class="btn-top" id="btnTop" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">↑</button>
+
+<script>
+  // Smooth scroll para los links del índice
+  document.querySelectorAll('.indice-consultas a').forEach(link => {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+
+  // Botón volver arriba
+  window.addEventListener('scroll', function() {
+    const btn = document.getElementById('btnTop');
+    if (window.scrollY > 300) {
+      btn.classList.add('visible');
+    } else {
+      btn.classList.remove('visible');
+    }
+  });
+</script>
+
+</body>
+</html>

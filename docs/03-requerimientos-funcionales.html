@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Requerimientos - FinanIA</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
+  
+  body {
+    background: linear-gradient(135deg, #0a1929 0%, #132f4c 50%, #0a1929 100%);
+    color: #e6edf3;
+    min-height: 100vh;
+    padding: 30px 20px;
+    line-height: 1.7;
+  }
+  
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  header {
+    text-align: center;
+    padding: 40px 20px;
+    background: rgba(19, 47, 76, 0.6);
+    border-radius: 20px;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    margin-bottom: 30px;
+    backdrop-filter: blur(10px);
+  }
+  
+  header .icono {
+    font-size: 4rem;
+    margin-bottom: 15px;
+  }
+  
+  header h1 {
+    color: #d4af37;
+    font-size: 2rem;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+  }
+  
+  header p {
+    color: #9fb3c8;
+    font-size: 1.05rem;
+  }
+
+  /* Tabs de secciones */
+  .tabs-secciones {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 25px;
+    padding: 10px;
+    background: rgba(19, 47, 76, 0.4);
+    border-radius: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .tab-seccion {
+    padding: 12px 25px;
+    background: rgba(10, 25, 41, 0.7);
+    color: #9fb3c8;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: all 0.3s;
+  }
+
+  .tab-seccion:hover {
+    background: rgba(212, 175, 55, 0.15);
+    color: #d4af37;
+  }
+
+  .tab-seccion.activo {
+    background: linear-gradient(135deg, #d4af37, #b8860b);
+    color: #0a1929;
+  }
+
+  /* Contenedores de secciones */
+  .seccion-contenido {
+    display: none;
+  }
+
+  .seccion-contenido.activo {
+    display: block;
+    animation: fadeIn 0.4s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  /* Buscador */
+  .buscador {
+    margin-bottom: 25px;
+  }
+  
+  .buscador input {
+    width: 100%;
+    padding: 15px 20px;
+    background: rgba(19, 47, 76, 0.6);
+    border: 2px solid rgba(212, 175, 55, 0.3);
+    border-radius: 15px;
+    color: #e6edf3;
+    font-size: 1rem;
+    transition: all 0.3s;
+  }
+  
+  .buscador input:focus {
+    outline: none;
+    border-color: #d4af37;
+    box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.15);
+  }
+  
+  .buscador input::placeholder {
+    color: #7a8a9c;
+  }
+  
+  /* Módulos */
+  .modulo {
+    background: rgba(19, 47, 76, 0.5);
+    border-radius: 20px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    border: 1px solid rgba(212, 175, 55, 0.2);
+  }
+  
+  .modulo-header {
+    padding: 20px 25px;
+    background: linear-gradient(90deg, rgba(212, 175, 55, 0.15), rgba(19, 47, 76, 0.5));
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background 0.3s;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+  }
+  
+  .modulo-header:hover {
+    background: linear-gradient(90deg, rgba(212, 175, 55, 0.25), rgba(19, 47, 76, 0.6));
+  }
+  
+  .modulo-header h2 {
+    color: #d4af37;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  
+  .modulo-header .contador {
+    background: rgba(10, 25, 41, 0.7);
+    color: #d4af37;
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+  }
+  
+  .modulo-header .icono-toggle {
+    color: #d4af37;
+    font-size: 1.3rem;
+    transition: transform 0.3s;
+  }
+  
+  .modulo-header .icono-toggle.abierto {
+    transform: rotate(180deg);
+  }
+  
+  .modulo-contenido {
+    display: none;
+    padding: 5px 0;
+  }
+  
+  .modulo-contenido.abierto {
+    display: block;
+  }
+  
+  .requerimiento {
+    display: flex;
+    padding: 15px 25px;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.08);
+    transition: background 0.2s;
+    align-items: flex-start;
+    gap: 15px;
+  }
+  
+  .requerimiento:hover {
+    background: rgba(212, 175, 55, 0.05);
+  }
+  
+  .requerimiento:last-child {
+    border-bottom: none;
+  }
+  
+  .req-id {
+    background: rgba(52, 152, 219, 0.2);
+    color: #6bb6ff;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    flex-shrink: 0;
+    min-width: 65px;
+    text-align: center;
+    font-family: 'Courier New', monospace;
+  }
+
+  .req-id.no-funcional {
+    background: rgba(230, 126, 34, 0.2);
+    color: #f39c12;
+  }
+  
+  .req-texto {
+    color: #c9d6e3;
+    flex: 1;
+  }
+  
+  /* Botón volver arriba */
+  .btn-top {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #d4af37, #b8860b);
+    color: #0a1929;
+    border: none;
+    cursor: pointer;
+    font-size: 1.5rem;
+    box-shadow: 0 5px 20px rgba(212, 175, 55, 0.4);
+    transition: all 0.3s;
+    opacity: 0;
+    visibility: hidden;
+  }
+  
+  .btn-top.visible {
+    opacity: 1;
+    visibility: visible;
+  }
+  
+  .btn-top:hover {
+    transform: translateY(-5px);
+  }
+  
+  /* Contador de resultados */
+  .resultados-info {
+    text-align: center;
+    padding: 15px;
+    color: #9fb3c8;
+    font-size: 0.9rem;
+    background: rgba(19, 47, 76, 0.4);
+    border-radius: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .resultados-info strong {
+    color: #d4af37;
+  }
+  
+  footer {
+    text-align: center;
+    padding: 30px;
+    color: #7a8a9c;
+    font-size: 0.9rem;
+    margin-top: 30px;
+  }
+  
+  @media (max-width: 768px) {
+    header h1 { font-size: 1.4rem; }
+    .modulo-header { padding: 15px; }
+    .modulo-header h2 { font-size: 1rem; }
+    .requerimiento { padding: 12px 15px; }
+    .btn-top { bottom: 15px; right: 15px; }
+    .tab-seccion { padding: 10px 18px; font-size: 0.85rem; }
+  }
+</style>
+</head>
+<body>
+
+  <button onclick="volverPresentacion()" class="btn-volver">
+  ← Volver a la presentación
+</button>
+
+<script>
+  function volverPresentacion() {
+    // Intentar cerrar la pestaña (funciona si se abrió con window.open)
+    window.close();
+    
+    // Si después de 300ms la pestaña sigue abierta, redirigir
+    setTimeout(function() {
+      window.location.href = '../presentacion/index.html';
+    }, 300);
+  }
+</script>
+
+<style>.btn-volver {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #d4af37, #b8860b);
+  color: #0a1929;
+  border: none;
+  border-radius: 25px;
+  font-weight: bold;
+  font-size: 0.9rem;
+  box-shadow: 0 5px 20px rgba(212, 175, 55, 0.4);
+  z-index: 9999;
+  transition: all 0.3s;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  cursor: pointer;
+}
+.btn-volver:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(212, 175, 55, 0.6);
+}
+</style>
+
+<div class="container">
+
+  <header>
+    <div class="icono">📋</div>
+    <h1>Especificación de Requerimientos</h1>
+    <p>FinanIA - 50 Requerimientos Funcionales · 25 No Funcionales</p>
+  </header>
+
+  <!-- Tabs de secciones -->
+  <div class="tabs-secciones">
+    <button class="tab-seccion activo" onclick="cambiarSeccion('funcionales', this)">
+      ⚙️ Funcionales (50)
+    </button>
+    <button class="tab-seccion" onclick="cambiarSeccion('no-funcionales', this)">
+      🔒 No Funcionales (25)
+    </button>
+  </div>
+
+  <!-- Buscador -->
+  <div class="buscador">
+    <input type="text" id="buscar" placeholder="🔍 Buscar requerimiento... (ej: login, metas, chatbot, seguridad)">
+  </div>
+
+  <div class="resultados-info" id="info">
+    Mostrando <strong>50</strong> requerimientos funcionales
+  </div>
+
+  <!-- ============================================
+       SECCIÓN: REQUERIMIENTOS FUNCIONALES
+       ============================================ -->
+  <div class="seccion-contenido activo" id="seccion-funcionales">
+    <div id="modulos-funcionales">
+
+      <!-- Módulo 1 -->
+      <div class="modulo" data-modulo="Autenticación">
+        <div class="modulo-header" onclick="toggleModulo(this)">
+          <h2>🔐 Autenticación y Onboarding <span class="contador">4 RF</span></h2>
+          <span class="icono-toggle">▾</span>
+        </div>
+        <div class="modulo-contenido">
+          <div class="requerimiento"><span class="req-id">RF01</span><span class="req-texto">El sistema debe permitir el registro de nuevos usuarios con nombre, email y contraseña, validando que el email no esté duplicado y encriptando la contraseña con bcrypt.</span></div>
+          <div class="requerimiento"><span class="req-id">RF02</span><span class="req-texto">El sistema debe permitir el inicio de sesión con email y contraseña, ofreciendo autenticación de dos factores (2FA) y recuperación de contraseña por email.</span></div>
+          <div class="requerimiento"><span class="req-id">RF03</span><span class="req-texto">El sistema debe implementar un onboarding de 6 pasos al registrarse, calculando el perfil de riesgo del usuario (conservador, cauteloso, moderado, valiente, arriesgado) y mostrando una pantalla de bienvenida.</span></div>
+          <div class="requerimiento"><span class="req-id">RF04</span><span class="req-texto">El sistema debe permitir cerrar sesión de forma segura, destruyendo la sesión y redirigiendo al login.</span></div>
+        </div>
+      </div>
+
+      <!-- Módulo 2 -->
+      <div class="modulo" data-modulo="Cuentas">
+        <div class="modulo-header" onclick="toggleModulo(this)">
+          <h2>🏦 Cuentas <span class="contador">2 RF</span></h2>
+          <span class="icono-toggle">▾</span>
+        </div>
+        <div class="modulo-contenido">
+          <div class="requerimiento"><span class="req-id">RF05</span><span class="req-texto">El sistema debe permitir crear, editar y eliminar cuentas (efectivo, ahorros, corriente, tarjeta, inversión) con nombre, saldo inicial y etiqueta personalizada.</span></div>
+          <div class="requerimiento"><span class="req-id">RF06</span><span class="req-texto">El sistema debe calcular automáticamente el saldo actual de cada cuenta y mostrar el saldo consolidado de todas las cuentas.</span></div>
+        </div>
+      </div>
+
+      <!-- Módulo 3 -->
+      <div class="modulo" data-modulo="Transacciones">
+        <div class="modulo-header" onclick="toggleModulo(this)">
+          <h2>💸 Transacciones <span class="contador">4 RF</span></h2>
+          <span class="icono-toggle">▾</span>
+        </div>
+        <div class="modulo-contenido">
+          <div class="requerimiento"><span class="req-id">RF07</span><span class="req-texto">El sistema debe permitir registrar ingresos y gastos con monto, fecha, categoría, cuenta, descripción y método de pago, marcando transacciones como recurrentes.</span></div>
+          <div class="requerimiento"><span class="req-id">RF08</span><span class="req-texto">El sistema debe permitir importar transacciones desde archivos CSV, detectando automáticamente las columnas de fecha, monto y descripción, y categorizando automáticamente según palabras clave.</span></div>
+          <div class="requerimiento"><span class="req-id">RF09</span><span class="req-texto">El sistema debe permitir editar y eliminar transacciones, filtrarlas por tipo (ingreso/gasto) y buscarlas por descripción o categoría.</span></div>
+          <div class="requerimiento"><span class="req-id">RF10</span><span class="req-texto">El sistema debe filtrar dinámicamente las categorías según el tipo de transacción seleccionado (JavaScript).</span></div>
+        </div>
+      </div>
+
+      <!-- Módulo 4 -->
+      <div class="modulo" data-modulo="Categorías">
+        <div class="modulo-header" onclick="toggleModulo(this)">
+          <h2>🏷️ Categorías <span class="contador">2 RF</span></h2>
+          <span class="icono-toggle">▾</span>
+        </div>
+        <div class="modulo-contenido">
+          <div class="requerimiento"><span class="req-id">RF11</span><span class="req-texto">El sistema debe permitir crear, editar y eliminar categorías de ingreso y gasto, personalizando color e ícono.</span></div>
+          <div class="requerimiento"><span class="req-id">RF12</span><span class="req-texto">El sistema debe proteger la eliminación de categorías que tengan transacciones o presupuestos asociados.</span></div>
+        </div>
+      </div>
+
+      <!-- Módulo 5 -->
+      <div class="modulo" data-modulo="Metas">
+        <div class="modulo-header" onclick="toggleModulo(this)">
+          <h2>🎯 Metas y Aportes <span class="contador">3 RF</span></h2>
+          <span class="icono-toggle">▾</span>
+        </div>
+        <div class="modulo-contenido">
+          <div class="requerimiento"><span class="req-id">RF13</span><span class="req-texto">El sistema debe permitir crear, editar y eliminar metas con nombre, monto objetivo, fecha límite y barra de progreso visual.</span></div>
+          <div class="requerimiento"><span class="req-id">RF14</span><span class="req-texto">El sistema debe permitir registrar aportes a las metas, manteniendo un historial editable y eliminable, y recalculando el progreso automáticamente.</span></div>
+          <div class="requerimiento"><span class="req-id">RF15</span><span class="req-texto">El sistema debe calcular automáticamente el fondo de emergencia recomendado (3-6 meses de gastos).</span></div>
+        </div>
+      </div>
+
+      <!-- Módulo 6 -->
+      <div class="modulo" data-modulo="Deudas">
+        <div class="modulo-header" onclick="toggleModulo(this)">
+          <h2>💳 Deudas y Pagos <span class="contador">3 RF</span></h2>
+          <span class="icono-toggle">▾</span>
+        </div>
+        <div class="modulo-contenido">
+          <div class="requerimiento"><span class="req-id">RF16</span><span class="req-texto">El sistema debe permitir registrar, editar y eliminar deudas con acreedor, monto, tasa de interés, vencimiento y pago mínimo, calculando el interés compuesto.</span></div>
+          <div class="requerimiento"><span class="req-id">RF17</span><span class="req-texto">El sistema debe alertar si una deuda supera la tasa de usura (28.79% EA) y generar un calendario de pagos con alertas 7 días antes del vencimiento.</span></div>
+          <div class="requerimiento"><span class="req-id">RF18</span><span class="req-texto">El sistema debe permitir registrar pagos parciales o totales a las deudas, manteniendo un historial editable y recalculando el saldo pendiente.</span></div>
+        </div>
+      </div>
+
+      <!-- Módulo 7 -->
+      <div class="modulo" data-modulo="Presupuestos">
+        <div class="modulo-header" onclick="toggleModulo(this)">
+          <h2>📅 Presupuestos <span class="contador">2 RF</span></h2>
+          <span class="icono-toggle">▾</span>
+        </div>
+        <div class="modulo-contenido">
+          <div class="requerimiento"><span class="req-id">RF19</span><span class="req-texto">El sistema debe permitir crear, editar y eliminar presupuestos mensuales por categoría, comparando el presupuesto con el gasto real.</span></div>
+          <div class="requerimiento"><span class="req-id">RF20</span><span class="req-texto">El sistema debe generar alertas automáticas al 80% y 100% del presupuesto por categoría.</span></div>
+        </div>
+      </div>
+
+      <!-- Módulo 8 -->
+      <div class="modulo" data-modulo="Fuentes">
+        <div class="modulo-header" onclick="toggleModulo(this)">
+          <h2>💼 Fuentes de Ingreso <span class="contador">2 RF</span></h2>
+          <span class="icono-toggle">▾</span>
+        </div>
+        <div class="modulo-contenido">
+          <div class="requerimiento"><span class="req-id">RF21</span><span class="req-texto">El sistema debe permitir registrar fuentes de ingreso con tipo y frecuencia, calculando la estabilidad de los ingresos (0-100%).</span></div>
+          <div class="requerimiento"><span class="req-id">RF22</span><span class="req-texto">El sistema debe proyectar los ingresos futuros basándose en el historial de las fuentes de ingreso.</span></div>
+        </div>
+      </div>
+
+      <!-- Módulo 9 -->
+      <div class="modulo" data-modulo="Recurrentes">
+        <div class="modulo-header" onclick="toggleModulo(this)">
+          <h2>🔄 Recurrentes <span class="contador">2 RF</span></h2>
+          <span class="icono-toggle">▾</span>
+        </div>
+        <div class="modulo-contenido">
+          <div class="requerimiento"><span class="req-id">RF23</span><span class="req-texto">El sistema debe agrupar las transacciones recurrentes y mostrar su impacto mensual y anual.</span></div>
+          <div class="requerimiento"><span class="req-id">RF24</span><span class="req-texto">El sistema debe detectar automáticamente posibles suscripciones (gastos repetidos pequeños) y mostrarlas agrupadas.</span></div>
+        </div>
+      </div>
+
+      <!-- Módulo 10 -->
+      <div class="modulo" data-modulo="Reportes">
+        <div class="modulo-header" onclick="toggleModulo(this)">
+          <h2>📈 Reportes <span class="contador">2 RF</span></h2>
+          <span class="icono-toggle">▾</span>
+        </div>
+        <div class="modulo-contenido">
+          <div class="requerimiento"><span class="req-id">RF25</span><span class="req-texto">El sistema debe generar reportes con filtro por rango de fechas, mostrando gráficas de ingresos vs gastos, gastos por categoría y top 5 de gastos más altos.</span></div>
+          <div class="requerimiento"><span class="req-id">RF26</span><span class="req-texto">El sistema debe permitir exportar los reportes a PDF.</span></div>
+        </div>
+      </div>
+
+      <!-- Módulo 11 -->
+      <div class="modulo" data-modulo="Calendario">
+        <div class="modulo-header" onclick="toggleModulo(this)">
+          <h2>📅 Calendario <span class="contador">2 RF</span></h2>
+          <span class="icono-toggle">▾</span>
+        </div>
+        <div class="modulo-contenido">
+          <div class="requerimiento"><span class="req-id">RF27</span><span class="req-texto">El sistema debe mostrar una vista de calendario mensual con las transacciones, vencimientos de deudas y metas.</span></div>
+          <div class="requerimiento"><span class="req-id">RF28</span><span class="req-texto">El sistema debe proyectar las transacciones recurrentes en los próximos meses y mostrar el detalle de cada día al hacer clic.</span></div>
+        </div>
+      </div>
+
+      <!-- Módulo 12 -->
+      <div class="modulo" data-modulo="Búsqueda">
+        <div class="modulo-header" onclick="toggleModulo(this)">
+          <h2>🔍 Búsqueda Global <span class="contador">1 RF</span></h2>
+          <span class="icono-toggle">▾</span>
+        </div>
+        <div class="modulo-contenido">
+          <div class="requerimiento"><span class="req-id">RF29</span><span class="req-texto">El sistema debe permitir buscar en todo el sistema con Ctrl+K, mostrando resultados agrupados por tipo (transacciones, metas, deudas, cuentas, categorías, productos) y permitiendo navegar con flechas y Enter.</span></div>
+        </div>
+      </div>
+
+      <!-- Módulo 13 -->
+      <div class="modulo" data-modulo="Salud">
+        <div class="modulo-header" onclick="toggleModulo(this)">
+          <h2>🏆 Salud Financiera <span class="contador">1 RF</span></h2>
+          <span class="icono-toggle">▾</span>
+        </div>
+        <div class="modulo-contenido">
+          <div class="requerimiento"><span class="req-id">RF30</span><span class="req-texto">El sistema debe calcular un puntaje de salud financiera (0-100) evaluando 5 componentes: fondo de emergencia, nivel de deuda, tasa de ahorro, diversificación y estabilidad, mostrando el desglose con recomendaciones.</span></div>
+        </div>
+      </div>
+
+      <!-- Módulo 14 -->
+      <div class="modulo" data-modulo="Logros">
+        <div class="modulo-header" onclick="toggleModulo(this)">
+          <h2>🏅 Logros <span class="contador">1 RF</span></h2>
+          <span class="icono-toggle">▾</span>
+        </div>
+        <div class="modulo-contenido">
+          <div class="requerimiento"><span class="req-id">RF31</span><span class="req-texto">El sistema debe otorgar logros automáticamente al cumplir hitos, mostrando los logros desbloqueados, bloqueados y los puntos totales del usuario.</span></div>
+        </div>
+      </div>
+
+      <!-- Módulo 15 -->
+      <div class="modulo" data-modulo="PWA">
+        <div class="modulo-header" onclick="toggleModulo(this)">
+          <h2>📱 PWA <span class="contador">1 RF</span></h2>
+          <span class="icono-toggle">▾</span>
+        </div>
+        <div class="modulo-contenido">
+          <div class="requerimiento"><span class="req-id">RF32</span><span class="req-texto">El sistema debe ser instalable como app en PC, Android e iPhone, funcionando parcialmente offline con Service Worker y usando un manifiesto dinámico para evitar bloqueos en hostings.</span></div>
+        </div>
+      </div>
+
+      <!-- Módulo 16 -->
+      <div class="modulo" data-modulo="Premium">
+        <div class="modulo-header" onclick="toggleModulo(this)">
+          <h2>⭐ Premium <span class="contador">2 RF</span></h2>
+          <span class="icono-toggle">▾</span>
+        </div>
+        <div class="modulo-contenido">
+          <div class="requerimiento"><span class="req-id">RF33</span><span class="req-texto">El sistema debe mostrar los planes disponibles (Registrado vs Premium) y permitir el pago simulado con tarjeta, PSE, Nequi o Daviplata.</span></div>
+          <div class="requerimiento"><span class="req-id">RF34</span><span class="req-texto">El sistema debe actualizar el rol del usuario a Premium después del pago y desbloquear las funciones avanzadas.</span></div>
+        </div>
+      </div>
+
+      <!-- Módulo 17 -->
+      <div class="modulo" data-modulo="Chatbot">
+        <div class="modulo-header" onclick="toggleModulo(this)">
+          <h2>🤖 Chatbot IA <span class="contador">2 RF</span></h2>
+          <span class="icono-toggle">▾</span>
+        </div>
+        <div class="modulo-contenido">
+          <div class="requerimiento"><span class="req-id">RF35</span><span class="req-texto">El sistema debe ofrecer un chatbot que responda preguntas financieras, personalice las respuestas según los datos reales del usuario, haga proyecciones y dé recomendaciones de inversión según su perfil de riesgo.</span></div>
+          <div class="requerimiento"><span class="req-id">RF36</span><span class="req-texto">El sistema debe detectar intenciones sin depender de tildes ni mayúsculas, y explicar cómo funciona cada módulo del sistema.</span></div>
+        </div>
+      </div>
+
+      <!-- Módulo 18 -->
+      <div class="modulo" data-modulo="Simulador Deudas">
+        <div class="modulo-header" onclick="toggleModulo(this)">
+          <h2>🏔️ Simulador de Deudas <span class="contador">1 RF</span></h2>
+          <span class="icono-toggle">▾</span>
+        </div>
+        <div class="modulo-contenido">
+          <div class="requerimiento"><span class="req-id">RF37</span><span class="req-texto">El sistema debe simular las estrategias "avalancha" (mayor tasa primero) y "bola de nieve" (menor saldo primero), comparar ambas y recomendar la mejor, mostrando gráficas de evolución del saldo.</span></div>
+        </div>
+      </div>
+
+      <!-- Módulo 19 -->
+      <div class="modulo" data-modulo="Simulador Inversiones">
+        <div class="modulo-header" onclick="toggleModulo(this)">
+          <h2>💰 Simulador de Inversiones <span class="contador">2 RF</span></h2>
+          <span class="icono-toggle">▾</span>
+        </div>
+        <div class="modulo-contenido">
+          <div class="requerimiento"><span class="req-id">RF38</span><span class="req-texto">El sistema debe calcular el rendimiento de CDT, FIC y cuenta de ahorros, comparar los tres productos y calcular el rendimiento real (descontando inflación y retención).</span></div>
+          <div class="requerimiento"><span class="req-id">RF39</span><span class="req-texto">El sistema debe calcular el aporte mensual necesario para alcanzar una meta y permitir personalizar la tasa de interés.</span></div>
+        </div>
+      </div>
+
+      <!-- Módulo 20 -->
+      <div class="modulo" data-modulo="Ideas Inversión">
+        <div class="modulo-header" onclick="toggleModulo(this)">
+          <h2>💡 Ideas de Inversión <span class="contador">1 RF</span></h2>
+          <span class="icono-toggle">▾</span>
+        </div>
+        <div class="modulo-contenido">
+          <div class="requerimiento"><span class="req-id">RF40</span><span class="req-texto">El sistema debe mostrar todas las opciones de inversión intangible ordenadas por perfil de riesgo (marcando la recomendada con justificación) y productos tangibles con cálculo exacto de rentabilidad según el presupuesto del usuario.</span></div>
+        </div>
+      </div>
+
+      <!-- Módulo 21 -->
+      <div class="modulo" data-modulo="Configuración">
+        <div class="modulo-header" onclick="toggleModulo(this)">
+          <h2>⚙️ Configuración <span class="contador">1 RF</span></h2>
+          <span class="icono-toggle">▾</span>
+        </div>
+        <div class="modulo-contenido">
+          <div class="requerimiento"><span class="req-id">RF41</span><span class="req-texto">El sistema debe permitir editar las tasas del mercado (usura, inflación, CDT) y actualizar las proyecciones cuando cambian las tasas.</span></div>
+        </div>
+      </div>
+
+      <!-- Módulo 22 -->
+      <div class="modulo" data-modulo="Seguridad">
+        <div class="modulo-header" onclick="toggleModulo(this)">
+          <h2>🔐 Seguridad <span class="contador">2 RF</span></h2>
+          <span class="icono-toggle">▾</span>
+        </div>
+        <div class="modulo-contenido">
+          <div class="requerimiento"><span class="req-id">RF42</span><span class="req-texto">El sistema debe proteger todos los formularios con tokens CSRF, usar consultas preparadas (PDO) para prevenir inyección SQL y validar la pertenencia de datos (categoría, cuenta) al usuario.</span></div>
+          <div class="requerimiento"><span class="req-id">RF43</span><span class="req-texto">El sistema debe expirar las sesiones después de 30 minutos de inactividad y registrar los intentos fallidos de login.</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============================================
+       SECCIÓN: REQUERIMIENTOS NO FUNCIONALES
+       ============================================ -->
+  <div class="seccion-contenido" id="seccion-no-funcionales">
+    <div id="modulos-no-funcionales">
+
+      <!-- Módulo 1: Rendimiento -->
+      <div class="modulo" data-modulo="Rendimiento">
+        <div class="modulo-header" onclick="toggleModulo(this)">
+          <h2>⚡ Rendimiento <span class="contador">4 RNF</span></h2>
+          <span class="icono-toggle">▾</span>
+        </div>
+        <div class="modulo-contenido">
+          <div class="requerimiento"><span class="req-id no-funcional">RNF01</span><span class="req-texto">El sistema debe cargar cualquier página en menos de 2 segundos en condiciones normales de red.</span></div>
+          <div class="requerimiento"><span class="req-id no-funcional">RNF02</span><span class="req-texto">El sistema debe soportar hasta 100 usuarios concurrentes sin degradar el rendimiento.</span></div>
+          <div class="requerimiento"><span class="req-id no-funcional">RNF03</span><span class="req-texto">Las consultas a la base de datos deben ejecutarse en menos de 500 ms para el 95% de las peticiones.</span></div>
+          <div class="requerimiento"><span class="req-id no-funcional">RNF04</span><span class="req-texto">El sistema debe procesar la importación de archivos CSV de hasta 5 MB en menos de 10 segundos.</span></div>
+        </div>
+      </div>
+
+      <!-- Módulo 2: Seguridad -->
+      <div class="modulo" data-modulo="Seguridad RNF">
+        <div class="modulo-header" onclick="toggleModulo(this)">
+          <h2>🔒 Seguridad <span class="contador">5 RNF</span></h2>
+          <span class="icono-toggle">▾</span>
+        </div>
+        <div class="modulo-contenido">
+          <div class="requerimiento"><span class="req-id no-funcional">RNF05</span><span class="req-texto">Todas las contraseñas deben almacenarse cifradas con bcrypt (mínimo 10 rondas).</span></div>
+          <div class="requerimiento"><span class="req-id no-funcional">RNF06</span><span class="req-texto">Todas las comunicaciones deben usar HTTPS/TLS 1.2 o superior en producción.</span></div>
+          <div class="requerimiento"><span class="req-id no-funcional">RNF07</span><span class="req-texto">El sistema debe cumplir con el estándar OWASP Top 10 para prevenir vulnerabilidades comunes.</span></div>
+          <div class="requerimiento"><span class="req-id no-funcional">RNF08</span><span class="req-texto">Las sesiones deben expirar después de 30 minutos de inactividad y usar tokens seguros.</span></div>
+          <div class="requerimiento"><span class="req-id no-funcional">RNF09</span><span class="req-texto">El sistema debe cumplir con la normativa GDPR para protección de datos personales.</span></div>
+        </div>
+      </div>
+
+      <!-- Módulo 3: Usabilidad -->
+      <div class="modulo" data-modulo="Usabilidad">
+        <div class="modulo-header" onclick="toggleModulo(this)">
+          <h2>🎨 Usabilidad <span class="contador">5 RNF</span></h2>
+          <span class="icono-toggle">▾</span>
+        </div>
+        <div class="modulo-contenido">
+          <div class="requerimiento"><span class="req-id no-funcional">RNF10</span><span class="req-texto">La interfaz debe cumplir con los estándares de accesibilidad WCAG 2.1 nivel AA.</span></div>
+          <div class="requerimiento"><span class="req-id no-funcional">RNF11</span><span class="req-texto">El diseño debe ser responsive y adaptarse a dispositivos desde 320px hasta 4K.</span></div>
+          <div class="requerimiento"><span class="req-id no-funcional">RNF12</span><span class="req-texto">El sistema debe ofrecer modo oscuro y claro, con persistencia de la preferencia del usuario.</span></div>
+          <div class="requerimiento"><span class="req-id no-funcional">RNF13</span><span class="req-texto">Los mensajes de error deben ser claros y en español, indicando cómo solucionar el problema.</span></div>
+          <div class="requerimiento"><span class="req-id no-funcional">RNF14</span><span class="req-texto">El sistema debe incluir un centro de ayuda con documentación de cada módulo y un chatbot de soporte.</span></div>
+        </div>
+      </div>
+
+      <!-- Módulo 4: Compatibilidad -->
+      <div class="modulo" data-modulo="Compatibilidad">
+        <div class="modulo-header" onclick="toggleModulo(this)">
+          <h2>🌐 Compatibilidad <span class="contador">3 RNF</span></h2>
+          <span class="icono-toggle">▾</span>
+        </div>
+        <div class="modulo-contenido">
+          <div class="requerimiento"><span class="req-id no-funcional">RNF15</span><span class="req-texto">El sistema debe ser compatible con Chrome, Firefox, Edge y Safari en sus últimas versiones.</span></div>
+          <div class="requerimiento"><span class="req-id no-funcional">RNF16</span><span class="req-texto">El sistema debe funcionar en Windows, macOS, Linux, Android e iOS.</span></div>
+          <div class="requerimiento"><span class="req-id no-funcional">RNF17</span><span class="req-texto">El sistema debe ser instalable como PWA en PC, Android e iPhone.</span></div>
+        </div>
+      </div>
+
+      <!-- Módulo 5: Mantenibilidad -->
+      <div class="modulo" data-modulo="Mantenibilidad">
+        <div class="modulo-header" onclick="toggleModulo(this)">
+          <h2>🔧 Mantenibilidad <span class="contador">3 RNF</span></h2>
+          <span class="icono-toggle">▾</span>
+        </div>
+        <div class="modulo-contenido">
+          <div class="requerimiento"><span class="req-id no-funcional">RNF18</span><span class="req-texto">El código debe seguir el patrón MVC para facilitar el mantenimiento y la escalabilidad.</span></div>
+          <div class="requerimiento"><span class="req-id no-funcional">RNF19</span><span class="req-texto">El código debe estar documentado con comentarios y seguir estándares de codificación PSR-12.</span></div>
+          <div class="requerimiento"><span class="req-id no-funcional">RNF20</span><span class="req-texto">El sistema debe usar control de versiones con Git y tener un repositorio en GitHub.</span></div>
+        </div>
+      </div>
+
+      <!-- Módulo 6: Disponibilidad -->
+      <div class="modulo" data-modulo="Disponibilidad">
+        <div class="modulo-header" onclick="toggleModulo(this)">
+          <h2>📡 Disponibilidad <span class="contador">3 RNF</span></h2>
+          <span class="icono-toggle">▾</span>
+        </div>
+        <div class="modulo-contenido">
+          <div class="requerimiento"><span class="req-id no-funcional">RNF21</span><span class="req-texto">El sistema debe tener una disponibilidad mínima del 99% en producción.</span></div>
+          <div class="requerimiento"><span class="req-id no-funcional">RNF22</span><span class="req-texto">El sistema debe funcionar parcialmente offline gracias al Service Worker de la PWA.</span></div>
+          <div class="requerimiento"><span class="req-id no-funcional">RNF23</span><span class="req-texto">El sistema debe tener respaldos automáticos de la base de datos al menos una vez al día.</span></div>
+        </div>
+      </div>
+
+      <!-- Módulo 7: Escalabilidad -->
+      <div class="modulo" data-modulo="Escalabilidad">
+        <div class="modulo-header" onclick="toggleModulo(this)">
+          <h2>📈 Escalabilidad <span class="contador">2 RNF</span></h2>
+          <span class="icono-toggle">▾</span>
+        </div>
+        <div class="modulo-contenido">
+          <div class="requerimiento"><span class="req-id no-funcional">RNF24</span><span class="req-texto">La arquitectura debe permitir agregar nuevos módulos sin afectar los existentes.</span></div>
+          <div class="requerimiento"><span class="req-id no-funcional">RNF25</span><span class="req-texto">El sistema debe poder migrar de un hosting compartido a un servidor dedicado sin cambios en el código.</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <footer>
+    © 2026 · FinanIA - Gestor Inteligente Financiero<br>
+    Documento de Requerimientos · 50 RF · 25 RNF
+  </footer>
+
+</div>
+
+<button class="btn-top" id="btnTop" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">↑</button>
+
+<script>
+  // Cambiar entre secciones
+  function cambiarSeccion(seccion, boton) {
+    document.querySelectorAll('.seccion-contenido').forEach(s => s.classList.remove('activo'));
+    document.querySelectorAll('.tab-seccion').forEach(b => b.classList.remove('activo'));
+    
+    document.getElementById('seccion-' + seccion).classList.add('activo');
+    boton.classList.add('activo');
+    
+    // Actualizar info
+    const info = document.getElementById('info');
+    if (seccion === 'funcionales') {
+      info.innerHTML = 'Mostrando <strong>50</strong> requerimientos funcionales';
+    } else {
+      info.innerHTML = 'Mostrando <strong>25</strong> requerimientos no funcionales';
+    }
+    
+    // Limpiar búsqueda
+    document.getElementById('buscar').value = '';
+  }
+
+  // Toggle de módulos
+  function toggleModulo(header) {
+    const contenido = header.nextElementSibling;
+    const icono = header.querySelector('.icono-toggle');
+    
+    contenido.classList.toggle('abierto');
+    icono.classList.toggle('abierto');
+  }
+
+  // Abrir el primero por defecto
+  document.querySelector('.modulo-header').click();
+
+  // Buscador
+  document.getElementById('buscar').addEventListener('input', function(e) {
+    const query = e.target.value.toLowerCase().trim();
+    const seccionActiva = document.querySelector('.seccion-contenido.activo');
+    const modulos = seccionActiva.querySelectorAll('.modulo');
+    let totalVisibles = 0;
+
+    modulos.forEach(modulo => {
+      const requerimientos = modulo.querySelectorAll('.requerimiento');
+      let reqVisibles = 0;
+
+      requerimientos.forEach(req => {
+        const texto = req.textContent.toLowerCase();
+        if (query === '' || texto.includes(query)) {
+          req.style.display = '';
+          reqVisibles++;
+          totalVisibles++;
+        } else {
+          req.style.display = 'none';
+        }
+      });
+
+      if (reqVisibles > 0) {
+        modulo.style.display = '';
+        if (query !== '') {
+          const contenido = modulo.querySelector('.modulo-contenido');
+          const icono = modulo.querySelector('.icono-toggle');
+          contenido.classList.add('abierto');
+          icono.classList.add('abierto');
+        }
+      } else {
+        modulo.style.display = 'none';
+      }
+    });
+
+    const info = document.getElementById('info');
+    if (query === '') {
+      const esFuncional = document.getElementById('seccion-funcionales').classList.contains('activo');
+      info.innerHTML = esFuncional 
+        ? 'Mostrando <strong>50</strong> requerimientos funcionales'
+        : 'Mostrando <strong>25</strong> requerimientos no funcionales';
+    } else {
+      info.innerHTML = `Mostrando <strong>${totalVisibles}</strong> resultado(s) para "<strong>${e.target.value}</strong>"`;
+    }
+  });
+
+  // Botón volver arriba
+  window.addEventListener('scroll', function() {
+    const btn = document.getElementById('btnTop');
+    if (window.scrollY > 300) {
+      btn.classList.add('visible');
+    } else {
+      btn.classList.remove('visible');
+    }
+  });
+</script>
+
+</body>
+</html>

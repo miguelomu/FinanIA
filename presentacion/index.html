@@ -1,0 +1,1256 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sustentación FinanIA - Gestor Inteligente Financiero</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
+  
+  body {
+    background: linear-gradient(135deg, #0a1929 0%, #132f4c 50%, #0a1929 100%);
+    min-height: 100vh;
+    color: #e6edf3;
+    overflow-x: hidden;
+    position: relative;
+  }
+  
+  /* Partículas decorativas */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(212,175,55,0.08) 0%, transparent 40%),
+      radial-gradient(circle at 80% 70%, rgba(46,125,200,0.12) 0%, transparent 40%),
+      repeating-linear-gradient(45deg, transparent 0 60px, rgba(255,255,255,0.015) 60px 61px);
+    pointer-events: none;
+    z-index: 0;
+  }
+  
+  header {
+    background: rgba(0, 0, 0, 0.5);
+    padding: 20px 30px;
+    text-align: center;
+    border-bottom: 3px solid #d4af37;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(15px);
+  }
+  
+  header h1 {
+    font-size: 1.4rem;
+    color: #d4af37;
+    letter-spacing: 1px;
+  }
+  
+  header p {
+    font-size: 0.9rem;
+    color: #9fb3c8;
+    margin-top: 5px;
+  }
+  
+  .container {
+    max-width: 1400px;
+    margin: 30px auto;
+    padding: 20px;
+    position: relative;
+    z-index: 1;
+  }
+  
+  .slide {
+    display: none;
+    background: rgba(19, 47, 76, 0.65);
+    border-radius: 25px;
+    padding: 60px;
+    margin-bottom: 20px;
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    animation: fadeIn 0.6s ease;
+    min-height: 650px;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .slide::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: linear-gradient(90deg, #d4af37, #b8860b, #d4af37);
+  }
+  
+  .slide.active {
+    display: block;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .slide-numero {
+    display: inline-block;
+    background: linear-gradient(135deg, #d4af37, #b8860b);
+    color: #0a1929;
+    padding: 6px 18px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+  }
+  
+  .slide h2 {
+    color: #d4af37;
+    font-size: 2.2rem;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid rgba(212, 175, 55, 0.3);
+  }
+  
+  .slide h3 {
+    color: #6bb6ff;
+    font-size: 1.4rem;
+    margin: 30px 0 18px 0;
+  }
+  
+  .slide p {
+    line-height: 1.8;
+    font-size: 1.05rem;
+    color: #c9d6e3;
+    margin-bottom: 15px;
+  }
+  
+  .slide ul, .slide ol {
+    margin-left: 30px;
+    margin-bottom: 20px;
+  }
+  
+  .slide li {
+    line-height: 2;
+    color: #c9d6e3;
+    margin-bottom: 10px;
+  }
+  
+  .slide li strong {
+    color: #d4af37;
+  }
+  
+  /* Portada */
+  .portada {
+    text-align: center;
+    padding: 60px 40px;
+  }
+  
+  .portada .icono-grande {
+    font-size: 8rem;
+    margin-bottom: 30px;
+    animation: float 3s ease-in-out infinite;
+  }
+  
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+  }
+  
+  .portada h1 {
+    color: #d4af37;
+    font-size: 3.5rem;
+    margin-bottom: 20px;
+    text-shadow: 0 4px 20px rgba(212, 175, 55, 0.4);
+    letter-spacing: 2px;
+  }
+  
+  .portada .subtitulo {
+    color: #9fb3c8;
+    font-size: 1.4rem;
+    margin-bottom: 40px;
+  }
+  
+  .portada .info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    max-width: 1000px;
+    margin: 40px auto 0;
+  }
+  
+  .portada .info-item {
+    background: rgba(10, 25, 41, 0.6);
+    padding: 20px;
+    border-radius: 15px;
+    border: 1px solid rgba(212, 175, 55, 0.2);
+  }
+  
+  .portada .info-item .etiqueta {
+    color: #9fb3c8;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+  
+  .portada .info-item .valor {
+    color: #d4af37;
+    font-size: 1.1rem;
+    font-weight: bold;
+  }
+  
+  .portada .integrantes {
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(19, 47, 76, 0.5));
+    border-radius: 20px;
+    padding: 30px;
+    margin-top: 30px;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .portada .integrantes h3 {
+    color: #d4af37;
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+  
+  .portada .integrantes ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .portada .integrantes li {
+    color: #e6edf3;
+    font-size: 1.1rem;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+  }
+  
+  .portada .integrantes li:last-child {
+    border-bottom: none;
+  }
+  
+  /* Tarjetas */
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+    margin: 30px 0;
+  }
+  
+  .card {
+    background: rgba(10, 25, 41, 0.6);
+    border-radius: 18px;
+    padding: 30px;
+    border-left: 5px solid #3498db;
+    transition: all 0.3s;
+  }
+  
+  .card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+  }
+  
+  .card.rojo { border-left-color: #e74c3c; }
+  .card.amarillo { border-left-color: #f39c12; }
+  .card.verde { border-left-color: #27ae60; }
+  .card.azul { border-left-color: #3498db; }
+  .card.dorado { border-left-color: #d4af37; }
+  .card.morado { border-left-color: #9b59b6; }
+  
+  .card .card-icono {
+    font-size: 2.8rem;
+    margin-bottom: 15px;
+  }
+  
+  .card h4 {
+    color: #d4af37;
+    font-size: 1.2rem;
+    margin-bottom: 12px;
+  }
+  
+  .card p {
+    color: #9fb3c8;
+    font-size: 0.95rem;
+    margin: 0;
+    line-height: 1.6;
+  }
+  
+  /* Botones de enlace a documentos */
+  .botones-enlace {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin: 30px 0;
+  }
+  
+  .btn-enlace {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 28px;
+    background: linear-gradient(135deg, #d4af37, #b8860b);
+    color: #0a1929;
+    text-decoration: none;
+    border-radius: 30px;
+    font-weight: bold;
+    font-size: 0.95rem;
+    box-shadow: 0 5px 20px rgba(212, 175, 55, 0.3);
+    transition: all 0.3s;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .btn-enlace:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(212, 175, 55, 0.5);
+  }
+  
+  .btn-enlace.secundario {
+    background: rgba(10, 25, 41, 0.8);
+    color: #d4af37;
+    border: 2px solid rgba(212, 175, 55, 0.4);
+  }
+  
+  .btn-enlace.secundario:hover {
+    background: rgba(212, 175, 55, 0.15);
+    border-color: #d4af37;
+  }
+  
+  /* Caja destacada */
+  .destacado {
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(19, 47, 76, 0.5));
+    border-left: 5px solid #d4af37;
+    padding: 25px 30px;
+    border-radius: 15px;
+    margin: 25px 0;
+  }
+  
+  .destacado p {
+    color: #e6edf3;
+    margin: 0;
+  }
+  
+  .destacado strong {
+    color: #d4af37;
+  }
+  
+  /* Tabla */
+  .tabla-req {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 25px 0;
+    background: rgba(10, 25, 41, 0.5);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  
+  .tabla-req th {
+    background: rgba(212, 175, 55, 0.2);
+    color: #d4af37;
+    padding: 16px;
+    text-align: left;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  
+  .tabla-req td {
+    padding: 14px 16px;
+    color: #c9d6e3;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+    font-size: 0.95rem;
+  }
+  
+  .tabla-req tr:last-child td {
+    border-bottom: none;
+  }
+  
+  /* QR e instalación */
+  .qr-section {
+    text-align: center;
+    padding: 40px;
+    background: rgba(10, 25, 41, 0.6);
+    border-radius: 25px;
+    margin: 30px 0;
+    border: 2px solid rgba(212, 175, 55, 0.3);
+  }
+  
+  .qr-section h3 {
+    color: #d4af37;
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+  }
+  
+  .qr-placeholder {
+    width: 250px;
+    height: 250px;
+    margin: 20px auto;
+    background: #fff;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #0a1929;
+    font-weight: bold;
+    font-size: 1rem;
+    border: 5px solid #d4af37;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    overflow: hidden;
+  }
+  
+  .qr-placeholder img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  
+  .qr-url {
+    color: #6bb6ff;
+    font-size: 1.1rem;
+    margin-top: 15px;
+    font-family: 'Courier New', monospace;
+  }
+  
+  /* Instalación */
+  .instalacion-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+    margin: 30px 0;
+  }
+  
+  .instalacion-card {
+    background: rgba(10, 25, 41, 0.6);
+    border-radius: 20px;
+    padding: 30px;
+    border: 1px solid rgba(212, 175, 55, 0.2);
+  }
+  
+  .instalacion-card h4 {
+    color: #d4af37;
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .instalacion-card ol {
+    margin-left: 20px;
+    counter-reset: step;
+    list-style: none;
+  }
+  
+  .instalacion-card li {
+    counter-increment: step;
+    position: relative;
+    padding-left: 45px;
+    margin-bottom: 18px;
+    color: #c9d6e3;
+    line-height: 1.6;
+  }
+  
+  .instalacion-card li::before {
+    content: counter(step);
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, #d4af37, #b8860b);
+    color: #0a1929;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.9rem;
+  }
+  
+  /* Navegación */
+  .navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 30px;
+    padding: 25px;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+  }
+  
+  .nav-btn {
+    background: linear-gradient(135deg, #d4af37, #b8860b);
+    color: #0a1929;
+    border: none;
+    padding: 14px 35px;
+    border-radius: 30px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  
+  .nav-btn:hover:not(:disabled) {
+    transform: scale(1.05);
+    box-shadow: 0 5px 20px rgba(212, 175, 55, 0.4);
+  }
+  
+  .nav-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  
+  .progress-bar {
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 12px;
+  }
+  
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #d4af37, #b8860b);
+    transition: width 0.5s;
+  }
+  
+  .slide-counter {
+    text-align: center;
+    font-size: 1.1rem;
+    color: #d4af37;
+    font-weight: bold;
+  }
+  
+  /* Índice */
+  .indice {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: rgba(19, 47, 76, 0.4);
+    border-radius: 15px;
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    justify-content: center;
+    position: relative;
+    z-index: 2;
+  }
+  
+  .indice button {
+    padding: 8px 14px;
+    background: rgba(10, 25, 41, 0.7);
+    color: #9fb3c8;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: 20px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-weight: normal;
+  }
+  
+  .indice button:hover {
+    background: rgba(212, 175, 55, 0.2);
+    color: #d4af37;
+  }
+  
+  .indice button.activo {
+    background: linear-gradient(135deg, #d4af37, #b8860b);
+    color: #0a1929;
+    font-weight: bold;
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .slide { padding: 30px; min-height: auto; }
+    .slide h2 { font-size: 1.5rem; }
+    .portada h1 { font-size: 2rem; }
+    .portada .icono-grande { font-size: 5rem; }
+    .cards { grid-template-columns: 1fr; }
+    .instalacion-grid { grid-template-columns: 1fr; }
+    .navigation { flex-wrap: wrap; gap: 10px; }
+    .nav-btn { padding: 10px 20px; font-size: 0.9rem; }
+    .btn-enlace { padding: 12px 22px; font-size: 0.9rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🎓 Sustentación FinanIA - Gestor Inteligente Financiero</h1>
+  <p>Universidad Uniminuto | Ingeniería de Software | Docente: Martín Emilio Rodríguez Forero</p>
+</header>
+
+<div class="container">
+
+  <!-- Índice -->
+  <div class="indice" id="indice">
+    <button onclick="irASlide(0)" class="activo">1. Portada</button>
+    <button onclick="irASlide(1)">2. Problema</button>
+    <button onclick="irASlide(2)">3. Causas y Soluciones</button>
+    <button onclick="irASlide(3)">4. Requerimientos</button>
+    <button onclick="irASlide(4)">5. Roles</button>
+    <button onclick="irASlide(5)">6. Casos de Uso</button>
+    <button onclick="irASlide(6)">7. Clases</button>
+    <button onclick="irASlide(7)">8. SQL Multitabla</button>
+    <button onclick="irASlide(8)">9. MER</button>
+    <button onclick="irASlide(9)">10. Demo CRUD</button>
+    <button onclick="irASlide(10)">11. Seguridad</button>
+    <button onclick="irASlide(11)">12. Secuencias</button>
+    <button onclick="irASlide(12)">13. QR e Instalación</button>
+    <button onclick="irASlide(13)">14. Cierre</button>
+  </div>
+
+  <!-- ============================================
+       SLIDE 1: PORTADA
+       ============================================ -->
+  <div class="slide active portada">
+    <div class="icono-grande">💰</div>
+    <h1>FinanIA</h1>
+    <p class="subtitulo">Gestor Inteligente Financiero<br>para estudiantes colombianos</p>
+    
+    <div class="info-grid">
+      <div class="info-item">
+        <div class="etiqueta">Institución</div>
+        <div class="valor">Universidad Uniminuto</div>
+      </div>
+      <div class="info-item">
+        <div class="etiqueta">Materia</div>
+        <div class="valor">Ingeniería de Software</div>
+      </div>
+      <div class="info-item">
+        <div class="etiqueta">Docente</div>
+        <div class="valor">Martín Emilio Rodríguez Forero</div>
+      </div>
+      <div class="info-item">
+        <div class="etiqueta">Proyecto</div>
+        <div class="valor">Sustentación Segundo Corte</div>
+      </div>
+    </div>
+    
+    <div class="integrantes">
+      <h3>👥 Integrantes del Proyecto</h3>
+      <ul>
+        <li>👨‍💻 Miguel Angel Muñoz Bohorquez</li>
+        <li>👨‍💻 Daniel Estiven Canchon Roa</li>
+        <li>👨‍💻 Luis Alejandro Neira Rivera</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ============================================
+       SLIDE 2: PLANTEAMIENTO DEL PROBLEMA
+       ============================================ -->
+  <div class="slide">
+    <span class="slide-numero">FASE 1: ANÁLISIS</span>
+    <h2>🔍 Planteamiento del Problema</h2>
+    
+    <div class="destacado">
+      <p>📊 <strong>Contexto:</strong> Más del 60% de los jóvenes colombianos entre 18 y 25 años no lleva un registro sistemático de sus ingresos y gastos. La mayoría desconoce conceptos como ahorro programado, interés compuesto o tasa de usura.</p>
+    </div>
+    
+    <h3>Los 3 problemas principales</h3>
+    
+    <div class="cards">
+      <div class="card rojo">
+        <div class="card-icono">📚</div>
+        <h4>Falta de educación financiera</h4>
+        <p>No han recibido formación sobre cómo administrar su dinero ni qué productos financieros existen.</p>
+      </div>
+      
+      <div class="card amarillo">
+        <div class="card-icono">📱</div>
+        <h4>Herramientas no adaptadas</h4>
+        <p>Las apps existentes están diseñadas para mercados extranjeros y no contemplan el contexto colombiano (Nequi, Daviplata, usura, CDT).</p>
+      </div>
+      
+      <div class="card azul">
+        <div class="card-icono">⏱️</div>
+        <h4>Complejidad en el registro</h4>
+        <p>Las apps tradicionales requieren registrar cada transacción manualmente. El 70% de los usuarios abandona en los primeros 30 días por esta razón.</p>
+      </div>
+    </div>
+    
+    <div class="botones-enlace">
+      <button onclick="abrirDocumento('../docs/01-planteamiento-problema.html')"  class="btn-enlace">
+        📄 Ver documento completo del planteamiento
+      </button>
+    </div>
+  </div>
+
+  <!-- ============================================
+       SLIDE 3: CAUSAS, CONSECUENCIAS Y SOLUCIONES
+       ============================================ -->
+  <div class="slide">
+    <span class="slide-numero">FASE 1: ANÁLISIS</span>
+    <h2>⚠️ Causas, Consecuencias y Soluciones</h2>
+    
+    <table class="tabla-req">
+      <thead>
+        <tr>
+          <th>Causa</th>
+          <th>Consecuencia</th>
+          <th>Solución en FinanIA</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Falta de educación financiera</td>
+          <td>No entienden conceptos básicos</td>
+          <td>Módulo educativo + Chatbot que explica</td>
+        </tr>
+        <tr>
+          <td>Ausencia de hábitos de ahorro</td>
+          <td>No ahorran para metas</td>
+          <td>Metas con recordatorios + fondo de emergencia</td>
+        </tr>
+        <tr>
+          <td>Gastos impulsivos</td>
+          <td>Desperdician dinero</td>
+          <td>Alertas de gasto + detección de gastos hormiga</td>
+        </tr>
+        <tr>
+          <td>No llevar registros</td>
+          <td>No saben en qué se va el dinero</td>
+          <td>Registro manual + importación CSV + calendario</td>
+        </tr>
+        <tr>
+          <td>Endeudamiento excesivo</td>
+          <td>Pagan intereses altos sin saberlo</td>
+          <td>Gestión de deudas + alerta de usura + simulador</td>
+        </tr>
+        <tr>
+          <td>Inflación no considerada</td>
+          <td>Pierden poder adquisitivo</td>
+          <td>Simulador con rendimiento real</td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <div class="botones-enlace">
+      <button onclick="abrirDocumento('../docs/01-planteamiento-problema.html')" class="btn-enlace">
+        📄 Ver matriz completa (15 causas, 6 filtros)
+      </button>
+    </div>
+  </div>
+
+  <!-- ============================================
+       SLIDE 4: REQUERIMIENTOS
+       ============================================ -->
+  <div class="slide">
+    <span class="slide-numero">FASE 1: ANÁLISIS</span>
+    <h2>📋 Requerimientos del Sistema</h2>
+    
+    <div class="cards">
+      <div class="card dorado">
+        <div class="card-icono">⚙️</div>
+        <h4>50 Requerimientos Funcionales</h4>
+        <p>Registro, login, cuentas, transacciones, metas, deudas, presupuestos, reportes, calendario, búsqueda, salud financiera, logros, PWA, premium, chatbot, simuladores, ideas de inversión, configuración y seguridad.</p>
+      </div>
+      
+      <div class="card azul">
+        <div class="card-icono">🔒</div>
+        <h4>25 Requerimientos No Funcionales</h4>
+        <p>Rendimiento, seguridad, usabilidad, compatibilidad, mantenibilidad, disponibilidad y escalabilidad.</p>
+      </div>
+    </div>
+    
+    <div class="botones-enlace">
+      <button onclick="abrirDocumento('../docs/01-planteamiento-problema.html')" class="btn-enlace" >
+        📄 Ver los 75 requerimientos con buscador
+      </button>
+    </div>
+  </div>
+
+  <!-- ============================================
+       SLIDE 5: ANÁLISIS DE ROLES
+       ============================================ -->
+  <div class="slide">
+    <span class="slide-numero">FASE 2: DISEÑO</span>
+    <h2>👥 Análisis de Roles</h2>
+    
+    <div class="cards">
+      <div class="card azul">
+        <div class="card-icono">🔵</div>
+        <h4>Invitado</h4>
+        <p>Ve landing page, demo y puede registrarse.</p>
+      </div>
+      
+      <div class="card verde">
+        <div class="card-icono">🟢</div>
+        <h4>Registrado</h4>
+        <p>Acceso a 18 funciones básicas: cuentas, transacciones, metas, deudas, presupuestos, reportes.</p>
+      </div>
+      
+      <div class="card amarillo">
+        <div class="card-icono">🟡</div>
+        <h4>Premium</h4>
+        <p>Todo lo anterior + 5 funciones IA: chatbot, simuladores, ideas de inversión, configuración.</p>
+      </div>
+    </div>
+    
+    <div class="destacado">
+      <p>💡 <strong>Modelo freemium:</strong> El usuario empieza gratis (Registrado) y puede actualizar a Premium para desbloquear las funciones de IA.</p>
+    </div>
+    
+    <div class="botones-enlace">
+      <a href="img/01-roles.png" target="_blank" class="btn-enlace" onclick="guardarOrigen()">
+        🖼️ Ver diagrama de roles completo
+      </a>
+    </div>
+  </div>
+
+  <!-- ============================================
+       SLIDE 6: CASOS DE USO
+       ============================================ -->
+  <div class="slide">
+    <span class="slide-numero">FASE 2: DISEÑO</span>
+    <h2>🎭 Diagrama de Casos de Uso</h2>
+    
+    <div class="destacado">
+      <p>📊 <strong>84 casos de uso</strong> organizados en 21 módulos, con 4 actores: Invitado, Registrado, Premium y Sistema IA.</p>
+    </div>
+    
+    <div class="cards">
+      <div class="card dorado">
+        <div class="card-icono">📦</div>
+        <h4>21 módulos</h4>
+        <p>Autenticación, Cuentas, Transacciones, Categorías, Metas, Deudas, Presupuestos, Fuentes, Recurrentes, Reportes, Calendario, Búsqueda, Salud, Logros, PWA, Premium, Chatbot, Simuladores, Ideas, Configuración y Seguridad.</p>
+      </div>
+      
+      <div class="card azul">
+        <div class="card-icono">🔗</div>
+        <h4>Relaciones</h4>
+        <p>25+ relaciones «include», 1 «extend» (Premium extiende a Registrado) y 1 actor no humano (Sistema IA).</p>
+      </div>
+    </div>
+    
+    <div class="botones-enlace">
+      <a href="img/02-casos-uso.png" target="_blank" class="btn-enlace" onclick="guardarOrigen()">
+        🖼️ Ver diagrama de casos de uso
+      </a>
+    </div>
+  </div>
+
+  <!-- ============================================
+       SLIDE 7: DIAGRAMA DE CLASES
+       ============================================ -->
+  <div class="slide">
+    <span class="slide-numero">FASE 2: DISEÑO</span>
+    <h2>🏗️ Diagrama de Clases</h2>
+    
+    <div class="destacado">
+      <p>📊 <strong>16 clases conceptuales</strong> con sus atributos, métodos, relaciones y 10 enumeraciones. Refleja las entidades del negocio.</p>
+    </div>
+    
+    <div class="cards">
+      <div class="card verde">
+        <div class="card-icono">📋</div>
+        <h4>Clases principales</h4>
+        <p>Usuario, Cuenta, Categoría, Transacción, Meta, AporteMeta, Deuda, PagoDeuda, Presupuesto, DetallePresupuesto, FuenteIngreso, ProductoInversion, Logro, Chatbot, SimuladorDeuda, SimuladorInversion.</p>
+      </div>
+      
+      <div class="card morado">
+        <div class="card-icono">🔢</div>
+        <h4>10 enumeraciones</h4>
+        <p>Rol, PerfilRiesgo, TipoCuenta, TipoCategoria, TipoTransaccion, EstadoMeta, EstadoDeuda, TipoIngreso, Frecuencia, CategoriaProducto.</p>
+      </div>
+    </div>
+    
+    <div class="botones-enlace">
+      <a href="img/04-clases.png" target="_blank" class="btn-enlace" onclick="guardarOrigen()">
+        🖼️ Ver diagrama de clases conceptual
+      </a>
+    </div>
+  </div>
+
+  <!-- ============================================
+       SLIDE 8: CONSULTAS MULTITABLA
+       ============================================ -->
+  <div class="slide">
+    <span class="slide-numero">FASE 2: DISEÑO</span>
+    <h2>🔗 Consultas Multitabla (SQL)</h2>
+    
+    <p>El sistema implementa <strong>6 consultas multitabla</strong> con JOINs entre 4 o más tablas relacionadas:</p>
+    
+    <table class="tabla-req">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Consulta</th>
+          <th>Tablas relacionadas</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>Transacciones con detalle completo</td>
+          <td>transaccion + usuario + categoria + cuenta</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Saldo actual por cuenta</td>
+          <td>cuenta + transaccion + aporte_meta + pago_deuda</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Progreso de metas con aportes</td>
+          <td>meta + usuario + aporte_meta + cuenta</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Deudas con historial de pagos</td>
+          <td>deuda + pago_deuda + usuario + cuenta</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Presupuesto vs gasto real</td>
+          <td>presupuesto + detalle_presupuesto + categoria + transaccion</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Reporte consolidado por categoría</td>
+          <td>categoria + transaccion + usuario + cuenta</td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <div class="botones-enlace">
+      <button onclick="abrirDocumento('../docs/01-planteamiento-problema.html')" class="btn-enlace">
+        📄 Ver las 6 consultas SQL con resultados
+      </button>
+    </div>
+  </div>
+
+  <!-- ============================================
+       SLIDE 9: MER
+       ============================================ -->
+  <div class="slide">
+    <span class="slide-numero">FASE 2: DISEÑO</span>
+    <h2>🗄️ Modelo Entidad-Relación</h2>
+    
+    <div class="destacado">
+      <p>📊 <strong>17 tablas</strong> con relaciones 1:N y 1:1, incluyendo las tablas nuevas de Ideas de Inversión y Contexto del Chatbot.</p>
+    </div>
+    
+    <div class="botones-enlace">
+      <a href="img/03-mer.png" target="_blank" class="btn-enlace" onclick="guardarOrigen()">
+        🖼️ Ver MER completo (17 tablas)
+      </a>
+    </div>
+  </div>
+
+  <!-- ============================================
+       SLIDE 10: DEMO CRUD
+       ============================================ -->
+  <div class="slide">
+    <span class="slide-numero">DEMO EN VIVO</span>
+    <h2>💻 Demostración del CRUD</h2>
+    
+    <div class="cards">
+      <div class="card verde">
+        <div class="card-icono">🟢</div>
+        <h4>CREATE</h4>
+        <p>Registrar una nueva transacción con monto, fecha, categoría y cuenta.</p>
+      </div>
+      
+      <div class="card azul">
+        <div class="card-icono">🔵</div>
+        <h4>READ</h4>
+        <p>Consultar el historial de transacciones y el dashboard con patrimonio neto.</p>
+      </div>
+      
+      <div class="card amarillo">
+        <div class="card-icono">🟡</div>
+        <h4>UPDATE</h4>
+        <p>Editar una transacción existente y ver el impacto en el saldo de la cuenta.</p>
+      </div>
+      
+      <div class="card rojo">
+        <div class="card-icono">🔴</div>
+        <h4>DELETE</h4>
+        <p>Eliminar una transacción y verificar que el saldo se recalcula automáticamente.</p>
+      </div>
+    </div>
+    
+    <div class="botones-enlace">
+      <a href="https://finania.rf.gd" target="_blank" class="btn-enlace">
+        🌐 Abrir FinanIA en producción
+      </a>
+    </div>
+  </div>
+
+  <!-- ============================================
+       SLIDE 11: SEGURIDAD
+       ============================================ -->
+  <div class="slide">
+    <span class="slide-numero">DEMO EN VIVO</span>
+    <h2>🔐 Seguridad del Sistema</h2>
+    
+    <div class="cards">
+      <div class="card verde">
+        <div class="card-icono">🔑</div>
+        <h4>Contraseñas con bcrypt</h4>
+        <p>Almacenadas con hash bcrypt de 10 rondas. Nunca en texto plano.</p>
+      </div>
+      
+      <div class="card azul">
+        <div class="card-icono">🛡️</div>
+        <h4>Tokens CSRF</h4>
+        <p>Todos los formularios protegidos con tokens únicos por sesión.</p>
+      </div>
+      
+      <div class="card amarillo">
+        <div class="card-icono">🔒</div>
+        <h4>Consultas PDO preparadas</h4>
+        <p>Previene inyección SQL. Todos los queries usan prepared statements.</p>
+      </div>
+      
+      <div class="card rojo">
+        <div class="card-icono">👤</div>
+        <h4>Validación de pertenencia</h4>
+        <p>Cada usuario solo puede acceder a sus propios datos.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================
+       SLIDE 12: DIAGRAMAS DE SECUENCIA
+       ============================================ -->
+  <div class="slide">
+    <span class="slide-numero">FASE 2: DISEÑO</span>
+    <h2>🔄 Diagramas de Secuencia</h2>
+    
+    <div class="cards">
+      <div class="card dorado">
+        <div class="card-icono">🔐</div>
+        <h4>1. Login de Usuario</h4>
+        <p>Flujo completo con validación CSRF, búsqueda en BD, verificación de contraseña y redirección según rol.</p>
+      </div>
+      
+      <div class="card azul">
+        <div class="card-icono">💸</div>
+        <h4>2. Crear Transacción</h4>
+        <p>Flujo completo con validación de categoría y cuenta, inserción en BD y recálculo automático del saldo.</p>
+      </div>
+    </div>
+    
+    <div class="botones-enlace">
+      <a href="img/05-secuencia-login.png" target="_blank" class="btn-enlace" onclick="guardarOrigen()">
+        🖼️ Ver secuencia de Login
+      </a>
+      <a href="img/06-secuencia-transaccion.png" target="_blank" class="btn-enlace" onclick="guardarOrigen()">
+        🖼️ Ver secuencia de Transacción
+      </a>
+    </div>
+  </div>
+
+  <!-- ============================================
+       SLIDE 13: QR E INSTALACIÓN
+       ============================================ -->
+  <div class="slide">
+    <span class="slide-numero">ACCESO Y DESPLIEGUE</span>
+    <h2>📱 Accede a FinanIA</h2>
+    
+    <div class="qr-section">
+      <h3>🌐 Escanea el código QR para abrir la app</h3>
+      <div class="qr-placeholder">
+        <img src="img/qr-finania.png" alt="QR FinanIA" onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\'color:#0a1929; text-align:center; padding:20px;\'>📌 Coloca tu QR en<br><strong>presentacion/img/qr-finania.png</strong></div>';">
+      </div>
+      <p class="qr-url">https://finania.rf.gd</p>
+      <p style="color:#9fb3c8; margin-top:15px;">Escanea este código con la cámara de tu celular para abrir FinanIA directamente.</p>
+    </div>
+  </div>
+
+  <!-- ============================================
+       SLIDE 14: INSTALACIÓN EN ANDROID E iOS
+       ============================================ -->
+  <div class="slide">
+    <span class="slide-numero">ACCESO Y DESPLIEGUE</span>
+    <h2>📲 Cómo instalar FinanIA</h2>
+    
+    <div class="instalacion-grid">
+      <!-- Android -->
+      <div class="instalacion-card">
+        <h4>🤖 Android (Chrome)</h4>
+        <ol>
+          <li>Abre <strong>Chrome</strong> en tu celular Android.</li>
+          <li>Ve a <strong>https://finania.rf.gd</strong> o escanea el QR.</li>
+          <li>Toca el menú de <strong>tres puntos (⋮)</strong> en la esquina superior derecha.</li>
+          <li>Selecciona <strong>"Instalar aplicación"</strong> o <strong>"Agregar a pantalla de inicio"</strong>.</li>
+          <li>Confirma tocando <strong>"Instalar"</strong>.</li>
+          <li>El ícono de FinanIA aparecerá en tu pantalla de inicio.</li>
+          <li>Ábrela y úsala como una app nativa, sin barra de navegador.</li>
+        </ol>
+        <div style="margin-top:20px; padding:15px; background:rgba(39,174,96,0.1); border-radius:10px; border-left:3px solid #27ae60;">
+          <p style="color:#7ee8a8; font-size:0.85rem; margin:0;">✅ Funciona sin conexión parcialmente y se actualiza automáticamente.</p>
+        </div>
+      </div>
+      
+      <!-- iOS -->
+      <div class="instalacion-card">
+        <h4>🍎 iPhone / iPad (Safari)</h4>
+        <ol>
+          <li>Abre <strong>Safari</strong> en tu iPhone o iPad (debe ser Safari, no Chrome).</li>
+          <li>Ve a <strong>https://finania.rf.gd</strong> o escanea el QR.</li>
+          <li>Toca el botón <strong>Compartir</strong> (el cuadrado con flecha hacia arriba) en la barra inferior.</li>
+          <li>Desliza hacia abajo y selecciona <strong>"Añadir a pantalla de inicio"</strong>.</li>
+          <li>Activa la opción <strong>"Abrir como app web"</strong>.</li>
+          <li>Toca <strong>"Añadir"</strong> en la esquina superior derecha.</li>
+          <li>El ícono de FinanIA aparecerá en tu pantalla de inicio.</li>
+        </ol>
+        <div style="margin-top:20px; padding:15px; background:rgba(52,152,219,0.1); border-radius:10px; border-left:3px solid #3498db;">
+          <p style="color:#6bb6ff; font-size:0.85rem; margin:0;">✅ En iOS, la app se abre en pantalla completa sin la barra de Safari.</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="destacado">
+      <p>💡 <strong>Nota:</strong> FinanIA es una <strong>PWA (Progressive Web App)</strong>, lo que significa que se puede instalar como app nativa en cualquier dispositivo sin pasar por la App Store ni Google Play.</p>
+    </div>
+  </div>
+
+  <!-- ============================================
+       SLIDE 15: CIERRE
+       ============================================ -->
+  <div class="slide portada">
+    <div class="icono-grande">🎉</div>
+    <h1>¡Gracias!</h1>
+    <p class="subtitulo">FinanIA está desplegado en producción y funcionando</p>
+    
+    <div class="cards" style="max-width: 1000px; margin: 40px auto;">
+      <div class="card dorado">
+        <div class="card-icono">💡</div>
+        <h4>21 módulos funcionales</h4>
+      </div>
+      <div class="card dorado">
+        <div class="card-icono">📊</div>
+        <h4>17 tablas en la BD</h4>
+      </div>
+      <div class="card dorado">
+        <div class="card-icono">📱</div>
+        <h4>PWA instalable</h4>
+      </div>
+      <div class="card dorado">
+        <div class="card-icono">🌐</div>
+        <h4>Deploy público</h4>
+      </div>
+    </div>
+    
+    <div class="destacado" style="max-width: 800px; margin: 30px auto 0;">
+      <p>🌐 <strong>https://finania.rf.gd</strong></p>
+      <p style="margin-top: 10px;">Usuario: demo@finania.com / Contraseña: demo123</p>
+    </div>
+    
+    <div style="margin-top: 40px;">
+      <p style="color: #9fb3c8; font-size: 1.2rem;">¿Preguntas?</p>
+    </div>
+  </div>
+
+  <!-- Navegación inferior -->
+  <div class="navigation">
+    <button id="prevBtn" class="nav-btn" onclick="cambiarSlide(-1)">◀ Anterior</button>
+    <div class="slide-counter">
+      <span id="currentSlide">1</span> / <span id="totalSlides">15</span>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill" style="width: 6.67%;"></div>
+      </div>
+    </div>
+    <button id="nextBtn" class="nav-btn" onclick="cambiarSlide(1)">Siguiente ▶</button>
+  </div>
+
+</div>
+
+<script>
+  let currentSlide = 0;
+  const slides = document.querySelectorAll('.slide');
+  const totalSlides = slides.length;
+  const indiceBtns = document.querySelectorAll('.indice button');
+  
+  document.getElementById('totalSlides').textContent = totalSlides;
+  
+  function showSlide(n) {
+    slides.forEach(s => s.classList.remove('active'));
+    slides[n].classList.add('active');
+    
+    indiceBtns.forEach(b => b.classList.remove('activo'));
+    if (indiceBtns[n]) indiceBtns[n].classList.add('activo');
+    
+    document.getElementById('currentSlide').textContent = n + 1;
+    document.getElementById('prevBtn').disabled = n === 0;
+    document.getElementById('nextBtn').disabled = n === totalSlides - 1;
+    
+    const progress = ((n + 1) / totalSlides) * 100;
+    document.getElementById('progressFill').style.width = progress + '%';
+    
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  
+  function cambiarSlide(direction) {
+    const newSlide = currentSlide + direction;
+    if (newSlide >= 0 && newSlide < totalSlides) {
+      currentSlide = newSlide;
+      showSlide(currentSlide);
+    }
+  }
+  
+  function irASlide(n) {
+    currentSlide = n;
+    showSlide(n);
+  }
+  
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ') {
+      e.preventDefault();
+      cambiarSlide(1);
+    }
+    if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      cambiarSlide(-1);
+    }
+  });
+
+  // ============================================
+// ABRIR DOCUMENTO EN NUEVA PESTAÑA CON CONTROL
+// ============================================
+function abrirDocumento(url) {
+  // Guardar la diapositiva actual
+  sessionStorage.setItem('volver_presentacion', 'true');
+  sessionStorage.setItem('slide_origen', currentSlide);
+  
+  // Abrir en nueva pestaña
+  window.open(url, '_blank');
+}
+  
+  showSlide(0);
+
+// ============================================
+// RESTAURAR DIAPOSITIVA AL VOLVER
+// ============================================
+window.addEventListener('pageshow', function(event) {
+  const volver = sessionStorage.getItem('volver_presentacion');
+  const slideOrigen = sessionStorage.getItem('slide_origen');
+  
+  if (volver === 'true' && slideOrigen !== null) {
+    const slideNum = parseInt(slideOrigen);
+    if (slideNum >= 0 && slideNum < totalSlides) {
+      currentSlide = slideNum;
+      showSlide(slideNum);
+    }
+    sessionStorage.removeItem('volver_presentacion');
+    sessionStorage.removeItem('slide_origen');
+  }
+});
+</script>
+
+</body>
+</html>

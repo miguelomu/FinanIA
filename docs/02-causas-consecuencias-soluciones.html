@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Causas, Consecuencias y Soluciones - FinanIA</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
+  
+  body {
+    background: linear-gradient(135deg, #0a1929 0%, #132f4c 50%, #0a1929 100%);
+    color: #e6edf3;
+    min-height: 100vh;
+    padding: 30px 20px;
+    line-height: 1.8;
+  }
+  
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  header {
+    text-align: center;
+    padding: 40px 20px;
+    background: rgba(19, 47, 76, 0.6);
+    border-radius: 20px;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    margin-bottom: 30px;
+    backdrop-filter: blur(10px);
+  }
+  
+  header .icono {
+    font-size: 4rem;
+    margin-bottom: 15px;
+  }
+  
+  header h1 {
+    color: #d4af37;
+    font-size: 2rem;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+  }
+  
+  header p {
+    color: #9fb3c8;
+    font-size: 1.05rem;
+  }
+  
+  /* Contador de filas */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+  }
+  
+  .stat {
+    background: rgba(19, 47, 76, 0.5);
+    border-radius: 15px;
+    padding: 25px;
+    text-align: center;
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    transition: all 0.3s;
+  }
+  
+  .stat:hover {
+    transform: translateY(-5px);
+    border-color: rgba(212, 175, 55, 0.5);
+  }
+  
+  .stat .numero {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #d4af37;
+    margin-bottom: 5px;
+  }
+  
+  .stat .etiqueta {
+    color: #9fb3c8;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  
+  /* Filtros */
+  .filtros {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 25px;
+    padding: 20px;
+    background: rgba(19, 47, 76, 0.4);
+    border-radius: 15px;
+    justify-content: center;
+  }
+  
+  .filtro-btn {
+    padding: 10px 20px;
+    background: rgba(10, 25, 41, 0.7);
+    color: #9fb3c8;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.3s;
+  }
+  
+  .filtro-btn:hover,
+  .filtro-btn.activo {
+    background: linear-gradient(135deg, #d4af37, #b8860b);
+    color: #0a1929;
+    font-weight: bold;
+  }
+  
+  /* Tabla */
+  .tabla-container {
+    background: rgba(19, 47, 76, 0.5);
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    margin-bottom: 25px;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  thead {
+    background: rgba(10, 25, 41, 0.8);
+  }
+  
+  thead th {
+    padding: 18px 20px;
+    text-align: left;
+    color: #d4af37;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 2px solid rgba(212, 175, 55, 0.3);
+  }
+  
+  tbody tr {
+    border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+    transition: background 0.2s;
+    animation: fadeIn 0.3s ease-out backwards;
+  }
+  
+  tbody tr:nth-child(1) { animation-delay: 0.03s; }
+  tbody tr:nth-child(2) { animation-delay: 0.06s; }
+  tbody tr:nth-child(3) { animation-delay: 0.09s; }
+  tbody tr:nth-child(4) { animation-delay: 0.12s; }
+  tbody tr:nth-child(5) { animation-delay: 0.15s; }
+  tbody tr:nth-child(6) { animation-delay: 0.18s; }
+  tbody tr:nth-child(7) { animation-delay: 0.21s; }
+  tbody tr:nth-child(8) { animation-delay: 0.24s; }
+  tbody tr:nth-child(9) { animation-delay: 0.27s; }
+  tbody tr:nth-child(10) { animation-delay: 0.30s; }
+  tbody tr:nth-child(11) { animation-delay: 0.33s; }
+  tbody tr:nth-child(12) { animation-delay: 0.36s; }
+  tbody tr:nth-child(13) { animation-delay: 0.39s; }
+  tbody tr:nth-child(14) { animation-delay: 0.42s; }
+  tbody tr:nth-child(15) { animation-delay: 0.45s; }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateX(-10px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  
+  tbody tr:hover {
+    background: rgba(212, 175, 55, 0.08);
+  }
+  
+  tbody td {
+    padding: 18px 20px;
+    color: #c9d6e3;
+    vertical-align: top;
+  }
+  
+  tbody td:first-child {
+    color: #ff8a80;
+    font-weight: 600;
+  }
+  
+  tbody td:nth-child(2) {
+    color: #f39c12;
+  }
+  
+  tbody td:last-child {
+    color: #7ee8a8;
+  }
+  
+  .etiqueta-tipo {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    margin-right: 5px;
+  }
+  
+  .etiqueta-tipo.causa { background: rgba(231, 76, 60, 0.2); color: #ff8a80; }
+  .etiqueta-tipo.consecuencia { background: rgba(243, 156, 18, 0.2); color: #f39c12; }
+  .etiqueta-tipo.solucion { background: rgba(39, 174, 96, 0.2); color: #7ee8a8; }
+  
+  /* Botón volver arriba */
+  .btn-top {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #d4af37, #b8860b);
+    color: #0a1929;
+    border: none;
+    cursor: pointer;
+    font-size: 1.5rem;
+    box-shadow: 0 5px 20px rgba(212, 175, 55, 0.4);
+    transition: all 0.3s;
+    opacity: 0;
+    visibility: hidden;
+  }
+  
+  .btn-top.visible {
+    opacity: 1;
+    visibility: visible;
+  }
+  
+  .btn-top:hover {
+    transform: translateY(-5px);
+  }
+  
+  footer {
+    text-align: center;
+    padding: 30px;
+    color: #7a8a9c;
+    font-size: 0.9rem;
+    margin-top: 30px;
+  }
+  
+  @media (max-width: 768px) {
+    header h1 { font-size: 1.4rem; }
+    table { font-size: 0.85rem; }
+    thead th, tbody td { padding: 12px 10px; }
+    .btn-top { bottom: 15px; right: 15px; }
+  }
+</style>
+</head>
+<body>
+
+  <button onclick="volverPresentacion()" class="btn-volver">
+  ← Volver a la presentación
+</button>
+
+<script>
+  function volverPresentacion() {
+    // Intentar cerrar la pestaña (funciona si se abrió con window.open)
+    window.close();
+    
+    // Si después de 300ms la pestaña sigue abierta, redirigir
+    setTimeout(function() {
+      window.location.href = '../presentacion/index.html';
+    }, 300);
+  }
+</script>
+
+<style>.btn-volver {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #d4af37, #b8860b);
+  color: #0a1929;
+  border: none;
+  border-radius: 25px;
+  font-weight: bold;
+  font-size: 0.9rem;
+  box-shadow: 0 5px 20px rgba(212, 175, 55, 0.4);
+  z-index: 9999;
+  transition: all 0.3s;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  cursor: pointer;
+}
+.btn-volver:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(212, 175, 55, 0.6);
+}
+</style>
+
+<div class="container">
+
+  <header>
+    <div class="icono">📊</div>
+    <h1>Causas, Consecuencias y Soluciones</h1>
+    <p>Matriz de Análisis del Proyecto FinanIA</p>
+  </header>
+
+  <!-- Estadísticas -->
+  <div class="stats">
+    <div class="stat">
+      <div class="numero">15</div>
+      <div class="etiqueta">Causas identificadas</div>
+    </div>
+    <div class="stat">
+      <div class="numero">15</div>
+      <div class="etiqueta">Consecuencias</div>
+    </div>
+    <div class="stat">
+      <div class="numero">15</div>
+      <div class="etiqueta">Soluciones implementadas</div>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="filtros">
+    <button class="filtro-btn activo" onclick="filtrar('todas')">📋 Todas</button>
+    <button class="filtro-btn" onclick="filtrar('educacion')">📚 Educación</button>
+    <button class="filtro-btn" onclick="filtrar('ahorro')">💰 Ahorro</button>
+    <button class="filtro-btn" onclick="filtrar('deuda')">💳 Deudas</button>
+    <button class="filtro-btn" onclick="filtrar('control')">📊 Control</button>
+    <button class="filtro-btn" onclick="filtrar('digital')">📱 Digital</button>
+  </div>
+
+  <!-- Tabla -->
+  <div class="tabla-container">
+    <table id="tablaMatriz">
+      <thead>
+        <tr>
+          <th>Causa</th>
+          <th>Consecuencia</th>
+          <th>Solución en FinanIA</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr data-cat="educacion">
+          <td>Falta de educación financiera</td>
+          <td>Los estudiantes no entienden conceptos básicos (ahorro, interés, riesgo)</td>
+          <td>Módulo educativo con tutoriales, videos y artículos. Chatbot que explica conceptos.</td>
+        </tr>
+        <tr data-cat="ahorro">
+          <td>Ausencia de hábitos de ahorro</td>
+          <td>No ahorran para metas ni fondo de emergencia</td>
+          <td>Metas de ahorro con recordatorios. Cálculo automático del fondo de emergencia.</td>
+        </tr>
+        <tr data-cat="control">
+          <td>Gastos impulsivos</td>
+          <td>Desperdician dinero en compras no planificadas</td>
+          <td>Alertas de gasto excesivo. Detección de gastos hormiga. Presupuestos con alertas al 80% y 100%.</td>
+        </tr>
+        <tr data-cat="control">
+          <td>No llevar registros</td>
+          <td>No saben en qué se les va el dinero</td>
+          <td>Registro manual + importación CSV. Calendario financiero. Reportes visuales.</td>
+        </tr>
+        <tr data-cat="control">
+          <td>Falta de presupuesto</td>
+          <td>Gastan más de lo que ganan</td>
+          <td>Generación automática de presupuesto mensual. Comparativa vs gasto real.</td>
+        </tr>
+        <tr data-cat="deuda">
+          <td>Endeudamiento excesivo</td>
+          <td>Pagan intereses altos sin saberlo</td>
+          <td>Gestión de deudas con cálculo de interés. Alerta de tasa de usura. Simulador avalancha vs bola de nieve.</td>
+        </tr>
+        <tr data-cat="ahorro">
+          <td>Ausencia de metas claras</td>
+          <td>No tienen objetivos financieros</td>
+          <td>Metas con fecha límite, monto objetivo y barra de progreso visual.</td>
+        </tr>
+        <tr data-cat="digital">
+          <td>Desconocimiento de herramientas digitales</td>
+          <td>No usan apps financieras</td>
+          <td>Onboarding de 6 pasos. Centro de ayuda. Chatbot que explica cada función. PWA instalable.</td>
+        </tr>
+        <tr data-cat="ahorro">
+          <td>Inflación no considerada</td>
+          <td>Pierden poder adquisitivo</td>
+          <td>Simulador de inversiones con rendimiento real (descontando inflación).</td>
+        </tr>
+        <tr data-cat="control">
+          <td>Gastos hormiga invisibles</td>
+          <td>No notan los gastos pequeños que suman</td>
+          <td>Detección automática de suscripciones y gastos recurrentes. Impacto anual.</td>
+        </tr>
+        <tr data-cat="ahorro">
+          <td>Ingresos variables</td>
+          <td>No pueden planear con ingresos irregulares</td>
+          <td>Módulo de fuentes de ingreso con análisis de estabilidad.</td>
+        </tr>
+        <tr data-cat="ahorro">
+          <td>Sin fondo de emergencia</td>
+          <td>No están preparados para imprevistos</td>
+          <td>Cálculo automático del fondo recomendado (3-6 meses de gastos).</td>
+        </tr>
+        <tr data-cat="control">
+          <td>Mal manejo del tiempo</td>
+          <td>No dedican tiempo a revisar sus finanzas</td>
+          <td>Reportes automáticos. Gráficas visuales. Búsqueda global con Ctrl+K.</td>
+        </tr>
+        <tr data-cat="control">
+          <td>No analizan su comportamiento</td>
+          <td>No entienden sus patrones de gasto</td>
+          <td>Gráficas interactivas. Puntaje de salud financiera 0-100.</td>
+        </tr>
+        <tr data-cat="educacion">
+          <td>Sin asesoría personalizada</td>
+          <td>No saben a quién consultar</td>
+          <td>Chatbot IA que analiza sus datos y da recomendaciones según su perfil de riesgo.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <footer>
+    © 2026 · FinanIA - Gestor Inteligente Financiero<br>
+    Documento de Causas, Consecuencias y Soluciones
+  </footer>
+
+</div>
+
+<button class="btn-top" id="btnTop" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">↑</button>
+
+<script>
+  function filtrar(categoria) {
+    const filas = document.querySelectorAll('#tablaMatriz tbody tr');
+    const botones = document.querySelectorAll('.filtro-btn');
+    
+    botones.forEach(btn => btn.classList.remove('activo'));
+    event.target.classList.add('activo');
+    
+    filas.forEach(fila => {
+      if (categoria === 'todas' || fila.dataset.cat === categoria) {
+        fila.style.display = '';
+      } else {
+        fila.style.display = 'none';
+      }
+    });
+  }
+
+  window.addEventListener('scroll', function() {
+    const btn = document.getElementById('btnTop');
+    if (window.scrollY > 300) {
+      btn.classList.add('visible');
+    } else {
+      btn.classList.remove('visible');
+    }
+  });
+</script>
+
+</body>
+</html>
