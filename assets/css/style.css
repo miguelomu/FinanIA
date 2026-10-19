@@ -148,6 +148,7 @@ body {
   position: fixed;
   height: 100vh;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .sidebar h2 {
@@ -1996,5 +1997,420 @@ button {
   
   #modalDia .resumen-dia {
     grid-template-columns: 1fr;
+  }
+}
+
+/* ============================================
+   RESPONSIVE MÓVIL - MENÚ HAMBURGUESA
+   ============================================ */
+
+/* Botón hamburguesa (oculto en desktop) */
+.menu-hamburguesa {
+  display: none;
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  z-index: 1001;
+  width: 45px;
+  height: 45px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #d4af37, #b8860b);
+  color: #0a1929;
+  border: none;
+  cursor: pointer;
+  font-size: 1.5rem;
+  font-weight: bold;
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+  align-items: center;
+  justify-content: center;
+}
+
+.menu-hamburguesa:active {
+  transform: scale(0.95);
+}
+
+/* Overlay para cerrar el sidebar */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 999;
+  backdrop-filter: blur(2px);
+}
+
+.sidebar-overlay.activo {
+  display: block;
+}
+
+/* ============================================
+   RESPONSIVE MÓVIL - CORREGIDO
+   ============================================ */
+
+/* Botón hamburguesa */
+.menu-hamburguesa {
+  display: none;
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 1100;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #d4af37, #b8860b);
+  color: #0a1929;
+  border: none;
+  cursor: pointer;
+  font-size: 1.4rem;
+  font-weight: bold;
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s;
+}
+
+.menu-hamburguesa:active {
+  transform: scale(0.92);
+}
+
+/* Overlay */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 998;
+  backdrop-filter: blur(2px);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.sidebar-overlay.activo {
+  display: block;
+  opacity: 1;
+}
+
+/* ============================================
+   MÓVIL
+   ============================================ */
+@media (max-width: 768px) {
+
+  /* Prevenir scroll horizontal global */
+  html, body {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+
+  /* Mostrar hamburguesa */
+  .menu-hamburguesa {
+    display: flex;
+  }
+
+  /* LAYOUT - el sidebar NO ocupa espacio cuando está cerrado */
+  .layout {
+    display: block !important;
+    position: relative;
+  }
+
+  /* SIDEBAR - posición fija, flotante, superpuesto */
+  .sidebar {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    height: 100vh !important;
+    width: 280px !important;
+    max-width: 85vw;
+    margin: 0 !important;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    z-index: 1000;
+    overflow-y: auto;
+    padding: 70px 15px 20px 15px !important;
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
+  }
+
+  .sidebar.abierto {
+    transform: translateX(0);
+  }
+
+  /* MAIN - ocupa TODO el ancho, sin margen */
+  .main-content {
+    margin-left: 0 !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+    padding: 65px 12px 20px 12px !important;
+    box-sizing: border-box !important;
+    overflow-x: hidden;
+  }
+
+  /* TOPBAR */
+  .topbar {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding-left: 52px;
+    width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  .topbar h1 {
+    font-size: 1.1rem !important;
+    word-wrap: break-word;
+    max-width: 100%;
+  }
+
+  .topbar > div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    width: 100%;
+  }
+
+  /* Ocultar el topbar toggle (ya está en el sidebar) */
+  .topbar .btn {
+    padding: 8px 12px;
+    font-size: 0.8rem;
+  }
+
+  /* CARDS - una columna, sin desbordar */
+  .cards-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .card,
+  .meta-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    padding: 18px !important;
+    overflow: hidden;
+  }
+
+  .card .value {
+    font-size: 1.5rem !important;
+    word-break: break-word;
+  }
+
+  /* FORMULARIOS - inputs cómodos, sin zoom en iOS */
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    font-size: 16px !important;
+    padding: 12px 14px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .form-group label {
+    font-size: 0.85rem;
+  }
+
+  /* BOTONES más grandes */
+  .btn {
+    min-height: 44px;
+    font-size: 0.85rem;
+    padding: 12px 16px;
+    box-sizing: border-box;
+  }
+
+  /* TABLAS - scroll horizontal SOLO en la tabla, no en toda la página */
+  .table-container {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    max-width: 100%;
+    width: 100%;
+  }
+
+  table {
+    min-width: 550px;
+    font-size: 0.8rem;
+  }
+
+  thead th,
+  tbody td {
+    padding: 10px 8px !important;
+    white-space: nowrap;
+  }
+
+  /* BUSCADOR en móvil */
+  .buscador-global {
+    display: block !important;
+    width: 100% !important;
+    margin: 0 0 15px 0 !important;
+  }
+
+  .buscador-input {
+    font-size: 16px !important;
+    padding: 10px 38px 10px 38px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .buscador-atajo {
+    display: none !important;
+  }
+
+  /* Panel de resultados a pantalla completa */
+  .buscador-resultados {
+    position: fixed !important;
+    top: 65px !important;
+    left: 10px !important;
+    right: 10px !important;
+    width: auto !important;
+    max-width: calc(100vw - 20px);
+    max-height: 70vh;
+    z-index: 1200;
+  }
+
+  .buscador-item {
+    padding: 12px 16px !important;
+  }
+
+  .buscador-item-titulo {
+    font-size: 0.9rem !important;
+  }
+
+  /* MODAL */
+  .modal-confirm {
+    width: 92% !important;
+    max-width: none !important;
+    padding: 20px !important;
+    margin: 10px auto;
+  }
+
+  .modal-titulo {
+    font-size: 1.1rem !important;
+  }
+
+  /* TOAST */
+  .toast-container {
+    left: 10px !important;
+    right: 10px !important;
+    max-width: none !important;
+  }
+
+  .toast {
+    min-width: auto !important;
+  }
+
+  /* CALENDARIO */
+  .calendario-grid {
+    gap: 3px !important;
+    padding: 6px !important;
+    width: 100% !important;
+    box-sizing: border-box;
+  }
+
+  .dia {
+    min-height: 55px !important;
+    padding: 4px !important;
+  }
+
+  .dia-semana {
+    font-size: 0.65rem !important;
+    padding: 6px 0 !important;
+  }
+
+  .dia-numero {
+    font-size: 0.75rem !important;
+    margin-bottom: 2px;
+  }
+
+  .dia-indicador {
+    font-size: 0.5rem !important;
+    padding: 1px 3px !important;
+  }
+
+  /* GRÁFICAS */
+  canvas {
+    max-height: 220px !important;
+    max-width: 100% !important;
+  }
+
+  /* CHAT */
+  .chat-container {
+    height: calc(100vh - 180px) !important;
+    min-height: 400px;
+  }
+
+  .chat-messages {
+    padding: 15px !important;
+  }
+
+  .message {
+    max-width: 88% !important;
+  }
+
+  .chat-input-container {
+    padding: 12px !important;
+    gap: 8px;
+  }
+
+  .chat-input-container input {
+    font-size: 16px !important;
+  }
+
+  .chat-input-container button {
+    padding: 12px 18px !important;
+  }
+
+  .sugerencias {
+    padding: 0 12px 10px 12px !important;
+    gap: 6px;
+  }
+
+  .sugerencias button {
+    font-size: 0.7rem !important;
+    padding: 6px 10px !important;
+  }
+
+  /* SIDEBAR - links más grandes para tocar */
+  .sidebar nav a {
+    padding: 12px 14px !important;
+    font-size: 0.9rem !important;
+  }
+
+  .sidebar h2 {
+    font-size: 1.1rem !important;
+  }
+
+  /* Título de secciones */
+  h2 {
+    font-size: 1.1rem !important;
+  }
+
+  h3 {
+    font-size: 1rem !important;
+  }
+
+  /* Ocultar el toggle de tema duplicado en el topbar (ya está en sidebar) */
+  .topbar .toggle-tema-btn {
+    display: none;
+  }
+}
+
+/* ============================================
+   TABLET
+   ============================================ */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .sidebar {
+    width: 220px;
+  }
+
+  .main-content {
+    margin-left: 220px;
+    padding: 25px 20px;
   }
 }

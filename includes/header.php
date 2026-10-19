@@ -43,5 +43,45 @@ require_once __DIR__ . '/../app/bootstrap.php';
     });
   }
 </script>
+
+<script>
+  function toggleSidebar() {
+    const sidebar = document.querySelector('.sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    const btn = document.getElementById('btnMenuHamburguesa');
+    
+    if (sidebar) sidebar.classList.toggle('abierto');
+    if (overlay) overlay.classList.toggle('activo');
+    
+    // Cambiar el ícono
+    if (btn) {
+      if (sidebar && sidebar.classList.contains('abierto')) {
+        btn.textContent = '✕';
+      } else {
+        btn.textContent = '☰';
+      }
+    }
+  }
+  
+  // Cerrar al hacer clic en un link del sidebar
+  document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.sidebar nav a').forEach(link => {
+      link.addEventListener('click', function() {
+        if (window.innerWidth <= 768) {
+          toggleSidebar();
+        }
+      });
+    });
+  });
+</script>
+
 </head>
 <body>
+
+<!-- Botón hamburguesa (móvil) -->
+<button class="menu-hamburguesa" onclick="toggleSidebar()" id="btnMenuHamburguesa">
+  ☰
+</button>
+
+<!-- Overlay para cerrar el sidebar -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
